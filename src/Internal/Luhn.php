@@ -11,6 +11,8 @@ use LogicException;
  * doubled and a two-digit product is cross-added; the check digit is the tens complement of the sum. A body that is not
  * ASCII digits throws \LogicException.
  *
+ * The length of the body is the caller's to fix.
+ *
  * @internal
  *
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, annex B (IMEI check digit)

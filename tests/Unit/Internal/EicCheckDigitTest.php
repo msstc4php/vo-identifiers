@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Internal;
 
-use LogicException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\EicCheckDigit;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -14,31 +13,37 @@ use PHPUnit\Framework\TestCase;
 final class EicCheckDigitTest extends TestCase
 {
     /**
-     * @return iterable<string, array{string, string}>
+     * @return iterable<string, array{string}>
      */
-    public static function bodies(): iterable
+    public static function validCodes(): iterable
     {
         // ENTSO-E EIC Data Exchange IG v1.2: the worked example 11XRWENET12345- gives 2 (sum 2107), and the area 11Y123456789012T.
-        yield 'IG worked example' => ['11XRWENET12345-', '2'];
-        yield 'IG area' => ['11Y123456789012', 'T'];
-        yield 'zero result' => ['10X000000000010', '0'];
-        yield 'all zeros' => ['000000000000000', '0'];
-        yield 'small sum' => ['000000000000001', 'Z'];
-        yield 'digit result' => ['10X000000000000', '3'];
-        yield 'letter result' => ['10X000000000003', 'Y'];
-        yield 'ten is A' => ['10X000000000049', 'A'];
+        yield 'IG worked example' => ['11XRWENET12345-2'];
+        yield 'IG area' => ['11Y123456789012T'];
+        // Synthetic bodies that reach each branch of the check value.
+        yield 'zero result' => ['10X0000000000100'];
+        yield 'all zeros' => ['0000000000000000'];
+        yield 'small sum' => ['000000000000001Z'];
+        yield 'digit result' => ['10X0000000000003'];
+        yield 'letter result' => ['10X000000000003Y'];
+        yield 'ten is A' => ['10X000000000049A'];
     }
 
-    #[DataProvider('bodies')]
-    public function testComputesTheCheckCharacter(string $body, string $expected): void
+    #[DataProvider('validCodes')]
+    public function testAcceptsAValidCode(string $code): void
     {
-        self::assertSame($expected, EicCheckDigit::compute($body));
+        self::assertTrue(EicCheckDigit::isValid($code));
     }
 
-    #[DataProvider('bodies')]
-    public function testAcceptsTheBodyWithItsCheckCharacter(string $body, string $expected): void
+    #[DataProvider('validCodes')]
+    public function testRejectsEveryOtherCheckCharacter(string $code): void
     {
-        self::assertTrue(EicCheckDigit::isValid($body . $expected));
+        $body = \substr($code, 0, 15);
+        foreach (\str_split('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') as $other) {
+            if ($other !== $code[15]) {
+                self::assertFalse(EicCheckDigit::isValid($body . $other));
+            }
+        }
     }
 
     public function testTheImplementationGuideCallsThisCodeIncorrect(): void
@@ -46,16 +51,11 @@ final class EicCheckDigitTest extends TestCase
         self::assertFalse(EicCheckDigit::isValid('10Z317973010277Q'));
     }
 
-    public function testRejectsAWrongCheckCharacter(): void
-    {
-        self::assertFalse(EicCheckDigit::isValid('11XRWENET12345-3'));
-        self::assertFalse(EicCheckDigit::isValid('11Y123456789012U'));
-    }
-
     public function testAHyphenIsNeverAValidCheckCharacter(): void
     {
         self::assertFalse(EicCheckDigit::isValid('10X000000000002-'));
         self::assertFalse(EicCheckDigit::isValid('10X000000000001-'));
+        self::assertFalse(EicCheckDigit::isValid('10X0000000000020'));
     }
 
     public function testRejectsInvalidShapesWithoutThrowing(): void
@@ -66,35 +66,6 @@ final class EicCheckDigitTest extends TestCase
         self::assertFalse(EicCheckDigit::isValid('11xRWENET12345-2'));
         self::assertFalse(EicCheckDigit::isValid('11XRWENET12345_2'));
         self::assertFalse(EicCheckDigit::isValid("11XRWENET12345-2\n"));
-    }
-
-    public function testRejectsAShortBody(): void
-    {
-        $this->expectException(LogicException::class);
-        EicCheckDigit::compute('11XRWENET1234-');
-    }
-
-    public function testRejectsALongBody(): void
-    {
-        $this->expectException(LogicException::class);
-        EicCheckDigit::compute('11XRWENET12345-2');
-    }
-
-    public function testRejectsATrailingNewline(): void
-    {
-        $this->expectException(LogicException::class);
-        EicCheckDigit::compute("11XRWENET12345-\n");
-    }
-
-    public function testRejectsABodyOutsideTheAlphabet(): void
-    {
-        $this->expectException(LogicException::class);
-        EicCheckDigit::compute('11xRWENET12345-');
-    }
-
-    public function testRejectsABodyWhoseCheckCharacterWouldBeAHyphen(): void
-    {
-        $this->expectException(LogicException::class);
-        EicCheckDigit::compute('10X000000000002');
+        self::assertFalse(EicCheckDigit::isValid('x11XRWENET12345-2'));
     }
 }

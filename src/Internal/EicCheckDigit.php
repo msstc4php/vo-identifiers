@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Internal;
 
-use LogicException;
-
 /**
- * The check character of an Energy Identification Code, used only to validate an allocated code (ENTSO-E allows no
- * other use of the algorithm): the fifteen characters take the values 0 to 9, A = 10 to Z = 35 and `-` = 36, are weighted
+ * Validates the check character of an Energy Identification Code. ENTSO-E allows the algorithm only for checking an
+ * allocated code, so there is deliberately no public method that computes a check character (ruling 5): the fifteen characters take the values 0 to 9, A = 10 to Z = 35 and `-` = 36, are weighted
  * 16 down to 2, and the check value is `36 - ((sum - 1) mod 37)`. A value of 36 would be `-`, which no allocated code
  * carries.
  *
@@ -21,23 +19,6 @@ final class EicCheckDigit
     private const string VALUES = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-';
 
     /**
-     * @return non-empty-string one digit or capital letter
-     */
-    public static function compute(string $body): string
-    {
-        if (\preg_match('/^[0-9A-Z-]{15}$/D', $body) !== 1) {
-            throw new LogicException('An EIC body is fifteen digits, capital letters or hyphens.');
-        }
-
-        $check = self::checkValue($body);
-        if ($check === 36) {
-            throw new LogicException('No allocated EIC has a hyphen as its check character.');
-        }
-
-        return self::character($check);
-    }
-
-    /**
      * Whether `$value` is fifteen characters followed by their check character.
      */
     public static function isValid(string $value): bool
@@ -46,6 +27,7 @@ final class EicCheckDigit
             return false;
         }
 
+        // A check value of 36 maps to `[`, which no code carries (a hyphen is never a check character).
         return self::character(self::checkValue(\substr($value, 0, 15))) === $value[15];
     }
 

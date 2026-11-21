@@ -12,6 +12,8 @@ use LogicException;
  * the sum is doubled and 37 is subtracted when the product reaches 37. The check value is 0 when the final product is
  * 1, otherwise 37 minus the product.
  *
+ * The length of the body is the caller's to fix.
+ *
  * @internal
  *
  * @see https://isan.org/docs/isan_check_digit_calculation_v2.0.pdf ISAN International Agency, "ISAN Check Characters Calculation" v2.0, sections 2 and 3 and annex 1

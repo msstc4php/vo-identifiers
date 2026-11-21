@@ -27,6 +27,9 @@ final class Mod11CheckDigitTest extends TestCase
         // Remainder 1 leaves a check value of 10, written X.
         yield 'ten is X' => ['0000006', 'X'];
         yield 'ten is X for nine digits' => ['000000006', 'X'];
+        // Review Focus (not printed by the source): ISBN-10 0-306-40615-2 and ISSN 0378-5955.
+        yield 'Review Focus ISBN-10' => ['030640615', '2'];
+        yield 'Review Focus ISSN' => ['0378595', '5'];
         // A body that does not start with a zero.
         yield 'leading digit counts' => ['123456789', 'X'];
     }

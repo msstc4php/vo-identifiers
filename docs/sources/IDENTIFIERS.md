@@ -17,81 +17,71 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 |---|---|---|
 | Isbn | ISBN-13 check (EAN, weights 1 3) | enforced: ISBN Users' Manual 5th ed. 2005, 6th ed. 2012, 7th ed. 2017 |
 | Isbn | ISBN-10 check (mod 11, X) | enforced: agency's own 4th-edition online manual, Internet Archive copy 2005-12-28 (no current manual states it) |
-| Isbn | `formatted()` from RangeMessage | **not built**: the agency's terms forbid republishing the range message |
+| Isbn | `formatted()` from RangeMessage | **not built** (ruling 6): the agency's terms forbid republishing the range message |
 | Issn | check (mod 11, weights 8 to 2, X) | enforced: ISSN Manual Dec 2024 |
 | Issn | `toGtin()` (977) | enforced: issn.org page on the EAN-13 (French) |
 | Ismn | check (EAN weights), `M` form | enforced: ISMN Users' Manual 2016 |
 | Isrc | 12 characters, no check digit | enforced (structure): IFPI ISRC pages |
-| Iswc | `T` + 9 digits + check | structure enforced (ISO 15707:2022 preview); **weights not quoted by any official text reached**: format only unless the controller accepts the weights (see below) |
+| Iswc | `T` + 9 digits + check | structure enforced (ISO 15707:2022 preview); **check digit format only** (ruling 3): Annex B is not reachable and matching the standard's example is not a quote |
 | Isan | MOD 37,36 check characters | enforced: ISAN-IA "ISAN Check Characters Calculation" v2.0 |
 | Isni, Orcid | MOD 11-2 check | enforced: ISO 27729:2012 preview (Annex A), ORCID page |
 | Doi | `10.` prefix, `/`, suffix; case-insensitive | enforced (structure): DOI Handbook |
-| Ror | `0` + 6 Crockford base32 + 2 digits | structure enforced; **modulus not named by ROR** (see below) |
+| Ror | `0` + 6 Crockford base32 + 2 digits | **enforced** (ruling 3): ROR cites ISO/IEC 7064 with two numeric check digits, which is the MOD 97-10 system; input is the decimal value of the six characters (see the ROR section) |
 | Ark | `ark:` NAAN `/` name | format only (check character optional): draft-kunze-ark-40 |
 | Vin | 17 characters, set without I O Q | enforced: 49 CFR 565.13(g) |
-| Vin | position 9 check | enforced for the vehicles 49 CFR 565 covers; see the VIN section: scope is by market, not by WMI region |
-| Wmi | region and country tables | **unreachable** (ISO 3780 text, SAE J1044): not built |
+| Vin | position 9 check | `hasValidCheckDigit()` per 49 CFR 565.15(c); **never a reason to refuse** (ruling 4); `modelYear(): list<int>` always returns the candidates |
+| Wmi | region and country tables | **not built** (ruling 6): ISO 3780 text and SAE J1044 unreachable; `Wmi` keeps its 3-character format and raw accessors |
 | ContainerNumber | structure | enforced: BIC |
-| ContainerNumber | check digit | **ISO 6346 text unreachable**; verified against BIC's own example `BICU 123456 5` only (see below) |
+| ContainerNumber | check digit | **format only** (ruling 3): the ISO 6346 algorithm text is not reachable; matching BIC's example `BICU 123456 5` is not a quote |
 | ImoNumber | `IMO` + 7 digits | enforced (structure): IMO A.1215(34) |
-| ImoNumber | check digit | **not confirmed**: no IMO text reached gives the weights; format only |
+| ImoNumber | check digit | **format only** (ruling 2): no IMO text gives the weights; source A.1215(34); no `ImoCompanyNumber` |
 | Mmsi | structure by leading digits | enforced: ITU-R M.585-10 |
-| Mmsi | MID to country | **not embedded**: ITU copyright, permission needed |
+| Mmsi | MID to country | **not built** (ruling 6): ITU copyright, permission needed; `mid()` gives the digits only |
 | S10ItemIdentifier | check (weights 8 6 4 2 3 5 9 7) | enforced: UPU S10-12 |
 | AirWaybillNumber | serial mod 7 | enforced on a regulator's publication (Australian Border Force); IATA Res. 600a **unreachable** |
 | UicVehicleNumber | Luhn on 11 digits | enforced: Commission Decision 2007/756/EC, Appendix 6 part 3 |
 | UnLocode | 2 letters + 3 characters | format only: UNECE Rec. 16 |
-| IataAirportCode, IcaoAirportCode | 3 and 4 letters | format only; ICAO nationality letters **unreachable** (Doc 7910 is sold) |
+| IataAirportCode, IcaoAirportCode | 3 and 4 letters | format only; `IcaoAirportCode::region()` **not built** (ruling 6): Doc 7910 nationality letters unreachable (the document is sold) |
 | Iso15459Identifier | IAC + company ID + serial | structure per MH10.8.2 `25S`; IAC list is public (AIM register), no licence text in it |
-| DataIdentifierString | format 06 envelope | enforced: ISO/IEC 15434:2005 preview; DI format: ANSI MH10.8.2-2021; **DI table not embeddable** |
+| DataIdentifierString | format 06 envelope | enforced: ISO/IEC 15434:2005 preview; DI is `\d{0,3}[A-Z]` with a null description (ruling 7): ANSI MH10.8.2-2021 clause 4; **DI table not embeddable** |
 | Imei | 14 digits, Luhn check | enforced: 3GPP TS 23.003 V17.7.0 |
 | Imeisv | 14 + 2 digits | enforced: 3GPP TS 23.003 |
-| Iccid | `89`, Luhn, up to 20 digits | partly: E.118 text **not reached** (see below) |
+| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checks it and never refuses a length a reached source allows (ruling 11) |
 | Imsi | up to 15 digits | enforced: 3GPP TS 23.003 |
-| Eid | 32 digits, MOD 97-10 check pair | enforced: GSMA SGP.29 v1.1; **the `89` prefix of the plan is wrong** (see below) |
+| Eid | 32 digits, MOD 97-10 check pair | enforced: GSMA SGP.29 v1.1; **no `89` prefix rule** (ruling 1) |
 | CasRegistryNumber | check (weights 1 up from the right, mod 10) | enforced: CAS page (formula is an image) |
 | EcNumber | check (weights 1 to 6, mod 11) | enforced: ECHA |
 | UnNumber | `UN` + 4 digits | format only (no check exists) |
 | HsCode, TariffCode | 6, 8, 10 digits | format only |
-| EnergyIdentificationCode | check character | enforced: ENTSO-E EIC Data Exchange IG v1.2; **terms restrict the algorithm to validation** |
-| Mpan | 13-digit core, 21-digit form | structure enforced; **check-digit weights not reached**: format only |
+| EnergyIdentificationCode | check character | enforced, validation only (ruling 5): ENTSO-E EIC Data Exchange IG v1.2; `objectType()` is a string unless Task 5 reaches the letter table (ruling 9) |
+| Mpan | 13-digit core | format only (ruling 9): the check weights and the 21-digit layout were not reached; the top line is not decoded unless Task 5 reaches the text |
 
-## Controller rulings needed
+## Controller rulings (2026-11-21 UTC)
 
-1. **Eid prefix.** The plan says "prefix `89`". GSMA SGP.29 v1.1 clause AE.R02: EIDs assigned under it "SHALL not use EIDs
-   that start with 89; such values are reserved for the ITU-T E.118 based scheme", and EID.P06 drops ISO/IEC 7812-1
-   compatibility. Both families are 32 digits with the same MOD 97-10 pair. Proposal: accept any 32 digits with a valid
-   check pair; no prefix rule.
-2. **ImoNumber check.** The official IMO text says only that an IMO number is "a six-digit sequential unique number
-   followed by a check digit" (IMO FAQ). No weights appear in A.1215(34), A.1117(30) circulars or the FAQ. The weights
-   (7 to 2, last digit of the sum) come from Wikipedia and libraries only. Proposal: format only (`IMO` + 7 digits).
-   `ImoCompanyNumber`: A.1215(34) para 24 gives seven digits and no check, so format only. A.1215(34) (3 Dec 2025)
-   **revokes A.1117(30)** and supersedes A.1078(28); cite A.1215(34).
-3. **Iswc check.** ISO 15707:2022 clause 4.4 says "weighted modulus 10"; the formula is in Annex B, not in the preview.
-   The common formula (`S = 1 + sum(i * d_i)`, `C = (10 - S mod 10) mod 10`, `T` counted as 1) reproduces the
-   standard's own example `T-034.524.680-1` but only a Wikipedia page spells it out. Proposal: enforce structure only,
-   or accept the formula because the standard's example is reproduced; the controller decides.
-4. **Ror modulus.** ROR says only "ISO/IEC 7064:2003". MOD 97-10 on the decimal value of the six base32 characters
-   (`98 - (n * 100 mod 97)`) reproduces ROR's own published IDs (`02mhbdp94`, `01an7q238`) and 3 more. Proposal: enforce.
-5. **ContainerNumber check.** ISO 6346 is paywalled and BIC prints no algorithm. The common description (letter values
-   from 10 skipping multiples of 11, weights 2^0..2^9, mod 11, 10 becomes 0) reproduces BIC's own `BICU 123456 5`.
-   Proposal: enforce (the helper is built and tested with that example).
-6. **Vin position 9 scope.** 49 CFR 565.15(c) applies to every vehicle that 565.11 covers (vehicles manufactured for sale
-   in the US, "VIN letter A or B in the 10th position" or model year 2009+), whatever the WMI region; a Canadian or
-   Mexican built vehicle sold in the US carries it. The plan's "WMI region 1-5" is a proxy. The CMVSS 115 exemption in
-   565.13(f) is about where the VIN is located, not about the check digit. No Canadian, Mexican, Chinese or EU text
-   reached makes position 9 mandatory. Proposal: enforce for WMI first character 1 to 5 as planned and document that
-   non-North-American VINs sold in the US are also covered but not refused.
-7. **Eic algorithm terms.** ENTSO-E: "The algorithm ... may only be used for the purpose of checking the validity of an
-   allocated EIC code, unless used by an authorised LIO ... Any other use ... is expressly prohibited." Proposal:
-   `isValid` only in the public API; no `withCheckCharacter()` and no check-character generator exposed; the internal
-   `compute` exists because validation recomputes and compares.
-8. **Wmi.** No official country/region table reachable (ISO 3780:1983 preview is a scan, 2009 text is paid, SAE J1044
-   paid). Wikibooks/Wikipedia tables are not accepted. Proposal: `Wmi` is format only; `region()`/`country()` not built.
-9. **Mpan check.** Not confirmed (see MPAN). Proposal: format only.
-10. **Isbn `formatted()`.** Not built (terms below).
-11. **Mmsi `mid()` and `country()`.** `mid()` digits only; no country table (terms below).
-12. **IcaoAirportCode `region()`.** Not built (nationality letters unreachable).
+Owner rule: a check digit or structure is enforced only when quoted from an official source; otherwise format only. The rulings override the plan.
+
+1. **Eid.** No `89` prefix rule. GSMA SGP.29 v1.1 clause AE.R02 forbids `89` for EIDs it defines ("such values are reserved for the ITU-T E.118
+   based scheme") and EID.P06 drops ISO/IEC 7812-1 compatibility, so both families exist. 32 digits with the MOD 97-10 pair of clause 10.
+2. **ImoNumber.** Format only (`IMO` + 7 digits), no `ImoCompanyNumber`. The IMO FAQ says only that the seventh digit is a check digit; no IMO text
+   gives the weights (they come from Wikipedia and libraries). A.1215(34) (3 Dec 2025) revokes A.1117(30); cite A.1215(34).
+3. **ContainerNumber and Iswc format only; Ror enforced.** ISO 6346 and ISO 15707 Annex B are not reachable, and matching an example is not a quote;
+   `Iso6346CheckDigit` is deleted. ROR cites "ISO/IEC 7064:2003" with two numeric check digits, which is the MOD 97-10 system (the 7064 system with a
+   two-digit numeric check pair), so Ror is enforced; the input decoding is in the ROR section.
+4. **Vin.** Position 9 is never a reason to refuse: 49 CFR 565.15 binds vehicles by the market they are sold in (565.11), which a VIN does not carry, and no
+   Canadian, Mexican, Chinese or EU text reached makes it mandatory. `hasValidCheckDigit(): bool` follows 565.15(c); `modelYear(): list<int>` always returns
+   the candidates (Table VII), never narrowed by position 7.
+5. **Eic.** Validation only: ENTSO-E allows the algorithm only "for the purpose of checking the validity of an allocated EIC code". `EicCheckDigit` has a
+   public `isValid()` and no method that computes a check character.
+6. **Not built:** `Wmi::region()` and `country()` (no official table), `Mmsi::country()` (ITU copyright), `Isbn::formatted()` (RangeMessage terms),
+   `IcaoAirportCode::region()` (Doc 7910 not reached). `Wmi` keeps its 3-character format and raw accessors.
+7. **Data identifiers.** `\d{0,3}[A-Z]`, null description (MH10.8.2 clause 4 says "preceded by one, two, or three digits" while Table 1 lists bare `S`, `J`, `P`).
+8. **vo-identifiers-doctrine** covered MSI is 66.67 % on the empty registrar; fixed in Task 6; nothing is pushed before the repositories exist.
+9. **EicObjectType** is not an enum unless Task 5 reaches the letter table (otherwise `objectType(): string`). **Mpan**: Task 5 re-checks the sources; without a
+   reached layout and check text the 13-digit core is format only and the 21-digit top line is not decoded.
+10. **ISAN version check:** round trips only (no official vector with a version segment was reached).
+11. **Iccid:** `89` prefix and Luhn as the ITU circular states; lengths only as reached (ETSI TS 102 221: at most 20 digits); Task 4 re-checks E.118 and never
+    refuses a length a reached source allows.
+12. This file and the README "format only" list record each ruling with its reason.
 
 ## ISBN, ISSN, ISMN, ISRC, ISWC, ISAN, ISNI, ORCID, DOI, ROR, ARK
 
@@ -164,8 +154,8 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
   shown in Annex B". Example `ISWC T-034.524.680-1`; hyphens and dots only for readability. Annex B is not in the preview.
   CISAC business rules (https://cisaciswcuat.developer.azure-api.net/content/SPE_20190806_ISWC_EDI_FileFormat.pdf) require a
   valid check digit "as per Annex B of ISO 15707" and print no formula.
-- Not confirmed from an official text: `S = 1 + sum(i * d_i)` for i = 1..9, `C = (10 - S mod 10) mod 10` (`T` counted as 1). For
-  `T-034.524.680`: 1 + 178 = 179, C = 1, equal to the standard's own example. See ruling 3.
+- Format only (ruling 3). Not confirmed from an official text: `S = 1 + sum(i * d_i)` for i = 1..9, `C = (10 - S mod 10) mod 10` (`T` counted as 1). For
+  `T-034.524.680`: 1 + 178 = 179, C = 1, equal to the standard's own example, which is not a quote of Annex B.
 
 ### ISAN (ISO 15706)
 
@@ -179,7 +169,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 - Procedure (steps 1-7): start with 36; add the digit value (hex digit 0-15); if the sum is 36 or more subtract 36, and if the
   result is 0 use 36; multiply by 2; if 37 or more subtract 37; carry on to the next digit; at the end "If the Adjusted Product
   for the 16th digit of the ISAN equals 1, use 0 for the check character. Otherwise ... subtract it from 37." Annex 1 worked
-  example: `ISAN B159-D8FA-0124-0000-K` (K = 20, 37 minus 17). The second check "is similar as for the first".
+  example: `ISAN B159-D8FA-0124-0000-K` (K = 20, 37 minus 17). The second check "is similar as for the first" (ruling 10: round trips only).
   No official example with a version segment was reached; the helper is tested with the official root example and, for the
   second character, by round trips (a third-party vector `1881-66c7-3420-0000-3-9f3a-0245-q` exists and is not used).
 
@@ -217,9 +207,11 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
   lower-case letters or integers, ... The ROR ID pattern uses base 32 Crockford encoding, which excludes letters "I", "L", "O", and
   "U". The last 2 digits of the ROR identifier are a checksum that follows the ISO/IEC 7064:2003 standard." Regexes
   `^0[a-z|0-9]{6}[0-9]{2}$` and `^0[a-hj-km-np-tv-z|0-9]{6}[0-9]{2}$` (the pipe inside the class is a typo of theirs). Forms:
-  `https://ror.org/02mhbdp94`, `ror.org/02mhbdp94`, `02mhbdp94`. **The modulus is not named.** Verified locally (not from a source): with
-  `n` the integer value of the six base32 characters, `98 - ((n * 100) mod 97)` gives the last two digits of `02mhbdp94` (94),
-  `01an7q238` (38), `03yrm5c26`, `05gq02987`, `0168r3w48`. See ruling 4.
+  `https://ror.org/02mhbdp94`, `ror.org/02mhbdp94`, `02mhbdp94`. **The modulus is not named, and ruling 3 enforces it:** "ISO/IEC 7064" with two numeric check digits is MOD 97-10. Input exactly: `n` is the
+  decimal integer value of the six Crockford base32 characters after the leading `0` (alphabet `0123456789abcdefghjkmnpqrstvwxyz`, case-insensitive; the characters are
+  decoded, not converted letter by letter to digit pairs as in `Iso7064Mod97` for an LEI), and the check pair is `98 - ((n * 100) mod 97)`, which is MOD 97-10
+  of the decimal string of `n` (the `RorCheckDigits` helper does the decoding and feeds `Iso7064Mod97`). The decoding is the reading of ROR's "base 32 Crockford encoding"; it gives the last two digits of `02mhbdp94` (94),
+  `01an7q238` (38), `03yrm5c26`, `05gq02987`, `0168r3w48` (decoded `n` of `2mhbdp` is 88649142). Tests use these published IDs.
 
 ### ARK
 
@@ -247,8 +239,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 - Model year, 565.15(d)(1), Table VII: 2009 = 9, 2010 = A ... 2030 = Y, 2031 = 1 ... 2039 = 9 (and 1980-2009 the same letters and digits one
   cycle earlier). "Note to Table VII: For passenger cars, and for multipurpose passenger vehicles and trucks with a gross vehicle weight
   rating of 4536 kg (10,000 lb) or less, ... If position 7 is alphabetic, the Model Year in Position 10 of the VIN refers to a year in the
-  range 2010-2039"; otherwise 1980-2009. So `modelYear()` returns two candidates 30 years apart, and position 7 narrows them for that
-  vehicle class only.
+  range 2010-2039"; otherwise 1980-2009. `modelYear(): list<int>` returns the candidates 30 years apart and is never narrowed by position 7 (ruling 4).
 - 565.15(a): "A "9" shall be placed in the third position of the VIN if the manufacturer identifier is six characters" (WMI of low-volume
   makers uses positions 1-3 plus 12-14). NSAI (Irish WMI issuer, ISO 3780): "A WMI is the first 3 characters of a vehicle Identification
   Number".
@@ -264,7 +255,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
   digit page (https://www.bic-code.org/check-digit-calculator/: "U for freight containers, J for detachable freight container-related
   equipment, and Z for trailers and chassis"). That page prints no algorithm ("calculated using an algorithm that takes into account
   both the BIC code and serial number").
-- **Algorithm not quoted from any official text.** ISO 6346 and ISO 6346:2022 are paid (iso.org/standard/90821.html). The usual description
+- **Format only (ruling 3); the algorithm is not quoted from any official text.** ISO 6346 and ISO 6346:2022 are paid (iso.org/standard/90821.html). The usual description
   (value of A = 10, B = 12, skipping 11, 22, 33; ten characters weighted by 2^0 ... 2^9; sum mod 11; 10 becomes 0) reproduces BIC's own
   `BICU 123456 5` (sum 5494, 5494 mod 11 = 5). `CSQU3054383` (Review Focus 1) gives 3 by the same method; no official text prints it.
 
@@ -369,7 +360,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
   Annex B)". ITU IIN page: "Together with MII and CC, it shall have a maximum of 7 digits".
 - ETSI TS 102 221 V17.0.0 clause 13.2 EF_ICCID: "File size: 10 bytes"; "Contents: according to Recommendation ITU-T E.118"; "Coding: BCD, left justified and padded with 'F'": so at most 20 digits.
 - The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
-  not confirmed. Proposal: 19 or 20 digits, `89` prefix, Luhn; 18-digit forms refused only if the controller accepts that no source supports them (the plan's "18-20" is unconfirmed).
+  not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checks E.118 and never refuses a length a reached source allows.
 
 ### Eid (GSMA SGP.29 v1.1, 22 March 2024)
 
@@ -417,14 +408,14 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
   36), one of the characters in the proposed EIC code shall be changed". Worked example: `11XRWENET12345-` gives `11XRWENET12345-2`. Also `11Y123456789012T` is given as an example of an area code.
   Structure (ENTSOG EIC manual page https://entsog.eu/eic-codes/manual-of-procedures, through search): 2-character local issuing office, 1 object-type character, 12 characters (A-Z, 0-9, "-"), check character.
   **Terms:** "The algorithm deriving from this document may only be used for the purpose of checking the validity of an allocated EIC code, unless used by an authorised LIO when allocating EIC codes. Any
-  other use of the ENTSO-E algorithm is expressly prohibited." (ruling 7). The object-type letters (X, Y, Z, W, V, T, A) were not read from the Reference Manual: `EicObjectType` needs that text (Task 5).
+  other use of the ENTSO-E algorithm is expressly prohibited." (ruling 5). The object-type letters (X, Y, Z, W, V, T, A) were not read from the Reference Manual: `objectType(): string` unless Task 5 reaches that text (ruling 9); `EicObjectType` needs that text (Task 5).
 
 ### Mpan
 
 - SSEN (licensed distribution network operator), https://ssen.co.uk/globalassets/what-is-a-mpan/mpan-process-for-demand-customers.pdf: the MPAN "is a unique 13-digit reference"; the core is the 13 digits; "Distributor ID: Informs
   you which Distribution ..."; "Check Digit: Validates the previous 12 digits". Elexon (BSC Guidance Note, found by search; page not readable here) calls an MPAN not conforming to modulus 11 invalid. The weights
   (primes 3 5 7 13 17 19 23 29 31 37 41 43, sum mod 11 mod 10) appear in Wikipedia and its mirrors only; the MRA Data Transfer Catalogue and DCUSA text were **not reached**. **Outcome: format only** (13 digits, 21 with the top
-  line); no helper built. The 21-digit layout (profile class 2, MTC 3, LLFC 3 on the top line) is the plan's and was not confirmed from a reached text.
+  line); no helper built (ruling 9). The 21-digit layout (profile class 2, MTC 3, LLFC 3 on the top line) is the plan's and was not confirmed from a reached text.
 
 ## Table terms of use summary
 
@@ -449,13 +440,13 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | `Mod11CheckDigit` (weights n+1 down to 2, X) | ISSN Manual; agency's ISBN-10 text | Issn, Isbn-10 |
 | `Iso7064Mod11_2` | ISO 27729 Annex A; ORCID | Isni, Orcid |
 | `Iso7064Mod37_36` | ISAN-IA v2.0 | Isan |
-| `Iso7064Mod97` | SGP.29 clause 10; ISO 7064 | Eid, Ror |
-| `Iso6346CheckDigit` | BIC example (ruling 5) | ContainerNumber |
+| `Iso7064Mod97` | SGP.29 clause 10; ISO 7064 MOD 97-10 | Eid; Ror (through `RorCheckDigits`) |
+| `RorCheckDigits` | ROR identifier page, decoding as in the ROR section | Ror |
 | `VinCheckDigit` | 49 CFR 565.15(c) | Vin |
 | `S10CheckDigit` | UPU S10-12 5.4 | S10ItemIdentifier |
 | `AirWaybillCheckDigit` | Australian Border Force | AirWaybillNumber |
 | `CasCheckDigit` | CAS | CasRegistryNumber |
 | `EcNumberCheckDigit` | ECHA | EcNumber |
-| `EicCheckDigit` | ENTSO-E | EnergyIdentificationCode |
+| `EicCheckDigit` (`isValid()` only, ruling 5) | ENTSO-E | EnergyIdentificationCode |
 
-Not built (no official source): IMO ship check, ISWC check (pending ruling 3), MPAN check, Wmi tables. ISBN-10 and ISSN share `Mod11CheckDigit` (one algorithm, two lengths).
+Not built (no official source, rulings 2, 3, 6, 9): IMO check, ISWC check, container check, MPAN check, Wmi tables. ISBN-10 and ISSN share `Mod11CheckDigit` (one algorithm, two lengths).

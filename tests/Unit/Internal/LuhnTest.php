@@ -23,6 +23,8 @@ final class LuhnTest extends TestCase
         // Commission Decision 2007/756/EC, Appendix 6 part 3: 33 84 4796 100-8 and 31 51 3320 198-0.
         yield 'EU wagon 1' => ['33844796100', '8'];
         yield 'EU wagon 2' => ['31513320198', '0'];
+        // Review Focus (not printed by the source): the IMEI 490154203237518.
+        yield 'Review Focus IMEI' => ['49015420323751', '8'];
         yield 'single digit' => ['0', '0'];
         yield 'doubling carries' => ['5', '9'];
         yield 'doubled nine' => ['9', '1'];

@@ -20,6 +20,8 @@ final class CasCheckDigitTest extends TestCase
     {
         // CAS, "Check Digit Verification of CAS Registry Numbers": RN 107-07-3, (5x1)+(4x0)+(3x7)+(2x0)+(1x7) = 33.
         yield 'CAS example' => ['10707', '3'];
+        // Review Focus (not printed by the source): water, 7732-18-5.
+        yield 'Review Focus water' => ['773218', '5'];
         yield 'shortest body' => ['0000', '0'];
         yield 'longest body' => ['000000001', '1'];
         yield 'weight two' => ['000010', '2'];

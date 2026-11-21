@@ -7,17 +7,16 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Internal;
 use LogicException;
 
 /**
- * The ISO/IEC 7064 MOD 97-10 check character system as ISO 17442, ISO 11649 and GSMA SGP.29 apply it: letters become two digits
- * (`A` = 10 ... `Z` = 35); a value is valid when the number mod 97 is 1, and the check pair of a body is `98` minus
- * the remainder of the body followed by `00`, written with two digits. The caller arranges the characters (an LEI is
- * checked as written; an RF creditor reference has its first four characters moved to the end first). The remainder is
- * built digit by digit, so no big-number extension is needed.
+ * The ISO/IEC 7064 MOD 97-10 check character system: letters become two digits (`A` = 10 ... `Z` = 35); a value is valid
+ * when the number mod 97 is 1, and the check pair of a body is `98` minus the remainder of the body followed by `00`,
+ * written with two digits. The caller arranges the characters. An EID (GSMA SGP.29) is checked as written over its 32
+ * digits; a ROR identifier is checked over the decimal value of its decoded base32 characters (see `RorCheckDigits`).
+ * The remainder is built digit by digit, so no big-number extension is needed.
  *
  * @internal
  *
- * @see https://www.iso.org/standard/59771.html ISO 17442:2012, clause 5 and Annex A
- * @see https://www.iso.org/standard/50649.html ISO 11649:2009, clause 6 and Annex B
  * @see https://www.gsma.com/solutions-and-impact/technologies/esim/wp-content/uploads/2024/03/SGP.29-v1.1.pdf GSMA SGP.29 v1.1, clause 10 (EID check digits)
+ * @see https://ror.readme.io/docs/identifier ROR, "Identifier pattern" (ISO/IEC 7064:2003, two numeric check digits)
  */
 final class Iso7064Mod97
 {

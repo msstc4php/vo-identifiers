@@ -11,6 +11,8 @@ use LogicException;
  * down to 2 (8 to 2 for a seven-digit ISSN body, 10 to 2 for a nine-digit ISBN body), and the check digit is 11 minus
  * the remainder of the sum divided by 11, a result of 11 being 0 and a result of 10 being `X`.
  *
+ * The length of the body is the caller's to fix.
+ *
  * @internal
  *
  * @see https://www.issn.org/wp-content/uploads/2025/05/Manual-ISSN_ENG-marc21_May2025.pdf ISSN Manual (December 2024), 5.1.1

@@ -11,6 +11,8 @@ use LogicException;
  * digit is doubled, the check value is `(12 - total mod 11) mod 11`, and 10 is written `X`. This is the weighted sum of
  * ISO 27729 Annex A (weights 2 to the power of the position from the right, mod 11) in Horner form.
  *
+ * The length of the body is the caller's to fix.
+ *
  * @internal
  *
  * @see https://standards.iteh.ai/catalog/standards/iso/6ba7c022-bf45-4860-a066-ff57650ab09e/iso-27729-2012 ISO 27729:2012, clause 4.4 and annex A
@@ -30,10 +32,10 @@ final class Iso7064Mod11_2
 
         $total = 0;
         for ($i = 0; $i < $length; $i++) {
-            $total = ($total + \ord($body[$i]) - 48) * 2;
+            $total = ($total + \ord($body[$i]) - 48) * 2 % 11;
         }
 
-        $check = (12 - $total % 11) % 11;
+        $check = (12 - $total) % 11;
 
         return $check === 10 ? 'X' : (string) $check;
     }

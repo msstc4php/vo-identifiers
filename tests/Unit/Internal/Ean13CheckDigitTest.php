@@ -24,6 +24,8 @@ final class Ean13CheckDigitTest extends TestCase
         yield 'ISBN manual 5th' => ['978011000222', '4'];
         // ISMN Users' Manual 2016, 2.1.4: 979-0-3452-4680-5.
         yield 'ISMN manual' => ['979034524680', '5'];
+        // Review Focus (not printed by the source): ISBN-13 978-0-306-40615-7.
+        yield 'Review Focus ISBN-13' => ['978030640615', '7'];
         // An apparent check digit of 10 is 0 (ISBN Users' Manual, A1.1).
         yield 'apparent ten' => ['000000000000', '0'];
         yield 'one weighted' => ['000000000010', '9'];

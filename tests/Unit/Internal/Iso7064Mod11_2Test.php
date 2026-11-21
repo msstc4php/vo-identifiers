@@ -59,6 +59,13 @@ final class Iso7064Mod11_2Test extends TestCase
         self::assertFalse(Iso7064Mod11_2::isValid('000000021694233x'));
     }
 
+    public function testAVeryLongBodyStaysExact(): void
+    {
+        $check = Iso7064Mod11_2::compute(\str_repeat('9', 80));
+
+        self::assertTrue(Iso7064Mod11_2::isValid(\str_repeat('9', 80) . $check));
+    }
+
     public function testRejectsAnEmptyBody(): void
     {
         $this->expectException(LogicException::class);
