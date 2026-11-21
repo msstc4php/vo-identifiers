@@ -5,7 +5,7 @@ Engineer notes for `msstc4php/vo-identifiers`. Team-readable, not user-facing do
 | File | What it answers |
 |---|---|
 | [architecture.md](architecture.md) | Layout of `src/` and the helpers |
-| [conventions.md](conventions.md) | Helper contract, test and source rules |
+| [conventions.md](conventions.md) | Helper contract, test and source rules, `ReparsesOnUnserialize` |
 | [domain-model.md](domain-model.md) | Identifier families and their rules |
 | [integrations.md](integrations.md) | The packages this one needs |
 | [known-issues.md](known-issues.md) | Source gaps, contradictions with the plan |

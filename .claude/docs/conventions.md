@@ -10,3 +10,8 @@
 - Tests use the source's own examples and name the source in a comment; a synthetic vector (a remainder that no source
   example reaches) is labelled as such. No test vector comes from Wikipedia or a library.
 - Infection needs `#[UsesClass]` for helpers that call other helpers, or PHPUnit marks the tests risky (coverage metadata is strict).
+- A class that caches state derived in `parse()` must use `Internal\ReparsesOnUnserialize`: vo-base does not re-run `parse()` on
+  unserialize, so without the trait a tampered payload restores derived state apart from the validated value. The trait serializes `value`
+  alone and re-parses it (other keys ignored, re-entry on a built object refused). Today only `DataIdentifierString` needs it.
+- Controller rulings (`docs/sources/IDENTIFIERS.md`, "Controller rulings") override the plan; the README "Format only" and "Not built" lists
+  repeat them with the reason. Add a ruling there before changing a rule.

@@ -388,6 +388,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
   not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF, 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 6 to 20 digits. 20 is from ETSI (BCD "padded with 'F'", so shorter numbers exist). Neither source gives a minimum; 6 is **derived, not quoted**, from the circular's structure: MII `89`, country code, issuer, individual account (at least one digit each) and the check digit. The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum). Consequence: short `89`-prefixed numbers also fit `Imei`, `Imsi` and `Imeisv`, and the factory reports them ambiguous.
 
+### Equality across forms
+
+Ruling (Task 4): `Imei::equals()` compares the first 14 digits (the check digit is derived, not part of the identity). `Isbn::equals()` compares the ISBN-13 forms. Both stored strings keep the form given, so a string-keyed index or a UNIQUE column sees two values.
+
 ### Masking
 
 Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the length kept). The leading part and the last 2 digits stay visible only when at least 6 digits remain masked, otherwise only the leading part. Leading part: `Imei` and `Imeisv` the 8-digit TAC, `Iccid` the first 4 digits (`89` + 2), `Imsi` the first 5, `Eid` the first 8. So a 14- or 15-digit IMEI shows the TAC only, a 16-digit IMEISV the TAC and the last 2, and an IMSI of up to 12 digits its first 5. `Imeisv` is Maskable because it holds the whole IMEI.

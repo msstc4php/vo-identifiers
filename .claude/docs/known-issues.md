@@ -22,6 +22,13 @@ Source gaps and the controller rulings of 2026-11-21 (UTC) (`docs/sources/IDENTI
 - `Gtin`, `Gs1CheckDigit`, `KeyRules` (vo-gs1) cannot be `#[UsesClass]` targets: PHPUnit warns (not a valid coverage target) and Infection refuses the run.
 - PHPStan max rejects `non-empty-string` on `substr`/`explode` results and the briefing forbids `assert()` to narrow: accessors return `string`.
 
+- **The AIM IAC register is prefix-free by inspection** (the register text does not say so). A test asserts it; when the register is updated
+  (`Internal\IssuingAgencyRegister`, new edition = minor release) update that test with it, and re-check longest-match decoding if a code
+  becomes the beginning of another.
+- **`Imei`/`Isbn` equality spans forms, the string does not** (see domain-model.md): never use the string as a dedup key without normalising.
+- **Source reachability for later sessions:** Elexon/MRA/Ofgem/DCUSA (MPAN) answer 403 or are blocked, ISO 6346 / ISO 15707 Annex B / ISO 3779 and 3780
+  texts are paid, E.118 and IATA Resolution 600a are not reachable; do not enforce rules from Wikipedia or libraries.
+
 ## Infection, 2026-11-21 (UTC)
 
 Covered MSI 99.2% over `src/Internal`. The five escaped mutants are equivalent: `S10CheckDigit` digit offset (the weights add up to

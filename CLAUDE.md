@@ -38,3 +38,11 @@ A check digit or structural rule is enforced only when `docs/sources/IDENTIFIERS
 bcmath (digit-by-digit integer arithmetic). Exception messages never contain the input or any part of it, not even its
 length; never call `InvalidValueObjectException::excerpt()`. Registry tables decode and never refuse; licensed or
 copyright-restricted tables are not embedded (the table terms are in `docs/sources/IDENTIFIERS.md`).
+
+## Gotchas
+
+- `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) compare across forms; the stored string keeps the form given, so a
+  string-keyed index or UNIQUE column sees two values.
+- A class that caches state derived in `parse()` must use `Internal\ReparsesOnUnserialize`.
+- The embedded AIM IAC register (edition 2026-06-16) is prefix-free by inspection; the test asserting it is updated together with the register.
+- Controller rulings and every source decision: `docs/sources/IDENTIFIERS.md`; format-only and not-built lists with reasons: README.

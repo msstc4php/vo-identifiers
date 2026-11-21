@@ -5,3 +5,5 @@
 - Bridge: `msstc4php/vo-identifiers-doctrine` (types `id_<snake_name>`).
 - Source documents: WebFetch for most hosts; PDFs come back as saved binaries (read with `pdftotext`); the Internet Archive is
   reachable with `curl` (allowed domain) and is the way to read pages that answer 403 to WebFetch (ORCID, ECHA, ABF, the old ISBN manual).
+- Embedded table: AIM register of issuing agency codes for ISO/IEC 15459, edition 2026-06-16 (public PDF, no terms of use in it); decode-only.
+  Tables not embedded and why: README "Registry and table updates" and `docs/sources/IDENTIFIERS.md` ("Table terms of use summary").
