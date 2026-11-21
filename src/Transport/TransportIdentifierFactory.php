@@ -12,7 +12,7 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 /**
  * Builds the one identifier type that accepts the value, or throws {@see AmbiguousValueException} listing every type
  * that does. Three letters are both a WMI and an IATA airport code, so such a value is ambiguous. The ISO/IEC 15459
- * identifier is not a candidate: it has no syntax of its own, only the data identifier that carries it.
+ * identifier is not a candidate, and any seven digits are an IMO number (the `IMO` prefix is optional): it has no syntax of its own, only the data identifier that carries it.
  */
 final class TransportIdentifierFactory
 {

@@ -37,6 +37,17 @@ final class MmsiTest extends TestCase
         yield 'leading 8' => ['800000000', MmsiType::Unclassified, null];
         yield 'leading 1 without 111' => ['110000000', MmsiType::Unclassified, null];
         yield 'leading 1 and 112' => ['112000000', MmsiType::Unclassified, null];
+        yield 'group with a MID starting 1' => ['011234567', MmsiType::Unclassified, null];
+        yield 'group with a MID starting 0' => ['001234567', MmsiType::Unclassified, null];
+        yield 'group with a MID starting 8' => ['081234567', MmsiType::Unclassified, null];
+        yield 'coast with a MID starting 0' => ['000123456', MmsiType::Unclassified, null];
+        yield 'coast with a MID starting 8' => ['008123456', MmsiType::Unclassified, null];
+        yield 'SAR aircraft with a MID starting 1' => ['111111123', MmsiType::Unclassified, null];
+        yield 'SAR aircraft with a MID starting 8' => ['111811123', MmsiType::Unclassified, null];
+        yield 'aid to navigation with a MID starting 1' => ['991111234', MmsiType::Unclassified, null];
+        yield 'aid to navigation with a MID starting 8' => ['998111234', MmsiType::Unclassified, null];
+        yield 'craft associated with a MID starting 1' => ['981111234', MmsiType::Unclassified, null];
+        yield 'craft associated with a MID starting 8' => ['988111234', MmsiType::Unclassified, null];
         yield 'leading 9 other' => ['960000000', MmsiType::Unclassified, null];
     }
 
@@ -50,11 +61,6 @@ final class MmsiTest extends TestCase
         self::assertSame($mid, $mmsi->mid());
     }
 
-    public function testSpacesAreDropped(): void
-    {
-        self::assertSame('366123456', (new Mmsi('366 123 456'))->value);
-    }
-
     /**
      * @return iterable<string, array{string}>
      */
@@ -62,6 +68,7 @@ final class MmsiTest extends TestCase
     {
         yield 'eight' => ['36612345'];
         yield 'ten' => ['3661234567'];
+        yield 'spaces' => ['366 123 456'];
         yield 'letter' => ['36612345A'];
         yield 'newline' => ["366123456\n"];
         yield 'empty' => [''];

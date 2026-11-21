@@ -9,10 +9,10 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
 /**
- * Maritime Mobile Service Identity (ITU-R M.585): nine digits. {@see type()} classifies by the leading digits and
+ * Maritime Mobile Service Identity (ITU-R M.585): nine contiguous digits. {@see type()} classifies by the leading digits and
  * {@see mid()} gives the three maritime identification digits; the MID table is under ITU copyright and is not embedded,
  * so the digits are not decoded to a country. A well-formed number the recommendation does not classify is
- * {@see MmsiType::Unclassified}.
+ * {@see MmsiType::Unclassified}, as is a form whose MID would not start with 2 to 7.
  *
  * @see https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.585-10-202604-I!!PDF-E.pdf ITU-R M.585-10, Annexes 1 and 2
  * @see docs/sources/IDENTIFIERS.md "Mmsi"
@@ -26,13 +26,13 @@ final class Mmsi extends AbstractStringValueObject
         $digits = $this->value;
 
         return match (true) {
-            \str_starts_with($digits, '00') => MmsiType::CoastStation,
-            $digits[0] === '0' => MmsiType::GroupShip,
-            \str_starts_with($digits, '111') => MmsiType::SarAircraft,
-            \str_starts_with($digits, '99') => MmsiType::AidToNavigation,
-            \str_starts_with($digits, '98') => MmsiType::CraftAssociated,
+            \str_starts_with($digits, '00') && $this->isMid($digits[2]) => MmsiType::CoastStation,
+            $digits[0] === '0' && $this->isMid($digits[1]) => MmsiType::GroupShip,
+            \str_starts_with($digits, '111') && $this->isMid($digits[3]) => MmsiType::SarAircraft,
+            \str_starts_with($digits, '99') && $this->isMid($digits[2]) => MmsiType::AidToNavigation,
+            \str_starts_with($digits, '98') && $this->isMid($digits[2]) => MmsiType::CraftAssociated,
             \in_array(\substr($digits, 0, 3), ['970', '972', '974'], true) => MmsiType::DistressDevice,
-            \str_contains('234567', $digits[0]) => MmsiType::Ship,
+            $this->isMid($digits[0]) => MmsiType::Ship,
             default => MmsiType::Unclassified,
         };
     }
@@ -56,12 +56,18 @@ final class Mmsi extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = TransportRules::compact($value);
-
         if (\preg_match('/^[0-9]{9}$/D', $value) !== 1) {
             throw TransportRules::invalidFormat(self::TYPE);
         }
 
         return $value;
+    }
+
+    /**
+     * A MID is a number from 201 to 775 (the table of M.585), so its first digit is 2 to 7.
+     */
+    private function isMid(string $firstDigit): bool
+    {
+        return \str_contains('234567', $firstDigit);
     }
 }

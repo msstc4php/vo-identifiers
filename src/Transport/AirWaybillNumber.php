@@ -11,7 +11,7 @@ use Override;
 
 /**
  * Air waybill number: the carrier's three-digit IATA prefix, a seven-digit serial number and a check digit, the serial
- * number modulo 7. Hyphens and spaces are dropped and the stored form is the eleven digits. The rule rests on the
+ * number modulo 7. The hyphen after the prefix, as the sources print it, is optional and dropped; the stored form is the eleven digits. The rule rests on the
  * Australian Border Force's published algorithm; IATA Resolution 600a was not reachable.
  *
  * @see https://www.abf.gov.au/sdg-subsite/Pages/Check-Digit-Algorithms/Air-Waybill-Number-Validation.aspx Australian Border Force, Air Waybill Number Validation
@@ -47,11 +47,11 @@ final class AirWaybillNumber extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = TransportRules::compact($value, '- ');
-
-        if (\preg_match('/^[0-9]{11}$/D', $value) !== 1) {
+        if (\preg_match('/^([0-9]{3})-?([0-9]{8})$/D', $value, $match) !== 1) {
             throw TransportRules::invalidFormat(self::TYPE);
         }
+
+        $value = $match[1] . $match[2];
 
         if (!AirWaybillCheckDigit::isValid(\substr($value, 3))) {
             throw TransportRules::fail(self::TYPE, 'has a wrong check digit');

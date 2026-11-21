@@ -25,8 +25,6 @@ final class AirWaybillNumberTest extends TestCase
     {
         yield 'printed' => ['020-12345675'];
         yield 'compact' => ['02012345675'];
-        yield 'spaces' => ['020 1234 5675'];
-        yield 'hyphen before the check digit' => ['020-1234567-5'];
     }
 
     #[DataProvider('valid')]
@@ -56,6 +54,10 @@ final class AirWaybillNumberTest extends TestCase
      */
     public static function invalid(): iterable
     {
+        yield 'spaces' => ['020 12345675'];
+        yield 'hyphen before the check digit' => ['020-1234567-5'];
+        yield 'two hyphens' => ['020--12345675'];
+        yield 'extra leading character' => ['X020-12345675'];
         yield 'ten digits' => ['020-1234567'];
         yield 'twelve digits' => ['020-123456755'];
         yield 'letter' => ['020-1234567A'];

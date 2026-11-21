@@ -303,8 +303,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   components: characters 1-2 service indicator (a2), 3-10 serial number (n8), 11 check digit (n1), 12-13 country code (a2). 5.4: "multiply the digits
   in the serial number by the weighting factors 8 6 4 2 3 5 9 7 ... divide this sum by 11 ... subtract the remainder from 11; if the result falls within
   the range 1 to 9, use the result as the check digit; if the result is 10, use 0 ...; if the result is 11, use 5". Example serial 47312482: sum 200,
-  remainder 2, check digit 9, "Complete self-checking number: 473124829". Footnote 1: service indicators `JA-JZ`, `KA-KZ`, `SA-SZ`, `TA-TZ`, `WA-WZ` are reserved (never
-  valid); the human-readable form may have spaces.
+  remainder 2, check digit 9, "Complete self-checking number: 473124829". Footnote 1 to 5.2, verbatim: "To reduce the risk of confusion between S10 identifier barcodes and barcodes which make
+  use of ISO/IEC 15418 data identifiers [9], character combinations JA-JZ; KA-KZ; SA-SZ; TA-TZ and WA-WZ are reserved and cannot be assigned as valid service
+  indicator values." The text gives the identifier as 13 characters with "The human-readable component may include spaces for readability, but this is recommended rather than being required."
+  **Ruling (round 1): the five reserved ranges stay accepted** (a barcode carrying one is not an S10 identifier assigned by the UPU, but the class does not refuse it).
 
 ### AirWaybillNumber
 
@@ -321,7 +323,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   (UK copy of the EU act; EUR-Lex original not readable here; Implementing Decision (EU) 2018/1614 restates it): "the digits in the even positions of the basic number
   (counting from the right) are taken at their own decimal value"; odd positions are doubled (factors 2 1 2 1 ...), the digits of the products are added, "units digit", the
   check digit is the complement to 10 ("If the units digit is 0, the check digit is also 0"). Examples: basic number 33844796100 gives 33 84 4796 100-8 (digit sum 52); 31513320198 gives
-  31 51 3320 198-0 (sum 40). Structure (UIC 438-3 as described by the ERA EVR page): digits 1-2 type, 3-4 country; only the check part is quoted from the act.
+  31 51 3320 198-0 (sum 40). Structure, from the headings of the same Decision's Appendix 6 (legislation.gov.uk/eudn/2007/756/annex/appendix/6/2020-12-31; the Agency for Railways keeps the EVN registers under Regulation (EU) 2016/796, so this is a regulator's act): "PART 4 - CODING OF THE COUNTRIES IN WHICH THE VEHICLES ARE REGISTERED (DIGITS 3-4 AND ABBREVIATION)"; "PART 6 - INTEROPERABILITY CODES USED FOR WAGONS (DIGITS 1-2)"; "PART 3 - RULES FOR THE DETERMINATION OF THE CHECK-DIGIT (DIGIT 12)"; "PART 9 - STANDARD NUMERICAL MARKING OF WAGONS (DIGITS 5 TO 8)".
   The vehicle-type and country tables of Appendix 6 parts 9-13 are ERA downloads and were not read: `vehicleType()` and `countryCode()` are raw digits.
 
 ### UnLocode, IATA, ICAO
@@ -355,9 +357,11 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 
 ### Task 3 implementation notes (2026-11-21 UTC)
 
-- S10: the footnote's reserved service indicators (`J K S T W`) are not refused: the text reached does not say a reserved indicator makes the identifier invalid, and a false refusal is worse than an accepted reserved one.
+- S10: the reserved service indicators (`J K S T W`) are accepted by controller ruling, although footnote 1 says they "cannot be assigned as valid service indicator values" (see the S10 section for the quote).
 - Mmsi: only the leading-digit rules quoted above classify; the handheld-VHF format is not quoted precisely enough (the note says "recommends 3") and `979` (AMRD Group B) has no type of its own, so both are `Unclassified`.
-- Iso15459Identifier: format only (`[A-Z0-9]{3,35}`, an..35 from the `J` definition); carried under DI `25S` or `J` only, the two DIs quoted above. The IAC register is not embedded, so no `issuingAgencyCode()`.
+- Iso15459Identifier: `[A-Z0-9]{3,}`; carried under DI `25S` or `J` only, the two DIs quoted above. The an..35 length of the quoted `J` definition is the only cap, applied to `J` fields only; `25S` has no quoted length. `issuingAgencyCode()` and `issuingAgencyName()` read the code from the start by the AIM register (version 2026-06-16, section 2, code to agency name; no terms of use are printed in it, contact details are not copied). The register text does not state that codes are prefix-free; in this edition they are (0-9, `D`, `J` and two- and three-letter codes, none the beginning of another; a unit test asserts it), so the longest match is the only match. A value starting with no entry decodes to null and is accepted.
+- Mmsi: group, coast, AIS aid to navigation, SAR aircraft and craft-associated forms are classified only when the MID digit after the fixed prefix is 2 to 7 (the MID table runs 201 to 775); otherwise `Unclassified`. No separators are stripped: M.585 prints nine contiguous digits.
+- AirWaybillNumber: only the hyphen after the prefix is accepted, as ABF and IATA print it (`020-12345675`); spaces are not stripped.
 - DataIdentifierString: one format-06 envelope only. ISO/IEC 15434 Table 1 and 4.1 (preview) give the header, GS after the format header, RS format trailer and EOT message trailer; the preview ends before the 4.3.7 data rules, so a field is a DI followed by UTF-8 data without RS, GS, EOT (MH10.8.2 clause 5).
 - Wmi is a factory candidate and collides with `IataAirportCode` on three letters without I, O, Q.
 
