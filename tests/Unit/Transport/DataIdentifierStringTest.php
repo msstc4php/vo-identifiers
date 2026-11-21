@@ -42,6 +42,14 @@ final class DataIdentifierStringTest extends TestCase
         self::assertNull($message->field('Q'));
     }
 
+    public function testFieldsAreParsedOnce(): void
+    {
+        $message = new DataIdentifierString(self::ENVELOPE);
+
+        self::assertSame($message->fields(), $message->fields());
+        self::assertSame($message->fields()[1], $message->field('S'));
+    }
+
     public function testSerialIsNullWithoutTheField(): void
     {
         self::assertNull(DataIdentifierString::fromFields([new DataIdentifierField('P', 'X')])->serial());

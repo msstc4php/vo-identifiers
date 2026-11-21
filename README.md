@@ -34,7 +34,7 @@ exist; telecom, substance and energy identifiers follow.
 | `Transport\ContainerNumber` | ISO 6346 / BIC, owner code, category `U`/`J`/`Z`, 6 digits, check digit (not verified); spaces accepted, stored compact; `formatted()` |
 | `Transport\ImoNumber` | `IMO` + 7 digits (the prefix is optional on input), check digit not verified; `number()`, `formatted()` |
 | `Transport\Mmsi`, `MmsiType` | ITU-R M.585, 9 digits; `type()` from the leading digits and the MID digit rule (ship, group ship, coast station, SAR aircraft, AIS aid to navigation, craft associated, distress device, unclassified), `mid()` digits only |
-| `Transport\S10ItemIdentifier` | UPU S10, check digit enforced; `serviceIndicator()`, `serialNumber()`, `countryCode()`, `country(): ?CountryCode` |
+| `Transport\S10ItemIdentifier` | UPU S10, check digit enforced, the reserved service indicators `J K S T W` refused; `serviceIndicator()`, `serialNumber()`, `countryCode()`, `country(): ?CountryCode` |
 | `Transport\AirWaybillNumber` | 3-digit prefix, 7-digit serial, serial mod 7 enforced; the hyphen after the prefix is optional, stored 11 digits, `formatted()` gives `020-12345675` |
 | `Transport\UicVehicleNumber` | 12 digits, Luhn enforced; printed (`31 51 3320 198-0`) or compact, stored compact; `vehicleType()` and `countryCode()` are raw digits |
 | `Transport\UnLocode` | UNECE Rec. 16, 2 letters + 3 of letters and 2-9, format only; `country(): ?CountryCode` |

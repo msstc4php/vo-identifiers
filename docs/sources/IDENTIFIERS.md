@@ -306,7 +306,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   remainder 2, check digit 9, "Complete self-checking number: 473124829". Footnote 1 to 5.2, verbatim: "To reduce the risk of confusion between S10 identifier barcodes and barcodes which make
   use of ISO/IEC 15418 data identifiers [9], character combinations JA-JZ; KA-KZ; SA-SZ; TA-TZ and WA-WZ are reserved and cannot be assigned as valid service
   indicator values." The text gives the identifier as 13 characters with "The human-readable component may include spaces for readability, but this is recommended rather than being required."
-  **Ruling (round 1): the five reserved ranges stay accepted** (a barcode carrying one is not an S10 identifier assigned by the UPU, but the class does not refuse it).
+  **Ruling (round 2): the five reserved ranges are refused** (a structural rule quoted from the issuing body: no such identifier can be validly issued); the message names only the type.
 
 ### AirWaybillNumber
 
@@ -357,7 +357,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 
 ### Task 3 implementation notes (2026-11-21 UTC)
 
-- S10: the reserved service indicators (`J K S T W`) are accepted by controller ruling, although footnote 1 says they "cannot be assigned as valid service indicator values" (see the S10 section for the quote).
+- S10: the service indicators `JA-JZ`, `KA-KZ`, `SA-SZ`, `TA-TZ`, `WA-WZ` are refused (footnote 1: "cannot be assigned as valid service indicator values"; ruling of round 2).
 - Mmsi: only the leading-digit rules quoted above classify; the handheld-VHF format is not quoted precisely enough (the note says "recommends 3") and `979` (AMRD Group B) has no type of its own, so both are `Unclassified`.
 - Iso15459Identifier: `[A-Z0-9]{3,}`; carried under DI `25S` or `J` only, the two DIs quoted above. The an..35 length of the quoted `J` definition is the only cap, applied to `J` fields only; `25S` has no quoted length. `issuingAgencyCode()` and `issuingAgencyName()` read the code from the start by the AIM register (version 2026-06-16, section 2, code to agency name; no terms of use are printed in it, contact details are not copied). The register text does not state that codes are prefix-free; in this edition they are (0-9, `D`, `J` and two- and three-letter codes, none the beginning of another; a unit test asserts it), so the longest match is the only match. A value starting with no entry decodes to null and is accepted.
 - Mmsi: group, coast, AIS aid to navigation, SAR aircraft and craft-associated forms are classified only when the MID digit after the fixed prefix is 2 to 7 (the MID table runs 201 to 775); otherwise `Unclassified`. No separators are stripped: M.585 prints nine contiguous digits.

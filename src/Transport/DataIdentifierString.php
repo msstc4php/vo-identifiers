@@ -29,6 +29,9 @@ final class DataIdentifierString extends AbstractStringValueObject
 
     private const string FIELD_SEPARATOR = "\x1D";
 
+    /** @var list<DataIdentifierField> */
+    private array $parsedFields = [];
+
     /**
      * @param list<DataIdentifierField> $fields
      *
@@ -49,13 +52,13 @@ final class DataIdentifierString extends AbstractStringValueObject
     }
 
     /**
-     * @return non-empty-list<DataIdentifierField>
+     * Never empty: the envelope needs at least one field.
+     *
+     * @return list<DataIdentifierField>
      */
     public function fields(): array
     {
-        $body = \substr($this->value, \strlen(self::HEADER) + 1, -\strlen(self::TRAILER));
-
-        return \array_map(DataIdentifierField::from(...), \explode(self::FIELD_SEPARATOR, $body));
+        return $this->parsedFields;
     }
 
     /**
@@ -63,7 +66,7 @@ final class DataIdentifierString extends AbstractStringValueObject
      */
     public function field(string $identifier): ?DataIdentifierField
     {
-        foreach ($this->fields() as $field) {
+        foreach ($this->parsedFields as $field) {
             if ($field->identifier() === $identifier) {
                 return $field;
             }
@@ -88,9 +91,7 @@ final class DataIdentifierString extends AbstractStringValueObject
         }
 
         try {
-            foreach (\explode(self::FIELD_SEPARATOR, $match[1]) as $field) {
-                DataIdentifierField::from($field);
-            }
+            $this->parsedFields = \array_map(DataIdentifierField::from(...), \explode(self::FIELD_SEPARATOR, $match[1]));
         } catch (InvalidTransportIdentifierException) {
             throw TransportRules::invalidFormat(self::TYPE);
         }

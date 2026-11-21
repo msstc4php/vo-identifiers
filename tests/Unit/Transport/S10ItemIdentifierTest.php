@@ -54,6 +54,40 @@ final class S10ItemIdentifierTest extends TestCase
     /**
      * @return iterable<string, array{string}>
      */
+    public static function reserved(): iterable
+    {
+        foreach (['J', 'K', 'S', 'T', 'W'] as $first) {
+            yield $first . 'A' => [$first . 'A473124829CH'];
+            yield $first . 'Z' => [$first . 'Z473124829CH'];
+        }
+    }
+
+    #[DataProvider('reserved')]
+    public function testReservedServiceIndicatorsAreRefused(string $value): void
+    {
+        try {
+            new S10ItemIdentifier($value);
+            self::fail('Expected an exception.');
+        } catch (InvalidTransportIdentifierException $e) {
+            self::assertSame('S10 item identifier has a reserved service indicator.', $e->getMessage());
+        }
+    }
+
+    public function testNeighbouringServiceIndicatorsAreAccepted(): void
+    {
+        foreach (['IA', 'LA', 'RA', 'UA', 'VA', 'XA', 'AA', 'CP'] as $indicator) {
+            self::assertSame($indicator, new S10ItemIdentifier($indicator . '473124829CH')->serviceIndicator());
+        }
+    }
+
+    public function testReservedLettersOutsideTheServiceIndicatorAreAccepted(): void
+    {
+        self::assertSame('RJ473124829KW', (new S10ItemIdentifier('RJ473124829KW'))->value);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function invalid(): iterable
     {
         yield 'digit in indicator' => ['R1473124829CH'];

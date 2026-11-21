@@ -12,7 +12,8 @@ use Override;
 
 /**
  * UPU S10 postal item identifier: a two-letter service indicator, eight serial digits, a check digit and the two-letter
- * UPU country code of the origin, for example `RA473124829CH`. Spaces are dropped and the stored form is compact.
+ * UPU country code of the origin, for example `RA473124829CH`. Spaces are dropped and the stored form is compact. The
+ * service indicators JA-JZ, KA-KZ, SA-SZ, TA-TZ and WA-WZ are reserved and cannot be assigned, so they are refused.
  *
  * @see https://upu.int/UPU/media/upu/files/postalSolutions/programmesAndServices/standards/S10-12.pdf UPU S10-12, 5.4
  * @see docs/sources/IDENTIFIERS.md "S10ItemIdentifier"
@@ -56,6 +57,10 @@ final class S10ItemIdentifier extends AbstractStringValueObject
 
         if (\preg_match('/^[A-Z]{2}[0-9]{9}[A-Z]{2}$/D', $value) !== 1) {
             throw TransportRules::invalidFormat(self::TYPE);
+        }
+
+        if (\preg_match('/^[JKSTW]/', $value) === 1) {
+            throw TransportRules::fail(self::TYPE, 'has a reserved service indicator');
         }
 
         if (!S10CheckDigit::isValid(\substr($value, 2, 9))) {
