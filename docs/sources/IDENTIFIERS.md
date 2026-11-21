@@ -426,8 +426,13 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
   detailed national extension of them". The nomenclature itself is under WCO licence: not embedded.
 - National extensions: EU Commission, Combined Nomenclature page https://taxation-customs.ec.europa.eu/customs/common-customs-tariff-cct/tariff-classification-goods/combined-nomenclature_en: CN code is 8 digits, the
   first six digits are the HS; TARIC adds the 9th and 10th digits (Regulation 2658/87 art. 3 in its 1987 text speaks of "10th and 11th digits" and "In the absence of a Community subdivision, the 10th and 11th digits shall be
-  '00'": the current numbering was not reconciled with it; **not confirmed**). US: USITC HTS external user guide, https://www.usitc.gov/documents/hts/hts_external_user_guide.pdf: 8-digit heading/subheading plus a 2-digit
+  '00'": the current numbering was not reconciled with it; **not confirmed**; reconciled in Task 5, see below). US: USITC HTS external user guide, https://www.usitc.gov/documents/hts/hts_external_user_guide.pdf: 8-digit heading/subheading plus a 2-digit
   statistical suffix gives the 10-digit HTS number. Format only: 8 or 10 digits.
+- Task 5 reconciliation, Regulation (EEC) No 2658/87 consolidated 2016-06-01 (https://legislation.gov.uk/eur/1987/2658/pdfs/eur_19872658_2016-06-01_en.pdf), Article 3: "1. Each CN subheading shall have an eight digit code number:
+  (a) the first six digits shall be the code numbers relating to the headings and subheadings of the harmonized system nomenclature; (b) the seventh and eighth digits shall identify the CN subheadings. ...
+  2. The Taric subheadings shall be identified by the 9th and 10th digits which, together with the code numbers referred to in paragraph 1, form the Taric code numbers. In the absence of a Community subdivision, the 9th and 10th digits shall be '00'."
+  So CN is 8 digits, TARIC 10; the "10th and 11th digits" wording is the 1987 text. `TariffCode` accepts 8 or 10; `hsSubheading()` is the first 6. Separators: spaces only; the dotted print form was not quoted.
+- Exceptions: `HsCode` and `TariffCode` throw `InvalidTradeIdentifierException` (added; Substance's exception would misname them). Helper `Internal\CommodityRules` builds the three exceptions' messages.
 
 ### EnergyIdentificationCode (ENTSO-E)
 
@@ -438,7 +443,7 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
   36), one of the characters in the proposed EIC code shall be changed". Worked example: `11XRWENET12345-` gives `11XRWENET12345-2`. Also `11Y123456789012T` is given as an example of an area code.
   Structure (ENTSOG EIC manual page https://entsog.eu/eic-codes/manual-of-procedures, through search): 2-character local issuing office, 1 object-type character, 12 characters (A-Z, 0-9, "-"), check character.
   **Terms:** "The algorithm deriving from this document may only be used for the purpose of checking the validity of an allocated EIC code, unless used by an authorised LIO when allocating EIC codes. Any
-  other use of the ENTSO-E algorithm is expressly prohibited." (ruling 5). The object-type letters (X, Y, Z, W, V, T, A) were not read from the Reference Manual: `objectType(): string` unless Task 5 reaches that text (ruling 9); `EicObjectType` needs that text (Task 5).
+  other use of the ENTSO-E algorithm is expressly prohibited." (ruling 5). Object-type letters, reached in Task 5 (ruling 9): ENTSO-E, EIC Short Guide and FAQ V3, April 2016 (https://eepublicdownloads.entsoe.eu/clean-documents/EDI/Library/EIC_Short_Guide_and_FAQ_V3_Approved%20April%202016.pdf): "Market Participants (Parties - object type "X")"; "Areas - object type "Y""; "Measuring Points - object type "Z", Energy Metering points"; "Resource objects - object type "W""; "Tie-lines - object type "T""; "Location - object type "V""; "Substations - object type "A"". Structure: "A 2-character number identifying the Issuing Office assigned by ENTSO-E. One Character identifying the object type ... 12 digits, uppercase characters or minus signs allocated by the issuing office. 1 check character"; "Valid characters of an EIC code are A-Z, 0-9 and "-"". `EicObjectType` has those seven cases; the Reference Manual itself was not reached, so a well-formed code with another letter is accepted and `objectType()` is null.
 
 ### Mpan
 
@@ -446,6 +451,7 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
   you which Distribution ..."; "Check Digit: Validates the previous 12 digits". Elexon (BSC Guidance Note, found by search; page not readable here) calls an MPAN not conforming to modulus 11 invalid. The weights
   (primes 3 5 7 13 17 19 23 29 31 37 41 43, sum mod 11 mod 10) appear in Wikipedia and its mirrors only; the MRA Data Transfer Catalogue and DCUSA text were **not reached**. **Outcome: format only** (13 digits, 21 with the top
   line); no helper built (ruling 9). The 21-digit layout (profile class 2, MTC 3, LLFC 3 on the top line) is the plan's and was not confirmed from a reached text.
+- Task 5 re-check (2026-11-21 UTC): elexon.co.uk (glossary, MSID API guideline) answers HTTP 403, mrasco.com, ofgem.gov.uk and the DCUSA site are blocked or carry no text; the Ofgem DWG glossary (Elexon) has no MPAN entry with a layout. Search snippets from Elexon say a full MPAN is 21 digits, the first two of which are the profile class, and that an MPAN "doesn't conform to modulus 11" is a failure reason, but no weights or layout were reached. Outcome unchanged (ruling 9): `Mpan` takes 13 or 21 digits, `core()` is the last 13, `distributorId()` the first two of the core (SSEN's wording), the check digit is not enforced, the top line is not decoded, no `profileClass()`.
 
 ## Table terms of use summary
 

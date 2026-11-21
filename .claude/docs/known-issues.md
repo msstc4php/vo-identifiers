@@ -10,7 +10,8 @@ Source gaps and the controller rulings of 2026-11-21 (UTC) (`docs/sources/IDENTI
 - EIC: validation only (ruling 5). `objectType(): string` unless Task 5 reaches the letter table (ruling 9).
 - Not built: `Wmi::region()`/`country()`, `Mmsi::country()`, `Isbn::formatted()`, `IcaoAirportCode::region()` (ruling 6).
 - MH10.8.2 DI table is copyrighted: DIs are `\d{0,3}[A-Z]` with a null description (ruling 7).
-- MPAN: Task 5 re-checks; core format only, top line not decoded without a reached text (ruling 9).
+- MPAN: re-checked in Task 5, still unreachable; 13 or 21 digits, format only, top line not decoded, no `profileClass()` (ruling 9).
+- EIC: `EicObjectType` has the seven letters of the ENTSO-E Short Guide; another letter is accepted and `objectType()` is null. `HsCode`/`TariffCode` use `InvalidTradeIdentifierException`; the three chemistry/trade/energy exceptions are built by `Internal\CommodityRules`. CN is 8 digits, TARIC 10 (Regulation 2658/87 Art. 3).
 - ICCID: `89` and Luhn; E.118 re-checked, still unreachable; 6 to 20 digits (minimum derived from the structure, ETSI maximum 20; ruling 11). Short `89` numbers overlap Imei/Imsi/Imeisv in the factory.
 - Telecom decisions: `Imei` drops spaces and hyphens, 14 digits are valid, `Imeisv::toImei()` gives the 14-digit form; `Imsi` takes 6 to 15 digits and `mnc()`/`msin()` need the MNC length from the caller; `Imei::equals()` compares the first 14 digits; the five Maskable classes use `Internal\TelecomRules::mask()` (leading part, last 2 only when 6+ stay masked, length kept); `TelecomIdentifierFactory` reports 14/15 digit IMEI+IMSI overlaps as ambiguous (every plausible short digit string is an IMSI).
 - ISAN second check character: round trips only (ruling 10).

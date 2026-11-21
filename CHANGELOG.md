@@ -4,6 +4,10 @@
 
 ### Added
 
+- Chemistry, trade and energy identifiers: `Substance\CasRegistryNumber`, `EcNumber` (check digits enforced), `UnNumber`;
+  `Trade\HsCode`, `TariffCode`; `Energy\EnergyIdentificationCode` with `EicObjectType` (validation only), `Mpan` (format
+  only); `Exception\InvalidSubstanceIdentifierException`, `InvalidTradeIdentifierException`,
+  `InvalidEnergyIdentifierException`.
 - Package scaffold, CI and tool configuration from `vo-finance`; source notes in `docs/sources/IDENTIFIERS.md`, the
   authority for every rule (enforced, format only, or not built, each with its reason), and the terms of use of every table
   the plan wanted to embed.
