@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
+
+use InvalidArgumentException;
+use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
+use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
+use Override;
+
+/**
+ * An ISO/IEC 15434 message in format `06` (data using ANSI MH10.8.2 data identifiers):
+ * `[)>` RS `06` GS field GS field ... RS EOT, with RS 0x1E, GS 0x1D and EOT 0x04. The value is the envelope exactly as
+ * given, separators included, so a message round-trips byte for byte; {@see fields()} parses it into typed fields.
+ *
+ * @see https://www.iso.org/standard/36783.html ISO/IEC 15434:2005, 4.1 and Table 1
+ * @see https://www.mhi.org/standards/mh10 ANSI MH10.8.2, clause 4
+ * @see docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
+ */
+final class DataIdentifierString extends AbstractStringValueObject
+{
+    private const string TYPE = 'Data identifier string';
+
+    private const string HEADER = "[)>\x1E06";
+
+    private const string TRAILER = "\x1E\x04";
+
+    private const string FIELD_SEPARATOR = "\x1D";
+
+    /**
+     * @param list<DataIdentifierField> $fields
+     *
+     * @throws InvalidArgumentException when there is no field
+     */
+    public static function fromFields(array $fields): self
+    {
+        if ($fields === []) {
+            throw new InvalidArgumentException('A data identifier string needs at least one field.');
+        }
+
+        $body = '';
+        foreach ($fields as $field) {
+            $body .= self::FIELD_SEPARATOR . $field;
+        }
+
+        return new self(self::HEADER . $body . self::TRAILER);
+    }
+
+    /**
+     * @return non-empty-list<DataIdentifierField>
+     */
+    public function fields(): array
+    {
+        $body = \substr($this->value, \strlen(self::HEADER) + 1, -\strlen(self::TRAILER));
+
+        return \array_map(DataIdentifierField::from(...), \explode(self::FIELD_SEPARATOR, $body));
+    }
+
+    /**
+     * The first field with the given identifier.
+     */
+    public function field(string $identifier): ?DataIdentifierField
+    {
+        foreach ($this->fields() as $field) {
+            if ($field->identifier() === $identifier) {
+                return $field;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The data of the serial number field (data identifier `S`).
+     */
+    public function serial(): ?string
+    {
+        return $this->field('S')?->value();
+    }
+
+    #[Override]
+    protected function parse(string $value): string
+    {
+        if (\preg_match('/^\[\)>\x1E06\x1D([^\x04\x1D\x1E]+(?:\x1D[^\x04\x1D\x1E]+)*)\x1E\x04$/D', $value, $match) !== 1) {
+            throw TransportRules::invalidFormat(self::TYPE);
+        }
+
+        try {
+            foreach (\explode(self::FIELD_SEPARATOR, $match[1]) as $field) {
+                DataIdentifierField::from($field);
+            }
+        } catch (InvalidTransportIdentifierException) {
+            throw TransportRules::invalidFormat(self::TYPE);
+        }
+
+        return $value;
+    }
+}

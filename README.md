@@ -10,8 +10,8 @@ format only.
 
 ## Status
 
-The check-digit helpers (`src/Internal/`) and the publication and media identifiers exist; transport, telecom, substance
-and energy identifiers follow.
+The check-digit helpers (`src/Internal/`), the publication and media identifiers and the transport and logistics identifiers
+exist; telecom, substance and energy identifiers follow.
 
 ## Classes
 
@@ -29,6 +29,19 @@ and energy identifiers follow.
 | `Publication\Ror` | MOD 97-10 pair enforced, bare or `https://ror.org/...`, stored lowercase bare; `uri()` |
 | `Publication\Ark` | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `naan()`, `name()` |
 | `Publication\PublicationIdentifierFactory` | `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, which is also a check-less ISAN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |
+| `Transport\Vin` | ISO 3779, 17 characters without `I`, `O`, `Q`, uppercased; position 9 never refuses, `hasValidCheckDigit()` follows 49 CFR 565.15(c); `wmi()`, `vds()`, `vis()`, `modelYear(): list<int>` (the candidates 30 years apart, empty for `0`, `U`, `Z`) |
+| `Transport\Wmi` | ISO 3780, 3 characters; raw `allocation()`, `manufacturer()`, `isSmallManufacturer()` (a `9` in position 3); no region or country decoding |
+| `Transport\ContainerNumber` | ISO 6346 / BIC, owner code, category `U`/`J`/`Z`, 6 digits, check digit (not verified); spaces accepted, stored compact; `formatted()` |
+| `Transport\ImoNumber` | `IMO` + 7 digits (the prefix is optional on input), check digit not verified; `number()`, `formatted()` |
+| `Transport\Mmsi`, `MmsiType` | ITU-R M.585, 9 digits; `type()` from the leading digits (ship, group ship, coast station, SAR aircraft, AIS aid to navigation, craft associated, distress device, unclassified), `mid()` digits only |
+| `Transport\S10ItemIdentifier` | UPU S10, check digit enforced; `serviceIndicator()`, `serialNumber()`, `countryCode()`, `country(): ?CountryCode` |
+| `Transport\AirWaybillNumber` | 3-digit prefix, 7-digit serial, serial mod 7 enforced; stored 11 digits, `formatted()` gives `020-12345675` |
+| `Transport\UicVehicleNumber` | 12 digits, Luhn enforced; printed (`31 51 3320 198-0`) or compact, stored compact; `vehicleType()` and `countryCode()` are raw digits |
+| `Transport\UnLocode` | UNECE Rec. 16, 2 letters + 3 of letters and 2-9, format only; `country(): ?CountryCode` |
+| `Transport\IataAirportCode`, `IcaoAirportCode` | 3 and 4 letters, format only |
+| `Transport\Iso15459Identifier` | 3 to 35 capital letters and digits (IAC + company number + serial), format only; `fromField()` for data identifiers `25S` and `J` |
+| `Transport\DataIdentifierString`, `DataIdentifierField` | ISO/IEC 15434 format `06` envelope, kept byte-exact (RS, GS, EOT included); `fields()`, `field()`, typed `serial()` (DI `S`), `fromFields()`; DIs are `\d{0,3}[A-Z]` with no description |
+| `Transport\TransportIdentifierFactory` | `fromString()` builds the one type that accepts the value; three letters that are both a WMI and an IATA code throw `AmbiguousValueException`; none throws `InvalidTransportIdentifierException` |
 
 ## Format only
 
@@ -49,6 +62,7 @@ A rule is enforced only when an official source is quoted for it; otherwise the 
 
 ## Not built
 
+- `Iso15459Identifier::issuingAgencyCode()`: the split of the identifier into agency code and company number needs the AIM register, which is not embedded.
 - `Wmi::region()` and `country()`: no official table (ISO 3780, SAE J1044 are not reachable).
 - `Mmsi::country()`: the ITU MID table is under ITU copyright; `mid()` gives the digits only.
 - `Isbn::formatted()`: the International ISBN Agency's terms forbid republishing the RangeMessage.

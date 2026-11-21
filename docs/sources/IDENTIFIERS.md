@@ -353,6 +353,14 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   format `06` is "Data using ASC MH10 Data Identifiers", format header `06` followed by the data element separator `GS`, format trailer `RS`. The ISO 646 byte values (RS 0x1E, GS 0x1D,
   EOT 0x04) are in Annex A, which the preview does not include; they are the standard ASCII control characters. The 15434 preview ends before 4.3.7 (format 06 data rules).
 
+### Task 3 implementation notes (2026-11-21 UTC)
+
+- S10: the footnote's reserved service indicators (`J K S T W`) are not refused: the text reached does not say a reserved indicator makes the identifier invalid, and a false refusal is worse than an accepted reserved one.
+- Mmsi: only the leading-digit rules quoted above classify; the handheld-VHF format is not quoted precisely enough (the note says "recommends 3") and `979` (AMRD Group B) has no type of its own, so both are `Unclassified`.
+- Iso15459Identifier: format only (`[A-Z0-9]{3,35}`, an..35 from the `J` definition); carried under DI `25S` or `J` only, the two DIs quoted above. The IAC register is not embedded, so no `issuingAgencyCode()`.
+- DataIdentifierString: one format-06 envelope only. ISO/IEC 15434 Table 1 and 4.1 (preview) give the header, GS after the format header, RS format trailer and EOT message trailer; the preview ends before the 4.3.7 data rules, so a field is a DI followed by UTF-8 data without RS, GS, EOT (MH10.8.2 clause 5).
+- Wmi is a factory candidate and collides with `IataAirportCode` on three letters without I, O, Q.
+
 ## Telecom
 
 ### Imei, Imeisv, Imsi (3GPP TS 23.003 V17.7.0, 2022-10, ETSI TS 123 003)
