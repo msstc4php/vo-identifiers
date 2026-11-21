@@ -14,6 +14,9 @@ Source gaps and the controller rulings of 2026-11-21 (UTC) (`docs/sources/IDENTI
 - ICCID: `89` and Luhn; at most 20 digits; Task 4 re-checks E.118 (ruling 11).
 - ISAN second check character: round trips only (ruling 10).
 - The ISO 3779/3780, ISO 15706 and ISO 15707 Annex texts are paid; only previews were reachable.
+- Publication decisions: `Isbn` accepts 979-0 values (the factory reports them ambiguous with `Ismn`); `Isbn::equals()` compares ISBN-13 forms; `Isan` requires the check characters (a bare 16-digit value would clash with ISNI); `Orcid` is stored hyphenated, `Isni` compact; the ORCID blocks are not enforced; `Ark` drops a leading NMA URL and keeps hyphens in the Name; `Doi` has no length cap and refuses leading/trailing whitespace and control characters.
+- `Gtin`, `Gs1CheckDigit`, `KeyRules` (vo-gs1) cannot be `#[UsesClass]` targets: PHPUnit warns (not a valid coverage target) and Infection refuses the run.
+- PHPStan max rejects `non-empty-string` on `substr`/`explode` results and the briefing forbids `assert()` to narrow: accessors return `string`.
 
 ## Infection, 2026-11-21 (UTC)
 

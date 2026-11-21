@@ -10,7 +10,25 @@ format only.
 
 ## Status
 
-Scaffold: the source notes and the check-digit helpers (`src/Internal/`) exist; the value object classes follow.
+The check-digit helpers (`src/Internal/`) and the publication and media identifiers exist; transport, telecom, substance
+and energy identifiers follow.
+
+## Classes
+
+| Class | Value |
+|---|---|
+| `Publication\Isbn` | ISO 2108; ISBN-13 and ISBN-10 both accepted, the stored form keeps the length given; `isbn13()`, `isbn10()` (null for 979), `isIsbn10()`, `toGtin()`; `equals()` compares the ISBN-13 forms |
+| `Publication\Issn` | ISO 3297, mod 11 enforced, stored `NNNN-NNNC`; a 7-digit value is completed; `toGtin($variant = '00')` gives the 977 GTIN |
+| `Publication\Ismn` | ISO 10957, EAN check enforced, the old `M` form is converted to `979-0...`; `toGtin()` |
+| `Publication\Isrc` | ISO 3901, 12 characters, no check digit; `countryCode()`, `registrant()`, `year()`, `designation()`, `formatted()` |
+| `Publication\Iswc` | ISO 15707, `T` and 10 digits, format only; `formatted()` |
+| `Publication\Isan` | ISO 15706, both MOD 37,36 check characters required, with or without the version segment; `root()`, `episode()`, `version()`, `formatted()` |
+| `Publication\Isni` | ISO 27729, MOD 11-2 enforced; `formatted()` |
+| `Publication\Orcid` | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
+| `Publication\Doi` | ISO 26324; bare, `doi:` or resolver URL, stored bare as given; `equals()` folds ASCII case; `prefix()`, `suffix()` |
+| `Publication\Ror` | MOD 97-10 pair enforced, bare or `https://ror.org/...`, stored lowercase bare; `uri()` |
+| `Publication\Ark` | draft-kunze-ark-40, format only; `naan()`, `name()` |
+| `Publication\PublicationIdentifierFactory` | `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, a 979-0 ISBN/ISMN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |
 
 ## Format only
 

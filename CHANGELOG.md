@@ -11,3 +11,6 @@
   `Mod11CheckDigit` (ISSN and ISBN-10), `Iso7064Mod11_2` (ISNI, ORCID), `Iso7064Mod37_36` (ISAN), `Iso7064Mod97` (EID), `RorCheckDigits`
   (ROR: Crockford base32 decoded to an integer, then MOD 97-10), `VinCheckDigit`, `S10CheckDigit`, `AirWaybillCheckDigit`, `CasCheckDigit`, `EcNumberCheckDigit` and
   `EicCheckDigit` (validation only: ENTSO-E allows no other use of its algorithm).
+- Publication and media identifiers in `Publication\`: `Isbn` (ISBN-10 and ISBN-13, GTIN), `Issn` (977 GTIN), `Ismn`, `Isrc`, `Iswc`
+  (format only), `Isan`, `Isni`, `Orcid`, `Doi` (ASCII case-insensitive equality), `Ror`, `Ark` (format only) and
+  `PublicationIdentifierFactory`; `Exception\InvalidPublicationIdentifierException`.
