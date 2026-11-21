@@ -11,8 +11,8 @@ use Override;
 
 /**
  * ORCID iD: an ISNI-compatible identifier with the same ISO 7064 MOD 11-2 check character, printed with a hyphen after
- * every four characters and stored that way. Accepted bare, hyphenated or as `https://orcid.org/...` (also `http` and
- * `www`). The assigned ORCID blocks are not enforced: they are an allocation, not part of the syntax.
+ * every four characters and stored that way. Accepted bare, hyphenated or as `https://orcid.org/...` (also `http`, `www`
+ * and the scheme-less `orcid.org/...`). The assigned ORCID blocks are not enforced: they are an allocation, not part of the syntax.
  *
  * @see https://support.orcid.org/hc/en-us/articles/360006897674 ORCID, "Structure of the ORCID Identifier"
  * @see docs/sources/IDENTIFIERS.md "ISNI (ISO 27729) and ORCID"
@@ -37,7 +37,7 @@ final class Orcid extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = \strtoupper(\preg_replace('~^https?://(?:www\.)?orcid\.org/~i', '', $value) ?? $value);
+        $value = \strtoupper(\preg_replace('~^(?:https?://)?(?:www\.)?orcid\.org/~i', '', $value) ?? $value);
 
         if (\preg_match('/^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$/D', $value) === 1) {
             $value = \str_replace('-', '', $value);

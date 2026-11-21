@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
+use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -12,7 +13,8 @@ use Override;
  * Archival Resource Key: `ark:`, a NAAN of betanumeric characters, a slash and a Name (with any qualifiers). Format only:
  * the check character is optional in the specification, so it is not enforced. The old `ark:/` label and a leading
  * name-mapping-authority URL are accepted; the stored form is `ark:NAAN/Name` with the label and NAAN lowercased and the
- * Name as given (it is case-sensitive; hyphens in it are kept although the specification says they are insignificant).
+ * Name as given (it is case-sensitive). Hyphens are kept in the stored form, but {@see equals()} ignores them, as the
+ * specification says they are insignificant.
  *
  * @see https://datatracker.ietf.org/doc/html/draft-kunze-ark-40 The ARK Identifier Scheme (draft-kunze-ark-40)
  * @see docs/sources/IDENTIFIERS.md "ARK"
@@ -32,6 +34,12 @@ final class Ark extends AbstractStringValueObject
     }
 
     #[Override]
+    public function equals(ValueObject $other): bool
+    {
+        return $other instanceof self && $this->withoutHyphens() === $other->withoutHyphens();
+    }
+
+    #[Override]
     protected function parse(string $value): string
     {
         $pattern = '~^(?:https?://[^/\s]+/)?ark:/?([bcdfghjkmnpqrstvwxz0-9]+)/([^\p{C}\s]+)$~Diu';
@@ -40,5 +48,10 @@ final class Ark extends AbstractStringValueObject
         }
 
         return 'ark:' . \strtolower($match[1]) . '/' . $match[2];
+    }
+
+    private function withoutHyphens(): string
+    {
+        return \str_replace('-', '', $this->value);
     }
 }

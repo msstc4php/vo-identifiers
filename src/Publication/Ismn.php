@@ -15,7 +15,7 @@ use Override;
  * character form `M` and nine digits is accepted and stored as `979-0...`, as the ISMN Manual says to convert it (the
  * check digit is kept). Hyphens, spaces and a leading `ISMN ` are dropped; the stored form is the 13 digits.
  *
- * @see https://ismn-international.org/web_ismn_users_manual_2016/ ISMN Users' Manual 2016, 2 and 10
+ * @see https://ismn-international.org/web_ismn_users_manual_2016/ ISMN Users' Manual 2016, 2, 2.1.1 and 10
  * @see docs/sources/IDENTIFIERS.md "ISMN (ISO 10957)"
  */
 final class Ismn extends AbstractStringValueObject

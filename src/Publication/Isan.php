@@ -10,10 +10,12 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
 /**
- * International Standard Audiovisual Number (ISO 15706): 12 hexadecimal digits of root and 4 of episode, an ISO 7064
- * MOD 37,36 check character, and optionally an 8-digit version segment with a second check character computed over the
- * 16 digits and the version (not over the first check character). Both check characters are required; a value without
- * them is refused. Hyphens, spaces and a leading `ISAN ` are dropped; the stored form is compact.
+ * International Standard Audiovisual Number (ISO 15706): 12 hexadecimal digits of root and 4 of episode, optionally an
+ * 8-digit version segment. The check characters (ISO 7064 MOD 37,36) are added to the printed form: the first after the
+ * 16 digits, the second after the version, computed over the 16 digits and the version (not over the first check
+ * character). A value without them (16 or 24 digits) is accepted; a check character that is present must be right, and a
+ * version needs both or neither. Hyphens, spaces and a leading `ISAN ` are dropped; the stored form is compact and keeps
+ * the form given. A bare 16-digit value is also a valid ISNI: {@see PublicationIdentifierFactory} reports it ambiguous.
  *
  * @see https://isan.org/docs/isan_check_digit_calculation_v2.0.pdf ISAN International Agency, "ISAN Check Characters Calculation" v2.0
  * @see docs/sources/IDENTIFIERS.md "ISAN (ISO 15706)"
@@ -43,26 +45,44 @@ final class Isan extends AbstractStringValueObject
      */
     public function version(): ?string
     {
-        return $this->hasVersion() ? \substr($this->value, 17, 8) : null;
+        return match (\strlen($this->value)) {
+            24 => \substr($this->value, 16, 8),
+            26 => \substr($this->value, 17, 8),
+            default => null,
+        };
     }
 
     public function hasVersion(): bool
     {
-        return \strlen($this->value) === 26;
+        return \strlen($this->value) >= 24;
+    }
+
+    public function hasCheckCharacters(): bool
+    {
+        return \strlen($this->value) === 17 || \strlen($this->value) === 26;
     }
 
     /**
-     * @return non-empty-string `ISAN XXXX-XXXX-XXXX-XXXX-C` or, with a version, `...-C-XXXX-XXXX-C`
+     * @return non-empty-string `ISAN XXXX-XXXX-XXXX-XXXX[-C]` and, with a version, `-XXXX-XXXX[-C]`; the check
+     *                          characters appear when the value carries them
      */
     public function formatted(): string
     {
-        $formatted = 'ISAN ' . \implode('-', \str_split(\substr($this->value, 0, 16), 4)) . '-' . $this->value[16];
-
-        if ($this->hasVersion()) {
-            $formatted .= '-' . \implode('-', \str_split(\substr($this->value, 17, 8), 4)) . '-' . $this->value[25];
+        $groups = \str_split(\substr($this->value, 0, 16), 4);
+        $version = $this->version();
+        $hasChecks = $this->hasCheckCharacters();
+        if ($hasChecks) {
+            $groups[] = $this->value[16];
         }
 
-        return $formatted;
+        if ($version !== null) {
+            \array_push($groups, ...\str_split($version, 4));
+            if ($hasChecks) {
+                $groups[] = $this->value[25];
+            }
+        }
+
+        return 'ISAN ' . \implode('-', $groups);
     }
 
     #[Override]
@@ -70,15 +90,18 @@ final class Isan extends AbstractStringValueObject
     {
         $value = PublicationRules::compact($value, 'ISAN');
 
-        if (\preg_match('/^([0-9A-F]{16})([0-9A-Z])(?:([0-9A-F]{8})([0-9A-Z]))?$/D', $value, $parts) !== 1) {
+        $pattern = '/^([0-9A-F]{16})(?:([0-9A-Z])(?:([0-9A-F]{8})([0-9A-Z]))?|([0-9A-F]{8}))?$/D';
+        if (\preg_match($pattern, $value, $parts) !== 1) {
             throw PublicationRules::invalidFormat(self::TYPE);
         }
 
-        if (Iso7064Mod37_36::compute($parts[1]) !== $parts[2]) {
+        $first = $parts[2] ?? '';
+        if ($first !== '' && Iso7064Mod37_36::compute($parts[1]) !== $first) {
             throw PublicationRules::fail(self::TYPE, 'has a wrong check character');
         }
 
-        if (isset($parts[3], $parts[4]) && Iso7064Mod37_36::compute($parts[1] . $parts[3]) !== $parts[4]) {
+        $second = $parts[4] ?? '';
+        if ($second !== '' && Iso7064Mod37_36::compute($parts[1] . ($parts[3] ?? '')) !== $second) {
             throw PublicationRules::fail(self::TYPE, 'has a wrong check character');
         }
 

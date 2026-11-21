@@ -27,6 +27,7 @@ final class IsmnTest extends TestCase
         yield 'compact' => ['9790345246805', '9790345246805'];
         yield 'spaces' => ['979 0 3452 4680 5', '9790345246805'];
         yield 'label' => ['ISMN 979-0-3452-4680-5', '9790345246805'];
+        yield 'label with colon' => ['ISMN: 979-0-3452-4680-5', '9790345246805'];
         yield 'old M form' => ['M-3452-4680-5', '9790345246805'];
         yield 'old M form with label' => ['ISMN M-3452-4680-5', '9790345246805'];
         yield 'old M compact' => ['M345246805', '9790345246805'];

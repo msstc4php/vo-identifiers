@@ -10,9 +10,10 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
 /**
- * Digital Object Identifier (ISO 26324): prefix `10.` and a registrant code (digits and full stops), a slash, and a
- * suffix of any printable Unicode characters, so the suffix may itself hold slashes. Accepted bare, `doi:`-prefixed or
- * as a `doi.org` resolver URL; stored bare, with the case as given. The Handbook calls a DOI case-insensitive without
+ * Digital Object Identifier (ISO 26324): a numeric directory indicator (usually `10`; with `10` a registrant code of
+ * digits and full stops is mandatory), a slash, and a suffix of any printable Unicode characters, so the suffix may itself
+ * hold slashes. Accepted bare, `doi:`-prefixed or as a `doi.org` resolver URL (`www.` and `dx.` hosts too), whose
+ * percent-encoding is decoded (RFC 3986); stored bare and decoded, with the case as given. The Handbook calls a DOI case-insensitive without
  * fixing the definition, so {@see equals()} folds ASCII case only. Leading or trailing whitespace and control characters
  * are refused.
  *
@@ -45,11 +46,14 @@ final class Doi extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        if (\preg_match('~^(?:https?://(?:dx\.)?doi\.org/|doi:)~i', $value, $match) === 1) {
-            $value = \substr($value, \strlen($match[0]));
+        if (\preg_match('~^https?://(?:www\.)?(?:dx\.)?doi\.org/~i', $value, $match) === 1) {
+            $value = \rawurldecode(\substr($value, \strlen($match[0])));
+        } elseif (\preg_match('~^doi:~i', $value) === 1) {
+            $value = \substr($value, 4);
         }
 
-        if (\preg_match('~^10\.[0-9]+(?:\.[0-9]+)*/[^\p{C}\s](?:\P{C}*[^\p{C}\s])?$~Du', $value) !== 1) {
+        $pattern = '~^(?:10(?:\.[0-9]+)+|(?!10[./])[0-9]+(?:\.[0-9]+)*)/[^\p{C}\s](?:\P{C}*[^\p{C}\s])?$~Du';
+        if (\preg_match($pattern, $value) !== 1) {
             throw PublicationRules::invalidFormat(self::TYPE);
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Publication;
 
+use InvalidArgumentException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Ean13CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
@@ -94,8 +95,13 @@ final class IssnTest extends TestCase
     #[DataProvider('badVariants')]
     public function testGtinRefusesABadVariant(string $variant): void
     {
-        $this->expectException(InvalidPublicationIdentifierException::class);
-        new Issn('0317-8471')->toGtin($variant);
+        try {
+            new Issn('0317-8471')->toGtin($variant);
+            self::fail('Expected an exception.');
+        } catch (InvalidArgumentException $e) {
+            self::assertNotInstanceOf(InvalidPublicationIdentifierException::class, $e);
+            self::assertSame('ISSN GTIN variant must be two digits.', $e->getMessage());
+        }
     }
 
     /**

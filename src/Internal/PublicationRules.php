@@ -30,14 +30,15 @@ final class PublicationRules
     }
 
     /**
-     * Drops the printed label (`ISBN `, `ISSN: `) and the separators the source prints, and uppercases.
+     * Drops the printed label (`ISBN `, `ISBN-13: `) and the separators the source prints, and uppercases. The label is
+     * only a label when a colon or a space follows it, so a code that happens to start with the letters survives.
      *
-     * @param non-empty-string $label
+     * @param non-empty-string $label PCRE fragment, matched case-insensitively
      * @param non-empty-string $separators each character is a separator
      */
     public static function compact(string $value, string $label, string $separators = '- '): string
     {
-        if (\preg_match('/^' . \preg_quote($label, '/') . ':? /Di', $value, $match) === 1) {
+        if (\preg_match('/^' . $label . '(?::[ ]*|[ ]+)/Di', $value, $match) === 1) {
             $value = \substr($value, \strlen($match[0]));
         }
 

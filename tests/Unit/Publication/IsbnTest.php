@@ -37,6 +37,9 @@ final class IsbnTest extends TestCase
         yield 'spaces' => ['978 0 306 40615 7', '9780306406157'];
         yield 'printed with label' => ['ISBN 978-0-306-40615-7', '9780306406157'];
         yield 'label with colon' => ['isbn: 0-306-40615-2', '0306406152'];
+        yield 'label ISBN-13' => ['ISBN-13: 978-0-306-40615-7', '9780306406157'];
+        yield 'label ISBN-10' => ['ISBN-10 0-306-40615-2', '0306406152'];
+        yield 'label with colon and no space' => ['ISBN:9780306406157', '9780306406157'];
         yield 'compact' => ['9780306406157', '9780306406157'];
     }
 
@@ -63,6 +66,10 @@ final class IsbnTest extends TestCase
         yield 'trailing newline' => ["9780306406157\n"];
         yield 'empty' => [''];
         yield 'label only' => ['ISBN '];
+        yield 'label without a separator' => ['ISBN9780306406157'];
+        yield 'label with another number' => ['ISBN-12: 9780306406157'];
+        yield 'ISMN 979-0' => ['979-0-3452-4680-5'];
+        yield 'ISMN compact' => ['9790345246805'];
     }
 
     #[DataProvider('invalid')]

@@ -32,6 +32,7 @@ final class OrcidTest extends TestCase
         yield 'https URL' => ['https://orcid.org/0000-0002-1825-0097', '0000-0002-1825-0097'];
         yield 'http URL' => ['http://orcid.org/0000-0002-1825-0097', '0000-0002-1825-0097'];
         yield 'www URL' => ['https://www.orcid.org/0000-0002-1825-0097', '0000-0002-1825-0097'];
+        yield 'host without scheme' => ['orcid.org/0000-0002-1825-0097', '0000-0002-1825-0097'];
         yield 'uppercase URL' => ['HTTPS://ORCID.ORG/0000-0002-1825-0097', '0000-0002-1825-0097'];
         yield 'without hyphens' => ['0000000218250097', '0000-0002-1825-0097'];
     }

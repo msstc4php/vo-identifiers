@@ -14,3 +14,4 @@
 - Publication and media identifiers in `Publication\`: `Isbn` (ISBN-10 and ISBN-13, GTIN), `Issn` (977 GTIN), `Ismn`, `Isrc`, `Iswc`
   (format only), `Isan`, `Isni`, `Orcid`, `Doi` (ASCII case-insensitive equality), `Ror`, `Ark` (format only) and
   `PublicationIdentifierFactory`; `Exception\InvalidPublicationIdentifierException`.
+- Publication review fixes: `Isbn` refuses 979-0 (ISMN), `Doi` takes any numeric directory indicator and decodes resolver URLs, `Ark::equals()` ignores hyphens, `Isan` accepts forms without check characters, `ISBN-13:`/`ISBN-10` labels are dropped, `Orcid` accepts `orcid.org/...`, `Issn::toGtin()` throws `InvalidArgumentException` for a bad variant.

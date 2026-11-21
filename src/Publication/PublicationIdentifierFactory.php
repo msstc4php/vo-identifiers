@@ -12,7 +12,7 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 /**
  * Builds the one identifier type that accepts the value, or throws {@see AmbiguousValueException} listing every type
  * that does. A bare ISNI and an ORCID iD are the same form, so only an ORCID URL (or a label such as `ISNI `) decides
- * between them; a 979-0 value is both an ISBN-shaped number and an ISMN. The factory never picks silently.
+ * between them, and a 16-digit ISAN without check characters is also an ISNI. The factory never picks silently.
  */
 final class PublicationIdentifierFactory
 {

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Publication;
 
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Ark;
+use MSSTC4PHP\ValueObject\Identifiers\Publication\Issn;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -14,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Ark::class)]
 #[UsesClass(PublicationRules::class)]
+#[UsesClass(Issn::class)]
+#[UsesClass(Mod11CheckDigit::class)]
 final class ArkTest extends TestCase
 {
     /**
@@ -72,6 +76,17 @@ final class ArkTest extends TestCase
         } catch (InvalidPublicationIdentifierException $e) {
             self::assertSame('ARK has an invalid format.', $e->getMessage());
         }
+    }
+
+    public function testEqualityIgnoresHyphens(): void
+    {
+        $ark = new Ark('ark:12025/654-xz-321');
+
+        self::assertTrue($ark->equals(new Ark('ark:12025/654xz321')));
+        self::assertTrue($ark->equals(new Ark('ark:/12025/654-xz321')));
+        self::assertFalse($ark->equals(new Ark('ark:12025/654xz322')));
+        self::assertFalse($ark->equals(new Ark('ark:12026/654xz321')));
+        self::assertFalse($ark->equals(new Issn('0317-8471')));
     }
 
     public function testParts(): void

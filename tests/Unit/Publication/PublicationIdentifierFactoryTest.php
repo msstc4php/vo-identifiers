@@ -60,10 +60,12 @@ final class PublicationIdentifierFactoryTest extends TestCase
         yield 'ISBN-13' => ['978-0-306-40615-7', Isbn::class];
         yield 'ISBN 979-10' => ['979-10-343-0062-4', Isbn::class];
         yield 'ISSN' => ['0317-8471', Issn::class];
+        yield 'ISMN 979-0' => ['979-0-3452-4680-5', Ismn::class];
         yield 'ISMN old form' => ['M-3452-4680-5', Ismn::class];
         yield 'ISRC' => ['AA-6QZ-20-00047', Isrc::class];
         yield 'ISWC' => ['T-034.524.680-1', Iswc::class];
         yield 'ISAN' => ['B159-D8FA-0124-0000-K', Isan::class];
+        yield 'ISAN with letters and no check characters' => ['B159-D8FA-0124-0000', Isan::class];
         yield 'ISNI labelled' => ['ISNI 1422 4586 3573 0476', Isni::class];
         yield 'ORCID URL' => ['https://orcid.org/0000-0002-1825-0097', Orcid::class];
         yield 'DOI' => ['10.1000/xyz-123', Doi::class];
@@ -85,9 +87,9 @@ final class PublicationIdentifierFactoryTest extends TestCase
      */
     public static function ambiguous(): iterable
     {
-        yield 'bare ISNI/ORCID value' => ['0000-0002-1825-0097', [Isni::class, Orcid::class]];
-        yield 'compact ISNI/ORCID value' => ['1422458635730476', [Isni::class, Orcid::class]];
-        yield '979-0 is an ISBN-shaped ISMN' => ['979-0-3452-4680-5', [Isbn::class, Ismn::class]];
+        yield 'bare ISNI/ORCID value is also a check-less ISAN' => ['0000-0002-1825-0097', [Isan::class, Isni::class, Orcid::class]];
+        yield 'compact ISNI/ORCID value' => ['1422458635730476', [Isan::class, Isni::class, Orcid::class]];
+        yield 'ISNI/ORCID value with X is no ISAN' => ['0000-0002-1694-233X', [Isni::class, Orcid::class]];
     }
 
     /**

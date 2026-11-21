@@ -14,9 +14,9 @@ use Override;
 
 /**
  * International Standard Book Number (ISO 2108): ISBN-13 (prefix 978 or 979, EAN check digit) or the older ISBN-10
- * (modulus 11, `X` for ten). Hyphens, spaces and a leading `ISBN ` are dropped; the stored form is compact and keeps the
+ * (modulus 11, `X` for ten). Hyphens, spaces and a leading `ISBN`, `ISBN-13` or `ISBN-10` label are dropped; the stored form is compact and keeps the
  * length given, so an ISBN-10 stays an ISBN-10. {@see equals()} compares the ISBN-13 forms, so both forms of one book
- * are equal. A 979-0 value is also a valid ISMN: {@see PublicationIdentifierFactory} reports it as ambiguous.
+ * are equal. A 979-0 value is an ISMN, not an ISBN (ISMN Manual 2.1.1) and is refused here.
  *
  * Hyphen placement needs the International ISBN Agency's range table, whose terms forbid republishing it, so there is no
  * formatted form.
@@ -80,7 +80,7 @@ final class Isbn extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = PublicationRules::compact($value, 'ISBN');
+        $value = PublicationRules::compact($value, 'ISBN(?:-1[03])?');
 
         if (\preg_match('/^[0-9]{9}[0-9X]$/D', $value) === 1) {
             if (!Mod11CheckDigit::isValid($value)) {
@@ -90,7 +90,7 @@ final class Isbn extends AbstractStringValueObject
             return $value;
         }
 
-        if (\preg_match('/^97[89][0-9]{10}$/D', $value) !== 1) {
+        if (\preg_match('/^97(?:8[0-9]|9[1-9])[0-9]{9}$/D', $value) !== 1) {
             throw PublicationRules::invalidFormat(self::TYPE);
         }
 

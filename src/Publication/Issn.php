@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
+use InvalidArgumentException;
 use MSSTC4PHP\ValueObject\Gs1\Key\Gtin;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Ean13CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
@@ -27,11 +28,13 @@ final class Issn extends AbstractStringValueObject
     /**
      * The 977 GTIN-13: `977`, the seven ISSN digits, the two-digit variant (`00` for a normal title) and the EAN check
      * digit.
+     *
+     * @throws InvalidArgumentException when the variant is not two digits (a caller error, not an invalid ISSN)
      */
     public function toGtin(string $variant = '00'): Gtin
     {
         if (\preg_match('/^[0-9]{2}$/D', $variant) !== 1) {
-            throw PublicationRules::fail(self::TYPE, 'GTIN variant must be two digits');
+            throw new InvalidArgumentException('ISSN GTIN variant must be two digits.');
         }
 
         $body = '977' . \substr($this->value, 0, 4) . \substr($this->value, 5, 3) . $variant;

@@ -105,7 +105,9 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - Conversion: ISMN manual 2016, intro: ISMN conversion keeps the check digit, "This differs from the conversion of an
   old ten-digit ISBN into a 13-digit one which can only be done by recalculating the check digit."
 - 979-0 belongs to the ISMN (ISMN manual 2.1.1: "The prefix «979-0» distinguishes the ISMN from the ISBN."): a 979-0
-  value is an ISMN, not an ISBN (factory ambiguity).
+  value is an ISMN, not an ISBN: `Isbn` refuses `9790...` and the factory returns `Ismn` for it (no ambiguity).
+- Labels: the manuals print `ISBN 978-...`, `ISBN-13: ...` / `ISBN-10 ...` (the agency's online manual), `ISSN 0317-8471` and `ISMN 979-0-...`; the
+  classes drop such a label when a colon or a space follows it.
 - **RangeMessage terms**, https://www.isbn-international.org/range_file_generation: "You must not republish material
   from our site (whether in digital or physical form) without our written permission."; "We do not authorise or licence any
   other sites to reproduce our range message in the same or other formats." Terms and conditions,
@@ -166,6 +168,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   0 through 9 and letters A through Z". "the first check character shall be added as the 17th character"; with a version "the
   resulting string of 26 characters incorporates two check characters: one as the 17th character and one as the 26th".
   Validation of a version-bearing ISAN "shall require both correct check characters".
+- Check-less forms (fix round 1): the check characters are *added* to the 16 digits ("the first check character shall be added as the 17th character"),
+  so the 16-digit root plus episode and the 24-digit form with a version are ISAN forms without their check characters. `Isan` accepts 16, 17, 24
+  and 26 characters, enforces every check character that is present, and refuses 25 (a version needs both or neither). A bare 16-digit value is
+  also an ISNI: the factory throws `AmbiguousValueException`.
 - Procedure (steps 1-7): start with 36; add the digit value (hex digit 0-15); if the sum is 36 or more subtract 36, and if the
   result is 0 use 36; multiply by 2; if 37 or more subtract 37; carry on to the next digit; at the end "If the Adjusted Product
   for the 16th digit of the ISAN equals 1, use 0 for the check character. Otherwise ... subtract it from 37." Annex 1 worked
@@ -200,6 +206,14 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   several full stops"; "If the directory indicator is 10 then a registrant code is mandatory." Suffix: "Any Unicode 2.0 character can be
   used in the suffix"; examples `10.1000/xyz-123`, `10.1000/123456`, `10.1038/issn.1476-4687`. `doi:` and `https://doi.org/` forms are
   resolver conventions, not Handbook syntax. ASCII folding for `equals()` is the plan's choice within the open definition.
+- Directory indicator (fix round 1): the Handbook text quoted above says only that it "can contain only numeric values" and "is usually 10", so
+  `Doi` accepts any numeric directory indicator; with `10` the registrant code is mandatory ("If the directory indicator is 10 then a registrant code is
+  mandatory"), with another one it is optional (`11/abc`, `100.5/abc`).
+- Resolver-URL decoding: the Handbook's URL-encoding section was **not reachable** (www.doi.org handbook paths answer 404, the Internet Archive copies
+  of the old `doi_handbook/*.html` pages hold no text). A resolver URL (`http(s)://[www.][dx.]doi.org/...`) is therefore percent-decoded as RFC 3986
+  section 2.1 defines percent-encoding (a standard cited by number); the stored form is the decoded bare DOI. A bare or `doi:` value is never decoded
+  (`%` is a legal DOI character). Decoded invalid UTF-8 or control characters are refused.
+- Length: no source states a maximum length for a DOI name, so `Doi` has no cap; `vo-identifiers-doctrine` will map it to a text type.
 
 ### ROR
 
