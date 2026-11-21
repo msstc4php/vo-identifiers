@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\I18n\CountryCode;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\S10CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
@@ -20,6 +22,11 @@ use Override;
  */
 final class S10ItemIdentifier extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 13;
+
     private const string TYPE = 'S10 item identifier';
 
     public function serviceIndicator(): string
@@ -64,7 +71,7 @@ final class S10ItemIdentifier extends AbstractStringValueObject
         }
 
         if (!S10CheckDigit::isValid(\substr($value, 2, 9))) {
-            throw TransportRules::fail(self::TYPE, 'has a wrong check digit');
+            throw TransportRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $value;

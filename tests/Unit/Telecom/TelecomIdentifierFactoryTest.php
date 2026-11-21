@@ -53,38 +53,39 @@ final class TelecomIdentifierFactoryTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{string, list<string>}>
+     * @return iterable<string, array{string, non-empty-list<class-string>}>
      */
     public static function ambiguous(): iterable
     {
-        yield '15 digits valid as IMEI and IMSI' => ['490154203237518', ['Imei', 'Imsi']];
-        yield '14 digits' => ['26053179311383', ['Imei', 'Imsi']];
-        yield '14 digits starting 89' => ['89333333333333', ['Imei', 'Iccid', 'Imsi']];
-        yield '15 digits starting 89' => ['893333333333339', ['Imei', 'Iccid', 'Imsi']];
-        yield '16 digits starting 89' => ['8933333333333334', ['Imeisv', 'Iccid']];
+        yield '15 digits valid as IMEI and IMSI' => ['490154203237518', [Imei::class, Imsi::class]];
+        yield '14 digits' => ['26053179311383', [Imei::class, Imsi::class]];
+        yield '14 digits starting 89' => ['89333333333333', [Imei::class, Iccid::class, Imsi::class]];
+        yield '15 digits starting 89' => ['893333333333339', [Imei::class, Iccid::class, Imsi::class]];
+        yield '16 digits starting 89' => ['8933333333333334', [Imeisv::class, Iccid::class]];
     }
 
     /**
-     * @param list<string> $names
+     * @param non-empty-list<class-string> $candidates
      */
     #[DataProvider('ambiguous')]
-    public function testAmbiguousValuesNameEveryCandidate(string $value, array $names): void
+    public function testAmbiguousValuesNameEveryCandidate(string $value, array $candidates): void
     {
         try {
             TelecomIdentifierFactory::fromString($value);
             self::fail('Expected an exception.');
         } catch (AmbiguousValueException $e) {
-            foreach ($names as $name) {
-                self::assertStringContainsString($name, $e->getMessage());
-            }
+            self::assertSame($candidates, $e->candidates());
             self::assertStringNotContainsString($value, $e->getMessage());
         }
     }
 
     public function testThrowsForNoMatch(): void
     {
-        $this->expectException(InvalidTelecomIdentifierException::class);
-
-        TelecomIdentifierFactory::fromString('not an identifier');
+        try {
+            TelecomIdentifierFactory::fromString('not an identifier');
+            self::fail('Expected an exception.');
+        } catch (InvalidTelecomIdentifierException $e) {
+            self::assertSame('Value is not a recognised telecom identifier.', $e->getMessage());
+        }
     }
 }

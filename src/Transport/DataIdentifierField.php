@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
+use LogicException;
 use MSSTC4PHP\ValueObject\Contract\StringConvertible;
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use Override;
 
 /**
  * One data element of an ANSI MH10.8.2 message: a data identifier (capital letter preceded by up to three digits, `25S`,
  * `1P`, `S`) followed by its data, written together (`1PABC123`). The data is any UTF-8 text without the separators
- * RS, GS and EOT. The identifier is not looked up: the MH10.8.2 table is copyrighted and not embedded.
+ * RS, GS and EOT. The identifier is not looked up: the MH10.8.2 table is copyrighted and not embedded. It serializes as
+ * its string form and is validated again on unserialize.
  *
  * @see https://www.mhi.org/standards/mh10 ANSI MH10.8.2, clause 4 (data identifier format)
  * @see docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
@@ -43,6 +46,37 @@ final readonly class DataIdentifierField implements StringConvertible, ValueObje
     public function __toString(): string
     {
         return $this->dataIdentifier . $this->data;
+    }
+
+    /**
+     * @return array{value: string}
+     */
+    public function __serialize(): array
+    {
+        return ['value' => $this->dataIdentifier . $this->data];
+    }
+
+    /**
+     * @param array<array-key, mixed> $data untrusted: whatever the serialized string holds
+     *
+     * @throws InvalidValueObjectException when the data holds no string value, or the transport exception when the
+     *                                     value is not valid
+     * @throws LogicException when called on an object that already holds a value
+     */
+    public function __unserialize(array $data): void
+    {
+        if (isset($this->dataIdentifier)) {
+            throw new LogicException('An identifier is immutable; __unserialize() runs only on a new object.');
+        }
+
+        $value = $data['value'] ?? null;
+        if (!\is_string($value)) {
+            throw new InvalidValueObjectException('A serialized identifier must hold its value, as a string.');
+        }
+
+        $field = self::from($value);
+        $this->dataIdentifier = $field->dataIdentifier;
+        $this->data = $field->data;
     }
 
     #[Override]

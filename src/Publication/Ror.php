@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\RorCheckDigits;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -18,6 +20,11 @@ use Override;
  */
 final class Ror extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 9;
+
     private const string TYPE = 'ROR';
 
     /**
@@ -38,7 +45,7 @@ final class Ror extends AbstractStringValueObject
         $value = \strtolower($match[1]);
 
         if (!RorCheckDigits::isValid(\substr($value, 1))) {
-            throw PublicationRules::fail(self::TYPE, 'has a wrong check digit');
+            throw PublicationRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $value;

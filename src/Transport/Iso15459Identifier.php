@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\IssuingAgencyRegister;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -24,6 +25,8 @@ use Override;
  */
 final class Iso15459Identifier extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
     private const string TYPE = 'ISO/IEC 15459 identifier';
 
     private const int LICENSE_PLATE_MAX_LENGTH = 35;

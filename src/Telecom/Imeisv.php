@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Telecom;
 
 use MSSTC4PHP\ValueObject\Contract\Maskable;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -18,6 +19,11 @@ use Override;
  */
 final class Imeisv extends AbstractStringValueObject implements Maskable
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 16;
+
     private const string TYPE = 'IMEISV';
 
     public function tac(): string

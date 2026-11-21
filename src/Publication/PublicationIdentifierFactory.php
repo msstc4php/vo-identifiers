@@ -7,7 +7,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Exception\AmbiguousValueException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
-use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 
 /**
  * Builds the one identifier type that accepts the value, or throws {@see AmbiguousValueException} listing every type
@@ -16,30 +15,21 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
  */
 final class PublicationIdentifierFactory
 {
-    /** @var non-empty-list<class-string<AbstractStringValueObject>> */
-    private const array CANDIDATES = [
-        Isbn::class,
-        Issn::class,
-        Ismn::class,
-        Isrc::class,
-        Iswc::class,
-        Isan::class,
-        Isni::class,
-        Orcid::class,
-        Doi::class,
-        Ror::class,
-        Ark::class,
-    ];
-
-    public static function fromString(string $value): ValueObject
+    public static function fromString(string $value): Isbn|Issn|Ismn|Isrc|Iswc|Isan|Isni|Orcid|Doi|Ror|Ark
     {
-        $matches = [];
-        foreach (self::CANDIDATES as $class) {
-            $candidate = $class::tryFrom($value);
-            if ($candidate !== null) {
-                $matches[] = $candidate;
-            }
-        }
+        $matches = \array_values(\array_filter([
+            Isbn::tryFrom($value),
+            Issn::tryFrom($value),
+            Ismn::tryFrom($value),
+            Isrc::tryFrom($value),
+            Iswc::tryFrom($value),
+            Isan::tryFrom($value),
+            Isni::tryFrom($value),
+            Orcid::tryFrom($value),
+            Doi::tryFrom($value),
+            Ror::tryFrom($value),
+            Ark::tryFrom($value),
+        ]));
 
         return match (\count($matches)) {
             0 => throw new InvalidPublicationIdentifierException('Value is not a recognised publication identifier.'),

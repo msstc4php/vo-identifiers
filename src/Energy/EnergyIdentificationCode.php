@@ -6,6 +6,8 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Energy;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CommodityRules;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\EicCheckDigit;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -19,6 +21,11 @@ use Override;
  */
 final class EnergyIdentificationCode extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 16;
+
     private const string TYPE = 'Energy Identification Code';
 
     public function issuingOffice(): string
@@ -54,7 +61,7 @@ final class EnergyIdentificationCode extends AbstractStringValueObject
         }
 
         if (!EicCheckDigit::isValid($value)) {
-            throw CommodityRules::energy(self::TYPE, 'has an invalid check character');
+            throw CommodityRules::energy(self::TYPE, Reason::WRONG_CHECK_CHARACTER);
         }
 
         return $value;

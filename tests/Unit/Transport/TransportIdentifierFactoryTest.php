@@ -60,6 +60,7 @@ final class TransportIdentifierFactoryTest extends TestCase
         yield 'WMI' => ['1G4', Wmi::class];
         yield 'container' => ['CSQU 305438 3', ContainerNumber::class];
         yield 'IMO' => ['IMO 8712345', ImoNumber::class];
+        yield 'seven digits: IMO' => ['8712345', ImoNumber::class];
         yield 'MMSI' => ['366123456', Mmsi::class];
         yield 'S10' => ['RA473124829CH', S10ItemIdentifier::class];
         yield 'air waybill' => ['020-12345675', AirWaybillNumber::class];
@@ -94,10 +95,21 @@ final class TransportIdentifierFactoryTest extends TestCase
         self::assertInstanceOf(IataAirportCode::class, TransportIdentifierFactory::fromString('LIS'));
     }
 
-    public function testNothingMatches(): void
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function unmatched(): iterable
+    {
+        yield 'not an identifier' => ['not an identifier!'];
+        yield 'ISO/IEC 15459 shaped, not a candidate' => ['LN12345'];
+        yield 'ISO/IEC 15459 licence plate shaped' => ['J12345678'];
+    }
+
+    #[DataProvider('unmatched')]
+    public function testNothingMatches(string $value): void
     {
         try {
-            TransportIdentifierFactory::fromString('not an identifier!');
+            TransportIdentifierFactory::fromString($value);
             self::fail('Expected an exception.');
         } catch (InvalidTransportIdentifierException $e) {
             self::assertSame('Value is not a recognised transport identifier.', $e->getMessage());

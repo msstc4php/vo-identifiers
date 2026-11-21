@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Internal;
 
 use LogicException;
-use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 
 /**
- * Serializes an identifier as its value alone and runs `parse()` again on unserialize, so state derived from the value is
- * never restored apart from the value it was validated with. Any other key of the payload is ignored.
+ * Serializes an identifier as its value alone and runs `parse()` again on unserialize, so a forged or stale payload never
+ * yields an identifier that `from()` would refuse, and state derived from the value is rebuilt from it. Any other key
+ * of the payload is ignored.
  *
  * @internal
  */
@@ -26,7 +27,8 @@ trait ReparsesOnUnserialize
     /**
      * @param array<array-key, mixed> $data untrusted: whatever the serialized string holds
      *
-     * @throws InvalidTransportIdentifierException when the data holds no string value or the value is not valid
+     * @throws InvalidValueObjectException when the data holds no string value, or the class's own exception when the
+     *                                     value is not valid
      * @throws LogicException when called on an object that already holds a value
      */
     public function __unserialize(array $data): void
@@ -37,7 +39,7 @@ trait ReparsesOnUnserialize
 
         $value = $data['value'] ?? null;
         if (!\is_string($value)) {
-            throw new InvalidTransportIdentifierException('A serialized identifier must hold its value, as a string.');
+            throw new InvalidValueObjectException('A serialized identifier must hold its value, as a string.');
         }
 
         $this->value = $this->parse($value);

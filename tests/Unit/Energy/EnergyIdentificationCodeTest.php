@@ -63,16 +63,7 @@ final class EnergyIdentificationCodeTest extends TestCase
 
     public function testUnknownObjectTypeLetterIsStillAccepted(): void
     {
-        $body = '11Q123456789012';
-        $check = null;
-        foreach (\str_split('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ') as $candidate) {
-            if (EicCheckDigit::isValid($body . $candidate)) {
-                $check = $candidate;
-            }
-        }
-        self::assertNotNull($check);
-
-        $eic = new EnergyIdentificationCode($body . $check);
+        $eic = new EnergyIdentificationCode('11Q123456789012U');
 
         self::assertNull($eic->objectType());
         self::assertSame('Q', $eic->objectTypeCode());
@@ -83,7 +74,7 @@ final class EnergyIdentificationCodeTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check' => ['11XRWENET12345-3', 'Energy Identification Code has an invalid check character.'];
+        yield 'wrong check' => ['11XRWENET12345-3', 'Energy Identification Code has a wrong check character.'];
         yield 'hyphen as check' => ['11XRWENET12345--', 'Energy Identification Code has an invalid format.'];
         yield 'short' => ['11XRWENET12345', 'Energy Identification Code has an invalid format.'];
         yield 'long' => ['11XRWENET12345-22', 'Energy Identification Code has an invalid format.'];

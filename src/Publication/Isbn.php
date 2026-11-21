@@ -9,6 +9,8 @@ use MSSTC4PHP\ValueObject\Gs1\Key\Gtin;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Ean13CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -27,6 +29,11 @@ use Override;
  */
 final class Isbn extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 13;
+
     private const string TYPE = 'ISBN';
 
     public function isIsbn10(): bool
@@ -84,7 +91,7 @@ final class Isbn extends AbstractStringValueObject
 
         if (\preg_match('/^[0-9]{9}[0-9X]$/D', $value) === 1) {
             if (!Mod11CheckDigit::isValid($value)) {
-                throw PublicationRules::fail(self::TYPE, 'has a wrong check digit');
+                throw PublicationRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
             }
 
             return $value;
@@ -95,7 +102,7 @@ final class Isbn extends AbstractStringValueObject
         }
 
         if (!Ean13CheckDigit::isValid($value)) {
-            throw PublicationRules::fail(self::TYPE, 'has a wrong check digit');
+            throw PublicationRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $value;

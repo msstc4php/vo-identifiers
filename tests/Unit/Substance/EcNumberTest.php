@@ -44,7 +44,7 @@ final class EcNumberTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check' => ['100-000-2', 'EC number has an invalid check digit.'];
+        yield 'wrong check' => ['100-000-2', 'EC number has a wrong check digit.'];
         yield 'letter I' => ['I00-000-1', 'EC number has an invalid format.'];
         yield 'letter check' => ['100-000-A', 'EC number has an invalid format.'];
         yield 'short' => ['100-00-1', 'EC number has an invalid format.'];

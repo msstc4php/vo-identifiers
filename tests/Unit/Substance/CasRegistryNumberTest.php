@@ -53,14 +53,14 @@ final class CasRegistryNumberTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check' => ['7732-18-4', 'CAS Registry Number has an invalid check digit.'];
+        yield 'wrong check' => ['7732-18-4', 'CAS Registry Number has a wrong check digit.'];
         yield 'one digit first part' => ['7-07-3', 'CAS Registry Number has an invalid format.'];
         yield 'eight digit first part' => ['10000000-07-3', 'CAS Registry Number has an invalid format.'];
         yield 'letters' => ['7732-1A-5', 'CAS Registry Number has an invalid format.'];
         yield 'leading garbage' => ['X7732-18-5', 'CAS Registry Number has an invalid format.'];
         yield 'mixed hyphens' => ['773218-5', 'CAS Registry Number has an invalid format.'];
         yield 'spaces' => [' 7732-18-5', 'CAS Registry Number has an invalid format.'];
-        yield 'wrong check after zeros' => ['0050-00-1', 'CAS Registry Number has an invalid check digit.'];
+        yield 'wrong check after zeros' => ['0050-00-1', 'CAS Registry Number has a wrong check digit.'];
         yield 'newline' => ["7732-18-5\n", 'CAS Registry Number has an invalid format.'];
         yield 'empty' => ['', 'CAS Registry Number has an invalid format.'];
     }

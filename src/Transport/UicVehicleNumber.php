@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Luhn;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -19,6 +21,11 @@ use Override;
  */
 final class UicVehicleNumber extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 12;
+
     private const string TYPE = 'UIC vehicle number';
 
     /**
@@ -67,7 +74,7 @@ final class UicVehicleNumber extends AbstractStringValueObject
         }
 
         if (!Luhn::isValid($value)) {
-            throw TransportRules::fail(self::TYPE, 'has a wrong check digit');
+            throw TransportRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $value;

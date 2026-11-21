@@ -6,6 +6,8 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Substance;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CasCheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CommodityRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -18,6 +20,11 @@ use Override;
  */
 final class CasRegistryNumber extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 12;
+
     private const string TYPE = 'CAS Registry Number';
 
     public function checkDigit(): string
@@ -38,7 +45,7 @@ final class CasRegistryNumber extends AbstractStringValueObject
         $check = \substr($digits, -1);
 
         if (!CasCheckDigit::isValid($first . $second . $check)) {
-            throw CommodityRules::substance(self::TYPE, 'has an invalid check digit');
+            throw CommodityRules::substance(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $first . '-' . $second . '-' . $check;

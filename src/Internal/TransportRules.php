@@ -26,7 +26,7 @@ final class TransportRules
      */
     public static function invalidFormat(string $type): InvalidTransportIdentifierException
     {
-        return self::fail($type, 'has an invalid format');
+        return self::fail($type, Reason::INVALID_FORMAT);
     }
 
     /**

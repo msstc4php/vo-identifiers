@@ -6,6 +6,8 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Substance;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CommodityRules;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\EcNumberCheckDigit;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -18,6 +20,11 @@ use Override;
  */
 final class EcNumber extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 9;
+
     private const string TYPE = 'EC number';
 
     public function checkDigit(): string
@@ -37,7 +44,7 @@ final class EcNumber extends AbstractStringValueObject
         $compact = \str_replace('-', '', $value);
 
         if (!EcNumberCheckDigit::isValid($compact)) {
-            throw CommodityRules::substance(self::TYPE, 'has an invalid check digit');
+            throw CommodityRules::substance(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         $first = \substr($compact, 0, 3);

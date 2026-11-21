@@ -26,7 +26,7 @@ final class PublicationRules
      */
     public static function invalidFormat(string $type): InvalidPublicationIdentifierException
     {
-        return self::fail($type, 'has an invalid format');
+        return self::fail($type, Reason::INVALID_FORMAT);
     }
 
     /**

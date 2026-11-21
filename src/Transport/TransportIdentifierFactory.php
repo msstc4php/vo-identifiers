@@ -7,40 +7,31 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Exception\AmbiguousValueException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
-use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 
 /**
  * Builds the one identifier type that accepts the value, or throws {@see AmbiguousValueException} listing every type
  * that does. Three letters are both a WMI and an IATA airport code, so such a value is ambiguous. The ISO/IEC 15459
- * identifier is not a candidate, and any seven digits are an IMO number (the `IMO` prefix is optional): it has no syntax of its own, only the data identifier that carries it.
+ * identifier is not a candidate: it has no syntax of its own, only the data identifier that carries it. Any seven
+ * digits are an IMO number (the `IMO` prefix is optional).
  */
 final class TransportIdentifierFactory
 {
-    /** @var non-empty-list<class-string<AbstractStringValueObject>> */
-    private const array CANDIDATES = [
-        Vin::class,
-        Wmi::class,
-        ContainerNumber::class,
-        ImoNumber::class,
-        Mmsi::class,
-        S10ItemIdentifier::class,
-        AirWaybillNumber::class,
-        UicVehicleNumber::class,
-        UnLocode::class,
-        IataAirportCode::class,
-        IcaoAirportCode::class,
-        DataIdentifierString::class,
-    ];
-
-    public static function fromString(string $value): ValueObject
+    public static function fromString(string $value): Vin|Wmi|ContainerNumber|ImoNumber|Mmsi|S10ItemIdentifier|AirWaybillNumber|UicVehicleNumber|UnLocode|IataAirportCode|IcaoAirportCode|DataIdentifierString
     {
-        $matches = [];
-        foreach (self::CANDIDATES as $class) {
-            $candidate = $class::tryFrom($value);
-            if ($candidate !== null) {
-                $matches[] = $candidate;
-            }
-        }
+        $matches = \array_values(\array_filter([
+            Vin::tryFrom($value),
+            Wmi::tryFrom($value),
+            ContainerNumber::tryFrom($value),
+            ImoNumber::tryFrom($value),
+            Mmsi::tryFrom($value),
+            S10ItemIdentifier::tryFrom($value),
+            AirWaybillNumber::tryFrom($value),
+            UicVehicleNumber::tryFrom($value),
+            UnLocode::tryFrom($value),
+            IataAirportCode::tryFrom($value),
+            IcaoAirportCode::tryFrom($value),
+            DataIdentifierString::tryFrom($value),
+        ]));
 
         return match (\count($matches)) {
             0 => throw new InvalidTransportIdentifierException('Value is not a recognised transport identifier.'),

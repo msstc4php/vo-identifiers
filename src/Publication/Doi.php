@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -22,6 +23,8 @@ use Override;
  */
 final class Doi extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
     private const string TYPE = 'DOI';
 
     /**

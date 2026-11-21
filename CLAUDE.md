@@ -43,6 +43,6 @@ copyright-restricted tables are not embedded (the table terms are in `docs/sourc
 
 - `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) compare across forms; the stored string keeps the form given, so a
   string-keyed index or UNIQUE column sees two values.
-- A class that caches state derived in `parse()` must use `Internal\ReparsesOnUnserialize`.
+- Every value object uses `Internal\ReparsesOnUnserialize` (vo-base does not re-validate on unserialize); a new class must too, and must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.
 - The embedded AIM IAC register (edition 2026-06-16) is prefix-free by inspection; the test asserting it is updated together with the register.
 - Controller rulings and every source decision: `docs/sources/IDENTIFIERS.md`; format-only and not-built lists with reasons: README.

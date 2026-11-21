@@ -388,6 +388,17 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
   not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF, 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 6 to 20 digits. 20 is from ETSI (BCD "padded with 'F'", so shorter numbers exist). Neither source gives a minimum; 6 is **derived, not quoted**, from the circular's structure: MII `89`, country code, issuer, individual account (at least one digit each) and the check digit. The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum). Consequence: short `89`-prefixed numbers also fit `Imei`, `Imsi` and `Imeisv`, and the factory reports them ambiguous.
 
+### Separators (review CR-014, 2026-11-21 UTC)
+
+The rule is "strip only what the source prints", per class, so the difference between the telecom classes is deliberate:
+
+- `Imei`, `Imeisv`: spaces and hyphens dropped. TS 23.003 annex B prints the example IMEI grouped (`26053179 311383`);
+  the hyphen is a Task 4 decision (`.claude/docs/known-issues.md`, "Telecom decisions"), not quoted. Neither changes the digits.
+- `Imsi`: digits only. TS 23.003 2.2 defines the IMSI as a digit string ("Not more than 15 digits") and prints no grouped form.
+- `Iccid`: digits only. The TSB 136 circular and ETSI TS 102 221 (BCD coding) define a digit string; no grouped form is quoted.
+- `Eid`: digits only. SGP.29 EID.R01 defines 32 digits and prints no example, grouped or not.
+- `Mpan`: digits only (see "Mpan": no separator is quoted).
+
 ### Equality across forms
 
 Ruling (Task 4): `Imei::equals()` compares the first 14 digits (the check digit is derived, not part of the identity). `Isbn::equals()` compares the ISBN-13 forms. Both stored strings keep the form given, so a string-keyed index or a UNIQUE column sees two values.

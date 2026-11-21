@@ -6,6 +6,8 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod11_2;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -19,6 +21,11 @@ use Override;
  */
 final class Orcid extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 19;
+
     private const string TYPE = 'ORCID';
 
     /**
@@ -48,7 +55,7 @@ final class Orcid extends AbstractStringValueObject
         }
 
         if (!Iso7064Mod11_2::isValid($value)) {
-            throw PublicationRules::fail(self::TYPE, 'has a wrong check character');
+            throw PublicationRules::fail(self::TYPE, Reason::WRONG_CHECK_CHARACTER);
         }
 
         return \implode('-', \str_split($value, 4));

@@ -18,7 +18,7 @@ final class CommodityRules
     /**
      * @param non-empty-string $type
      */
-    public static function substance(string $type, string $reason = 'has an invalid format'): InvalidSubstanceIdentifierException
+    public static function substance(string $type, string $reason = Reason::INVALID_FORMAT): InvalidSubstanceIdentifierException
     {
         return new InvalidSubstanceIdentifierException(\sprintf('%s %s.', $type, $reason));
     }
@@ -26,7 +26,7 @@ final class CommodityRules
     /**
      * @param non-empty-string $type
      */
-    public static function trade(string $type, string $reason = 'has an invalid format'): InvalidTradeIdentifierException
+    public static function trade(string $type, string $reason = Reason::INVALID_FORMAT): InvalidTradeIdentifierException
     {
         return new InvalidTradeIdentifierException(\sprintf('%s %s.', $type, $reason));
     }
@@ -34,7 +34,7 @@ final class CommodityRules
     /**
      * @param non-empty-string $type
      */
-    public static function energy(string $type, string $reason = 'has an invalid format'): InvalidEnergyIdentifierException
+    public static function energy(string $type, string $reason = Reason::INVALID_FORMAT): InvalidEnergyIdentifierException
     {
         return new InvalidEnergyIdentifierException(\sprintf('%s %s.', $type, $reason));
     }

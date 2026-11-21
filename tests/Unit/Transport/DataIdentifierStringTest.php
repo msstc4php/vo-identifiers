@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Transport;
 
 use InvalidArgumentException;
 use LogicException;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\DataIdentifierField;
@@ -110,7 +111,7 @@ final class DataIdentifierStringTest extends TestCase
     {
         $class = DataIdentifierString::class;
         $forged = \sprintf(
-            'O:%d:"%s":2:{s:5:"value";s:%d:"%s";s:%d:"%s";a:1:{i:0;O:%d:"%s":2:{s:%d:"%s";s:1:"S";s:%d:"%s";s:3:"bad";}}}',
+            'O:%d:"%s":2:{s:5:"value";s:%d:"%s";s:%d:"%s";a:1:{i:0;O:%d:"%s":1:{s:5:"value";s:4:"Sbad";}}}',
             \strlen($class),
             $class,
             \strlen(self::ENVELOPE),
@@ -119,10 +120,6 @@ final class DataIdentifierStringTest extends TestCase
             "\0{$class}\0parsedFields",
             \strlen(DataIdentifierField::class),
             DataIdentifierField::class,
-            \strlen("\0" . DataIdentifierField::class . "\0dataIdentifier"),
-            "\0" . DataIdentifierField::class . "\0dataIdentifier",
-            \strlen("\0" . DataIdentifierField::class . "\0data"),
-            "\0" . DataIdentifierField::class . "\0data",
         );
 
         $restored = \unserialize($forged);
@@ -147,7 +144,7 @@ final class DataIdentifierStringTest extends TestCase
     #[DataProvider('malformedPayloads')]
     public function testMalformedPayloadsAreRefused(string $serialized): void
     {
-        $this->expectException(InvalidTransportIdentifierException::class);
+        $this->expectException(InvalidValueObjectException::class);
 
         \unserialize($serialized);
     }

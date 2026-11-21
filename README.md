@@ -13,6 +13,16 @@ format only.
 Initial 0.1.0 content is complete (unreleased): the publication and media, transport and logistics, telecom, chemistry,
 trade and energy identifiers and the check-digit helpers they use. Exceptions are one per family
 (`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`); no message carries the input.
+A message is `<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong
+check character`. Every class with a bounded length has a `MAX_LENGTH` constant (characters of the longest stored form; the
+Doctrine columns are sized from it). The three factories return a native union of their candidate classes.
+
+## Serialization
+
+Every value object serializes as its value alone (`O:...:{s:5:"value";...}`) and validates it again on `unserialize()`: a
+forged or stale payload throws the class's own exception, a payload without a string `value` throws vo-base
+`InvalidValueObjectException`, any other key is ignored, and calling `__unserialize()` on a built object throws
+`LogicException`.
 
 ## Classes
 
@@ -64,6 +74,12 @@ compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. The stored string 
 string-keyed index or a UNIQUE column sees two values for what `equals()` calls one. Normalise first (`Imei::withCheckDigit()`
 or the 14 digits, `Isbn::isbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
 ignores hyphens, with the same caveat.
+
+## Separators
+
+Each class strips only the separators its source prints (the quote is in `docs/sources/IDENTIFIERS.md`): `Imei` and `Imeisv`
+drop spaces and hyphens; `Imsi`, `Iccid`, `Eid` and `Mpan` accept digits only, because no reached source prints them
+grouped; `Mmsi` and `UnNumber` take no spaces, `AirWaybillNumber` only the hyphen after the prefix.
 
 ## Registry and table updates
 

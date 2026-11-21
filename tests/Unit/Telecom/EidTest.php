@@ -40,7 +40,7 @@ final class EidTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check pair' => ['35209900176148100000000000000079', 'EID has an invalid check digit.'];
+        yield 'wrong check pair' => ['35209900176148100000000000000079', 'EID has a wrong check digit.'];
         yield '31 digits' => ['3520990017614810000000000000078', 'EID has an invalid format.'];
         yield '33 digits' => ['352099001761481000000000000000780', 'EID has an invalid format.'];
         yield 'letter' => ['3520990017614810000000000000007A', 'EID has an invalid format.'];

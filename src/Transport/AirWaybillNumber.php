@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\AirWaybillCheckDigit;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -19,6 +21,11 @@ use Override;
  */
 final class AirWaybillNumber extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 11;
+
     private const string TYPE = 'Air waybill number';
 
     public function airlinePrefix(): string
@@ -54,7 +61,7 @@ final class AirWaybillNumber extends AbstractStringValueObject
         $value = $match[1] . $match[2];
 
         if (!AirWaybillCheckDigit::isValid(\substr($value, 3))) {
-            throw TransportRules::fail(self::TYPE, 'has a wrong check digit');
+            throw TransportRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 
         return $value;

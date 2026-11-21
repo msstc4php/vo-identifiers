@@ -44,7 +44,7 @@ final class IccidTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check digit' => ['8944444444444444448', 'ICCID has an invalid check digit.'];
+        yield 'wrong check digit' => ['8944444444444444448', 'ICCID has a wrong check digit.'];
         yield 'no 89 prefix' => ['9944444444444444441', 'ICCID has an invalid format.'];
         yield '89 not at the start' => ['11894444444444444449', 'ICCID has an invalid format.'];
         yield 'prefix 88' => ['8844444444444444440', 'ICCID has an invalid format.'];

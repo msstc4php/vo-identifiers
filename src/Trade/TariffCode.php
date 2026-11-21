@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Trade;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CommodityRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -20,6 +21,11 @@ use Override;
  */
 final class TariffCode extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
+    /** Characters of the longest stored form. */
+    public const int MAX_LENGTH = 10;
+
     private const string TYPE = 'tariff code';
 
     public function hsSubheading(): HsCode

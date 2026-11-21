@@ -65,7 +65,7 @@ final class ImeiTest extends TestCase
      */
     public static function invalid(): iterable
     {
-        yield 'wrong check digit' => ['490154203237519', 'IMEI has an invalid check digit.'];
+        yield 'wrong check digit' => ['490154203237519', 'IMEI has a wrong check digit.'];
         yield 'thirteen' => ['4901542032375', 'IMEI has an invalid format.'];
         yield 'sixteen' => ['4901542032375180', 'IMEI has an invalid format.'];
         yield 'letter' => ['49015420323751A', 'IMEI has an invalid format.'];
