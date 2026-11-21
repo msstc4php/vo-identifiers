@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Transport;
 
 use InvalidArgumentException;
+use LogicException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\DataIdentifierField;
@@ -89,6 +90,81 @@ final class DataIdentifierStringTest extends TestCase
         $envelope = "[)>\x1E06\x1D1PŁódź\x1E\x04";
 
         self::assertSame($envelope, (new DataIdentifierString($envelope))->value);
+    }
+
+    public function testASerializedMessageHoldsOnlyItsValue(): void
+    {
+        $message = new DataIdentifierString(self::ENVELOPE);
+        $serialized = \serialize($message);
+
+        self::assertSame(\sprintf('O:%d:"%s":1:{s:5:"value";s:%d:"%s";}', \strlen(DataIdentifierString::class), DataIdentifierString::class, \strlen(self::ENVELOPE), self::ENVELOPE), $serialized);
+
+        $restored = \unserialize($serialized);
+        self::assertInstanceOf(DataIdentifierString::class, $restored);
+        self::assertTrue($message->equals($restored));
+        self::assertSame('000001', $restored->serial());
+        self::assertSame(['25SLN12345', 'S000001', '1PABC-1'], \array_map(strval(...), $restored->fields()));
+    }
+
+    public function testForgedDerivedStateIsIgnored(): void
+    {
+        $class = DataIdentifierString::class;
+        $forged = \sprintf(
+            'O:%d:"%s":2:{s:5:"value";s:%d:"%s";s:%d:"%s";a:1:{i:0;O:%d:"%s":2:{s:%d:"%s";s:1:"S";s:%d:"%s";s:3:"bad";}}}',
+            \strlen($class),
+            $class,
+            \strlen(self::ENVELOPE),
+            self::ENVELOPE,
+            \strlen("\0{$class}\0parsedFields"),
+            "\0{$class}\0parsedFields",
+            \strlen(DataIdentifierField::class),
+            DataIdentifierField::class,
+            \strlen("\0" . DataIdentifierField::class . "\0dataIdentifier"),
+            "\0" . DataIdentifierField::class . "\0dataIdentifier",
+            \strlen("\0" . DataIdentifierField::class . "\0data"),
+            "\0" . DataIdentifierField::class . "\0data",
+        );
+
+        $restored = \unserialize($forged);
+
+        self::assertInstanceOf(DataIdentifierString::class, $restored);
+        self::assertSame(['25SLN12345', 'S000001', '1PABC-1'], \array_map(strval(...), $restored->fields()));
+        self::assertSame('000001', $restored->serial());
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function malformedPayloads(): iterable
+    {
+        $prefix = \sprintf('O:%d:"%s":', \strlen(DataIdentifierString::class), DataIdentifierString::class);
+
+        yield 'invalid value' => [$prefix . '1:{s:5:"value";s:5:"hello";}'];
+        yield 'no value' => [$prefix . '0:{}'];
+        yield 'a value that is no string' => [$prefix . '1:{s:5:"value";i:1;}'];
+    }
+
+    #[DataProvider('malformedPayloads')]
+    public function testMalformedPayloadsAreRefused(string $serialized): void
+    {
+        $this->expectException(InvalidTransportIdentifierException::class);
+
+        \unserialize($serialized);
+    }
+
+    public function testABuiltObjectRefusesUnserialize(): void
+    {
+        $message = new DataIdentifierString(self::ENVELOPE);
+
+        try {
+            $message->__unserialize(['value' => "[)>\x1E06\x1D1PA\x1E\x04"]);
+            self::fail('Expected an exception.');
+        } catch (LogicException $e) {
+            self::assertSame('An identifier is immutable; __unserialize() runs only on a new object.', $e->getMessage());
+        }
+
+        self::assertSame(self::ENVELOPE, $message->value);
+        self::assertSame('000001', $message->serial());
     }
 
     /**

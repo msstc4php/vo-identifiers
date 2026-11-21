@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use InvalidArgumentException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -21,6 +22,8 @@ use Override;
  */
 final class DataIdentifierString extends AbstractStringValueObject
 {
+    use ReparsesOnUnserialize;
+
     private const string TYPE = 'Data identifier string';
 
     private const string HEADER = "[)>\x1E06";
