@@ -6,9 +6,10 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Internal;
 
 /**
  * Validates the check character of an Energy Identification Code. ENTSO-E allows the algorithm only for checking an
- * allocated code, so there is deliberately no public method that computes a check character (ruling 5): the fifteen characters take the values 0 to 9, A = 10 to Z = 35 and `-` = 36, are weighted
- * 16 down to 2, and the check value is `36 - ((sum - 1) mod 37)`. A value of 36 would be `-`, which no allocated code
- * carries.
+ * allocated code, so no public method computes a check character.
+ *
+ * The fifteen characters take the values 0 to 9, A = 10 to Z = 35 and `-` = 36, are weighted 16 down to 2, and the
+ * check value is `36 - ((sum - 1) mod 37)`. A value of 36 would be `-`, which no allocated code carries.
  *
  * @internal
  *
