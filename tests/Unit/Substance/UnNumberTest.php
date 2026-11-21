@@ -23,7 +23,6 @@ final class UnNumberTest extends TestCase
     {
         yield 'prefixed' => ['UN1203'];
         yield 'bare' => ['1203'];
-        yield 'spaced' => ['UN 1203'];
         yield 'lowercase' => ['un1203'];
     }
 
@@ -46,6 +45,7 @@ final class UnNumberTest extends TestCase
         yield 'five digits' => ['12034'];
         yield 'twice' => ['UNUN1203'];
         yield 'letters' => ['UN12O3'];
+        yield 'spaced' => ['UN 1203'];
         yield 'newline' => ["UN1203\n"];
         yield 'empty' => [''];
     }

@@ -7,11 +7,11 @@ Source gaps and the controller rulings of 2026-11-21 (UTC) (`docs/sources/IDENTI
 - ISWC and container number: format only, the algorithm text is not reachable and matching an example is not a quote; `Iso6346CheckDigit` deleted (ruling 3).
 - ROR: enforced; ROR names only "ISO/IEC 7064:2003" with two numeric check digits, i.e. MOD 97-10, over the decoded base32 integer (ruling 3).
 - VIN: position 9 is never a reason to refuse; `hasValidCheckDigit()` per 49 CFR 565.15(c); `modelYear()` always returns the candidates (ruling 4).
-- EIC: validation only (ruling 5). `objectType(): string` unless Task 5 reaches the letter table (ruling 9).
+- EIC: validation only (ruling 5); `objectType(): ?EicObjectType` from the Short Guide letters (ruling 9, reached in Task 5).
 - Not built: `Wmi::region()`/`country()`, `Mmsi::country()`, `Isbn::formatted()`, `IcaoAirportCode::region()` (ruling 6).
 - MH10.8.2 DI table is copyrighted: DIs are `\d{0,3}[A-Z]` with a null description (ruling 7).
-- MPAN: re-checked in Task 5, still unreachable; 13 or 21 digits, format only, top line not decoded, no `profileClass()` (ruling 9).
-- EIC: `EicObjectType` has the seven letters of the ENTSO-E Short Guide; another letter is accepted and `objectType()` is null. `HsCode`/`TariffCode` use `InvalidTradeIdentifierException`; the three chemistry/trade/energy exceptions are built by `Internal\CommodityRules`. CN is 8 digits, TARIC 10 (Regulation 2658/87 Art. 3).
+- MPAN: re-checked in Task 5, still unreachable; 13 or 21 digits, digits only, nothing decoded (no `core()`, `distributorId()`, `profileClass()`) (ruling 9).
+- Chemistry/trade: `EicObjectType` has the seven Short Guide letters, another letter is accepted (`objectType()` null). `CasRegistryNumber` drops leading zeros of the first part; CAS and EC take hyphens all or none and no spaces; `UnNumber` takes no spaces; `HsCode`/`TariffCode` strip only the quoted print forms (WCO point, EU spaces, USITC points; a TARIC print form was not reached). `HsCode`/`TariffCode` use `InvalidTradeIdentifierException`; the three chemistry/trade/energy exceptions are built by `Internal\CommodityRules`. CN is 8 digits, TARIC 10 (Regulation 2658/87 Art. 3).
 - ICCID: `89` and Luhn; E.118 re-checked, still unreachable; 6 to 20 digits (minimum derived from the structure, ETSI maximum 20; ruling 11). Short `89` numbers overlap Imei/Imsi/Imeisv in the factory.
 - Telecom decisions: `Imei` drops spaces and hyphens, 14 digits are valid, `Imeisv::toImei()` gives the 14-digit form; `Imsi` takes 6 to 15 digits and `mnc()`/`msin()` need the MNC length from the caller; `Imei::equals()` compares the first 14 digits; the five Maskable classes use `Internal\TelecomRules::mask()` (leading part, last 2 only when 6+ stay masked, length kept); `TelecomIdentifierFactory` reports 14/15 digit IMEI+IMSI overlaps as ambiguous (every plausible short digit string is an IMSI).
 - ISAN second check character: round trips only (ruling 10).

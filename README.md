@@ -48,13 +48,13 @@ exist; telecom, substance and energy identifiers follow.
 | `Telecom\Imsi` | 3GPP TS 23.003: 6 to 15 digits; `mcc()`, `mnc(int)`, `msin(int)` (the caller gives the MNC length); `masked()` |
 | `Telecom\Eid` | GSMA SGP.29: 32 digits with the MOD 97-10 pair, no prefix rule; `masked()` |
 | `Telecom\TelecomIdentifierFactory` | `fromString()` builds the one type that accepts the value; a value that fits several types (an IMEI and an IMSI, an `89`-prefixed number that is also an ICCID, IMEISV or IMSI) throws `AmbiguousValueException`; the return type is the union of the five classes; none throws `InvalidTelecomIdentifierException` |
-| `Substance\CasRegistryNumber` | CAS: 2 to 7 digits, 2 digits, check digit enforced; hyphens optional, stored hyphenated; `checkDigit()` |
-| `Substance\EcNumber` | ECHA EC or list number, `NNN-NNN-N`, mod 11 check digit enforced; hyphens optional |
-| `Substance\UnNumber` | UN Model Regulations, 4 digits, `UN` optional on input and always stored; `number()`; format only |
-| `Trade\HsCode` | WCO Harmonized System, 6 digits; `chapter()`, `heading()`, `subheading()`; format only |
-| `Trade\TariffCode` | 8 digits (EU CN, HTS) or 10 (EU TARIC, US HTS); `hsSubheading(): HsCode`; format only |
+| `Substance\CasRegistryNumber` | CAS: 2 to 7 digits, 2 digits, check digit enforced; hyphens all or none, stored hyphenated; leading zeros of the first part dropped (`0050-00-0` is `50-00-0`); `checkDigit()` |
+| `Substance\EcNumber` | ECHA EC or list number, `NNN-NNN-N`, mod 11 check digit enforced; hyphens all or none |
+| `Substance\UnNumber` | UN Model Regulations, 4 digits, `UN` optional on input and always stored, no spaces; `number()`; format only |
+| `Trade\HsCode` | WCO Harmonized System, 6 digits, unbroken or as printed by the WCO (`0103.10`) or the EU (`1806 10`); `chapter()`, `heading()`, `subheading()`; format only |
+| `Trade\TariffCode` | EU CN 8 digits, TARIC 10, US HTS 8 or 10 (other national lengths are not quoted and are refused); unbroken, spaced as the EU prints (`1806 10 15`) or dotted as the USITC prints (`9801.00.10.10`); `hsSubheading(): HsCode`; format only |
 | `Energy\EnergyIdentificationCode`, `EicObjectType` | ENTSO-E EIC, 16 characters, check character validated; `issuingOffice()`, `objectType(): ?EicObjectType` (null for a letter outside the Short Guide's seven), `objectTypeCode()`, `checkCharacter()` |
-| `Energy\Mpan` | GB MPAN, 13-digit core or 21 digits with the top line, format only; `core()`, `distributorId()`, `hasTopLine()` |
+| `Energy\Mpan` | GB MPAN, 13 digits or 21, digits only, format only; neither form is decoded (no layout reached) |
 
 ## Format only
 
@@ -65,7 +65,7 @@ A rule is enforced only when an official source is quoted for it; otherwise the 
 - `ContainerNumber`: the check digit of ISO 6346 is not enforced; the standard is paid and BIC prints no algorithm (matching an example is not a quote).
 - `Iswc`: the check digit is not enforced; ISO 15707 Annex B is not reachable.
 - `Vin`: position 9 is never a reason to refuse; `hasValidCheckDigit()` follows 49 CFR 565.15(c), which binds vehicles by the market they are sold in, not by anything in the VIN.
-- `Mpan`: 13 or 21 digits. The check weights and the top-line layout appear only in Wikipedia and mirrors; the MRA, DCUSA and Elexon pages were not reachable, so the check digit is not enforced and the top line (profile class, MTC, LLFC) is not decoded.
+- `Mpan`: 13 or 21 digits, neither decoded and the check digit not enforced: the layout and the check weights appear only in Wikipedia and its mirrors, and the Elexon, MRA, Ofgem and DCUSA pages were not reachable (Elexon answers 403). Digits only; no separator is quoted.
 - `Iccid`: `89` and Luhn as the ITU circular states; at most 20 digits (ETSI TS 102 221). Neither source gives a minimum: 6 digits is derived from the structure (`89`, country code, issuer, account of at least one digit each, check digit), not quoted. E.118 itself was not reached.
 - `HsCode`, `TariffCode`: no nomenclature is embedded (WCO licence); EU CN has 8 digits and TARIC 10 (Regulation 2658/87 Article 3).
 - `Ark`, `UnLocode`, `IataAirportCode`, `IcaoAirportCode`, `UnNumber`, `HsCode`, `TariffCode`: no check exists or no list may be embedded.

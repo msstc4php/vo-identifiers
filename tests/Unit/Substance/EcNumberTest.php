@@ -49,6 +49,8 @@ final class EcNumberTest extends TestCase
         yield 'letter check' => ['100-000-A', 'EC number has an invalid format.'];
         yield 'short' => ['100-00-1', 'EC number has an invalid format.'];
         yield 'leading garbage' => ['X100-000-1', 'EC number has an invalid format.'];
+        yield 'mixed hyphens' => ['100000-1', 'EC number has an invalid format.'];
+        yield 'spaces' => ['100 000 1', 'EC number has an invalid format.'];
         yield 'newline' => ["100-000-1\n", 'EC number has an invalid format.'];
     }
 

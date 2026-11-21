@@ -9,7 +9,7 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
 /**
- * Harmonized System code: six digits, the first two the chapter, the first four the heading. Format only: the
+ * Harmonized System code: six digits, the first two the chapter, the first four the heading. Written as printed by the WCO (`0103.10`), by the EU (`1806 10`) or unbroken. Format only: the
  * nomenclature is under WCO licence and is not embedded, so a well-formed code is never checked against it.
  *
  * @see https://www.wcoomd.org/en/topics/nomenclature/overview/harmonized_system_faq.aspx WCO, Harmonized System FAQ
@@ -37,12 +37,10 @@ final class HsCode extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = CommodityRules::compact($value);
-
-        if (\preg_match('/^[0-9]{6}$/D', $value) !== 1) {
+        if (\preg_match('/^(?:[0-9]{6}|[0-9]{4}[. ][0-9]{2})$/D', $value) !== 1) {
             throw CommodityRules::trade(self::TYPE);
         }
 
-        return $value;
+        return \str_replace(['.', ' '], '', $value);
     }
 }

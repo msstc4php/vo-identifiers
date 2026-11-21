@@ -38,14 +38,4 @@ final class CommodityRules
     {
         return new InvalidEnergyIdentifierException(\sprintf('%s %s.', $type, $reason));
     }
-
-    /**
-     * Drops the separators the source prints and uppercases.
-     *
-     * @param non-empty-string $separators each character is a separator
-     */
-    public static function compact(string $value, string $separators = ' '): string
-    {
-        return \strtoupper(\str_replace(\str_split($separators), '', $value));
-    }
 }

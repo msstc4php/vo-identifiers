@@ -27,7 +27,7 @@ final class UnNumber extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        $value = CommodityRules::compact($value);
+        $value = \strtoupper($value);
 
         if (\preg_match('/^(?:UN)?([0-9]{4})$/D', $value, $match) !== 1) {
             throw CommodityRules::substance(self::TYPE);

@@ -44,15 +44,21 @@ final class EnergyIdentificationCodeTest extends TestCase
      */
     public static function letters(): iterable
     {
-        foreach (EicObjectType::cases() as $case) {
-            yield $case->name => [$case->value, $case];
-        }
+        // ENTSO-E EIC Short Guide and FAQ V3.
+        yield 'Party' => ['X', EicObjectType::Party];
+        yield 'Area' => ['Y', EicObjectType::Area];
+        yield 'Measuring point' => ['Z', EicObjectType::MeasuringPoint];
+        yield 'Resource object' => ['W', EicObjectType::ResourceObject];
+        yield 'Tie-line' => ['T', EicObjectType::TieLine];
+        yield 'Location' => ['V', EicObjectType::Location];
+        yield 'Substation' => ['A', EicObjectType::Substation];
     }
 
     #[DataProvider('letters')]
     public function testObjectTypeLetters(string $letter, EicObjectType $expected): void
     {
         self::assertSame($expected, EicObjectType::from($letter));
+        self::assertCount(7, EicObjectType::cases());
     }
 
     public function testUnknownObjectTypeLetterIsStillAccepted(): void

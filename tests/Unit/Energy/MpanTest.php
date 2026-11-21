@@ -16,24 +16,10 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(CommodityRules::class)]
 final class MpanTest extends TestCase
 {
-    public function testCoreOnly(): void
+    public function testAcceptsTheCoreAndTheFullForm(): void
     {
-        $mpan = new Mpan('12 3456 7890 123');
-
-        self::assertSame('1234567890123', $mpan->value);
-        self::assertSame('1234567890123', $mpan->core());
-        self::assertSame('12', $mpan->distributorId());
-        self::assertFalse($mpan->hasTopLine());
-    }
-
-    public function testFullFormKeepsTheTopLineUndecoded(): void
-    {
-        $mpan = new Mpan('01 801 100 12 3456 7890 123');
-
-        self::assertSame('018011001234567890123', $mpan->value);
-        self::assertSame('1234567890123', $mpan->core());
-        self::assertSame('12', $mpan->distributorId());
-        self::assertTrue($mpan->hasTopLine());
+        self::assertSame('1234567890123', (new Mpan('1234567890123'))->value);
+        self::assertSame('012345671234567890123', (new Mpan('012345671234567890123'))->value);
     }
 
     /**
@@ -46,6 +32,7 @@ final class MpanTest extends TestCase
         yield 'twenty digits' => ['12345678901234567890'];
         yield 'letters' => ['12345678901A3'];
         yield 'newline' => ["1234567890123\n"];
+        yield 'spaces' => ['12 3456 7890 123'];
         yield 'empty' => [''];
     }
 
