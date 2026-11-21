@@ -46,7 +46,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | DataIdentifierString | format 06 envelope | enforced: ISO/IEC 15434:2005 preview; DI is `\d{0,3}[A-Z]` with a null description (ruling 7): ANSI MH10.8.2-2021 clause 4; **DI table not embeddable** |
 | Imei | 14 digits, Luhn check | enforced: 3GPP TS 23.003 V17.7.0 |
 | Imeisv | 14 + 2 digits | enforced: 3GPP TS 23.003 |
-| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checks it and never refuses a length a reached source allows (ruling 11) |
+| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checked: still not reached; 18 to 20 digits accepted (ruling 11) |
 | Imsi | up to 15 digits | enforced: 3GPP TS 23.003 |
 | Eid | 32 digits, MOD 97-10 check pair | enforced: GSMA SGP.29 v1.1; **no `89` prefix rule** (ruling 1) |
 | CasRegistryNumber | check (weights 1 up from the right, mod 10) | enforced: CAS page (formula is an image) |
@@ -386,7 +386,11 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   Annex B)". ITU IIN page: "Together with MII and CC, it shall have a maximum of 7 digits".
 - ETSI TS 102 221 V17.0.0 clause 13.2 EF_ICCID: "File size: 10 bytes"; "Contents: according to Recommendation ITU-T E.118"; "Coding: BCD, left justified and padded with 'F'": so at most 20 digits.
 - The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
-  not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checks E.118 and never refuses a length a reached source allows.
+  not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 18 to 20 digits (20 from ETSI; 18 is the lower end in circulation, no reached source allows less or more). The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum).
+
+### Masking
+
+`Imei` keeps the 8-digit TAC and the last 2 digits, `Iccid` the first 7 and the last 2, `Imsi` the first 5 and the last 2, `Eid` the first 8 and the last 2; the rest are asterisks, the length is kept and at least one character is always masked.
 
 ### Eid (GSMA SGP.29 v1.1, 22 March 2024)
 
