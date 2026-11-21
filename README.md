@@ -42,12 +42,12 @@ exist; telecom, substance and energy identifiers follow.
 | `Transport\Iso15459Identifier` | at least 3 capital letters and digits (IAC + company number + serial); `issuingAgencyCode()` and `issuingAgencyName()` from the AIM register (null when unregistered, still accepted); `fromField()` for data identifiers `25S` and `J` (a `J` plate is at most 35 characters) |
 | `Transport\DataIdentifierString`, `DataIdentifierField` | ISO/IEC 15434 format `06` envelope, kept byte-exact (RS, GS, EOT included); `fields()`, `field()`, typed `serial()` (DI `S`), `fromFields()`; DIs are `\d{0,3}[A-Z]` with no description |
 | `Transport\TransportIdentifierFactory` | `fromString()` builds the one type that accepts the value; three letters that are both a WMI and an IATA code throw `AmbiguousValueException`, and any seven digits are an `ImoNumber`; none throws `InvalidTransportIdentifierException` |
-| `Telecom\Imei` | 3GPP TS 23.003: 14 digits, or 15 with a Luhn check digit; spaces and hyphens dropped; `tac()`, `serialNumber()`, `checkDigit()`, `withCheckDigit()`; `masked()` |
-| `Telecom\Imeisv` | 3GPP TS 23.003: 16 digits, no check digit; `softwareVersion()`, `toImei()` |
-| `Telecom\Iccid` | ITU-T Circular 136 and ETSI TS 102 221: `89` prefix, Luhn, 18 to 20 digits; `issuerIdentifier()` raw; `masked()` |
+| `Telecom\Imei` | 3GPP TS 23.003: 14 digits, or 15 with a Luhn check digit; spaces and hyphens dropped; `equals()` compares the first 14 digits, so both forms of one IMEI are equal; `tac()`, `serialNumber()`, `checkDigit()`, `withCheckDigit()`; `masked()` |
+| `Telecom\Imeisv` | 3GPP TS 23.003: 16 digits, no check digit; `softwareVersion()`, `toImei()`; `masked()` |
+| `Telecom\Iccid` | ITU-T Circular 136 and ETSI TS 102 221: `89` prefix, Luhn, 6 to 20 digits (the minimum is derived, not quoted); `issuerIdentifier()` raw; `masked()` |
 | `Telecom\Imsi` | 3GPP TS 23.003: 6 to 15 digits; `mcc()`, `mnc(int)`, `msin(int)` (the caller gives the MNC length); `masked()` |
 | `Telecom\Eid` | GSMA SGP.29: 32 digits with the MOD 97-10 pair, no prefix rule; `masked()` |
-| `Telecom\TelecomIdentifierFactory` | `fromString()` builds the one type that accepts the value; a 14- or 15-digit number that is both an IMEI and an IMSI throws `AmbiguousValueException`; none throws `InvalidTelecomIdentifierException` |
+| `Telecom\TelecomIdentifierFactory` | `fromString()` builds the one type that accepts the value; a value that fits several types (an IMEI and an IMSI, an `89`-prefixed number that is also an ICCID, IMEISV or IMSI) throws `AmbiguousValueException`; the return type is the union of the five classes; none throws `InvalidTelecomIdentifierException` |
 
 ## Format only
 
@@ -59,7 +59,7 @@ A rule is enforced only when an official source is quoted for it; otherwise the 
 - `Iswc`: the check digit is not enforced; ISO 15707 Annex B is not reachable.
 - `Vin`: position 9 is never a reason to refuse; `hasValidCheckDigit()` follows 49 CFR 565.15(c), which binds vehicles by the market they are sold in, not by anything in the VIN.
 - `Mpan`: the 13-digit core only; the check weights and the 21-digit layout were not reached.
-- `Iccid`: `89` and Luhn as the ITU circular states; at most 20 digits (ETSI TS 102 221). The E.118 text was not reached, so no minimum is sourced: 18 to 20 digits are accepted, which is the range in circulation.
+- `Iccid`: `89` and Luhn as the ITU circular states; at most 20 digits (ETSI TS 102 221). Neither source gives a minimum: 6 digits is derived from the structure (`89`, country code, issuer, account of at least one digit each, check digit), not quoted. E.118 itself was not reached.
 - `Ark`, `UnLocode`, `IataAirportCode`, `IcaoAirportCode`, `UnNumber`, `HsCode`, `TariffCode`: no check exists or no list may be embedded.
 - `AirWaybillNumber`: the rule rests on the Australian Border Force's published algorithm; IATA Resolution 600a was not reached.
 - Data identifiers (`DataIdentifierString`): `\d{0,3}[A-Z]` with no description, because the MH10.8.2 table is copyrighted.

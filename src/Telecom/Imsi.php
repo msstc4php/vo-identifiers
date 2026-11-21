@@ -29,9 +29,9 @@ final class Imsi extends AbstractStringValueObject implements Maskable
     }
 
     /**
-     * @param positive-int $length
+     * @param 2|3 $length
      *
-     * @throws InvalidArgumentException when the length is not 2 or 3
+     * @throws InvalidArgumentException when the length is not 2 or 3 or leaves no subscriber number
      */
     public function mnc(int $length): string
     {
@@ -41,16 +41,13 @@ final class Imsi extends AbstractStringValueObject implements Maskable
     }
 
     /**
-     * @param positive-int $mncLength
+     * @param 2|3 $mncLength
      *
      * @throws InvalidArgumentException when the MNC length is not 2 or 3 or leaves no subscriber number
      */
     public function msin(int $mncLength): string
     {
         $this->assertMncLength($mncLength);
-        if (\strlen($this->value) <= 3 + $mncLength) {
-            throw new InvalidArgumentException('The MNC length leaves no subscriber number.');
-        }
 
         return \substr($this->value, 3 + $mncLength);
     }
@@ -75,6 +72,9 @@ final class Imsi extends AbstractStringValueObject implements Maskable
     {
         if ($length !== 2 && $length !== 3) {
             throw new InvalidArgumentException('The MNC length is 2 or 3.');
+        }
+        if (\strlen($this->value) <= 3 + $length) {
+            throw new InvalidArgumentException('The MNC length leaves no subscriber number.');
         }
     }
 }

@@ -53,23 +53,30 @@ final class TelecomIdentifierFactoryTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{string}>
+     * @return iterable<string, array{string, list<string>}>
      */
     public static function ambiguous(): iterable
     {
-        yield '15 digits valid as IMEI and IMSI' => ['490154203237518'];
-        yield '14 digits' => ['26053179311383'];
+        yield '15 digits valid as IMEI and IMSI' => ['490154203237518', ['Imei', 'Imsi']];
+        yield '14 digits' => ['26053179311383', ['Imei', 'Imsi']];
+        yield '14 digits starting 89' => ['89333333333333', ['Imei', 'Iccid', 'Imsi']];
+        yield '15 digits starting 89' => ['893333333333339', ['Imei', 'Iccid', 'Imsi']];
+        yield '16 digits starting 89' => ['8933333333333334', ['Imeisv', 'Iccid']];
     }
 
+    /**
+     * @param list<string> $names
+     */
     #[DataProvider('ambiguous')]
-    public function testImeiAndImsiAreAmbiguous(string $value): void
+    public function testAmbiguousValuesNameEveryCandidate(string $value, array $names): void
     {
         try {
             TelecomIdentifierFactory::fromString($value);
             self::fail('Expected an exception.');
         } catch (AmbiguousValueException $e) {
-            self::assertStringContainsString('Imei', $e->getMessage());
-            self::assertStringContainsString('Imsi', $e->getMessage());
+            foreach ($names as $name) {
+                self::assertStringContainsString($name, $e->getMessage());
+            }
             self::assertStringNotContainsString($value, $e->getMessage());
         }
     }

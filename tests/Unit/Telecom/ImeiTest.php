@@ -8,6 +8,7 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTelecomIdentifierExceptio
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Luhn;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
 use MSSTC4PHP\ValueObject\Identifiers\Telecom\Imei;
+use MSSTC4PHP\ValueObject\Identifiers\Telecom\Imeisv;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -16,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Imei::class)]
 #[UsesClass(Luhn::class)]
 #[UsesClass(TelecomRules::class)]
+#[UsesClass(Imeisv::class)]
 final class ImeiTest extends TestCase
 {
     public function testSourceExample(): void
@@ -84,7 +86,19 @@ final class ImeiTest extends TestCase
 
     public function testMasks(): void
     {
-        self::assertSame('49015420*****18', new Imei('490154203237518')->masked());
-        self::assertSame('49015420****51', new Imei('49015420323751')->masked());
+        self::assertSame('49015420*******', new Imei('490154203237518')->masked());
+        self::assertSame('49015420******', new Imei('49015420323751')->masked());
+    }
+
+    public function testBothFormsOfOneImeiAreEqual(): void
+    {
+        $short = new Imei('26053179311383');
+        $long = new Imei('260531793113837');
+
+        self::assertTrue($short->equals($long));
+        self::assertTrue($long->equals($short));
+        self::assertTrue($long->equals(new Imei('26 053179 311383 7')));
+        self::assertFalse($long->equals(new Imei('26053179311384')));
+        self::assertFalse($long->equals(new Imeisv('2605317931138301')));
     }
 }

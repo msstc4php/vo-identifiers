@@ -59,4 +59,9 @@ final class ImeisvTest extends TestCase
             self::assertSame('IMEISV has an invalid format.', $e->getMessage());
         }
     }
+
+    public function testMasks(): void
+    {
+        self::assertSame('26053179******01', new Imeisv('2605317931138301')->masked());
+    }
 }

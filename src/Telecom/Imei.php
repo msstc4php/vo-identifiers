@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Telecom;
 
 use MSSTC4PHP\ValueObject\Contract\Maskable;
+use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Luhn;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
@@ -13,7 +14,7 @@ use Override;
 /**
  * International Mobile station Equipment Identity: a Type Allocation Code of 8 digits, a serial number of 6 digits and a
  * Luhn check digit. The check digit is not transmitted over the air, so 14 digits are a valid IMEI; with 15 digits the
- * check digit must be right. Spaces and hyphens are dropped.
+ * check digit must be right. Spaces and hyphens are dropped. The first 8 digits stay visible in {@see masked()}.
  *
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, 6.2.1 and annex B
  * @see docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
@@ -21,6 +22,15 @@ use Override;
 final class Imei extends AbstractStringValueObject implements Maskable
 {
     private const string TYPE = 'IMEI';
+
+    /**
+     * The 14-digit and the 15-digit form of one IMEI are equal: the check digit is derived and not always transmitted.
+     */
+    #[Override]
+    public function equals(ValueObject $other): bool
+    {
+        return $other instanceof self && $other->base() === $this->base();
+    }
 
     public function tac(): string
     {
@@ -44,7 +54,7 @@ final class Imei extends AbstractStringValueObject implements Maskable
      */
     public function checkDigit(): string
     {
-        return Luhn::compute(\substr($this->value, 0, 14));
+        return Luhn::compute($this->base());
     }
 
     public function withCheckDigit(): self
@@ -70,5 +80,10 @@ final class Imei extends AbstractStringValueObject implements Maskable
         }
 
         return $digits;
+    }
+
+    private function base(): string
+    {
+        return \substr($this->value, 0, 14);
     }
 }

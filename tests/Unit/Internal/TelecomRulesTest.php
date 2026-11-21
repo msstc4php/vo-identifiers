@@ -17,12 +17,10 @@ final class TelecomRulesTest extends TestCase
      */
     public static function masks(): iterable
     {
-        yield 'long' => ['1234567890', 3, 2, '123*****90'];
-        yield 'tail shrinks first' => ['123456', 5, 2, '12345*'];
-        yield 'both fit' => ['1234567', 5, 2, '12345*7'];
+        yield 'tail kept at six masked' => ['1234567890', 2, 2, '12******90'];
+        yield 'tail dropped at five masked' => ['123456789', 2, 2, '12*******'];
         yield 'nothing kept' => ['1234', 0, 0, '****'];
-        yield 'single' => ['1', 5, 2, '*'];
-        yield 'empty' => ['', 5, 2, '*'];
+        yield 'head only' => ['12', 1, 0, '1*'];
     }
 
     /**

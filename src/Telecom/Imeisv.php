@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Telecom;
 
+use MSSTC4PHP\ValueObject\Contract\Maskable;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -15,7 +16,7 @@ use Override;
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, 6.2.2
  * @see docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
  */
-final class Imeisv extends AbstractStringValueObject
+final class Imeisv extends AbstractStringValueObject implements Maskable
 {
     private const string TYPE = 'IMEISV';
 
@@ -40,6 +41,12 @@ final class Imeisv extends AbstractStringValueObject
     public function toImei(): Imei
     {
         return new Imei(\substr($this->value, 0, 14));
+    }
+
+    #[Override]
+    public function masked(): string
+    {
+        return TelecomRules::mask($this->value, 8, 2);
     }
 
     #[Override]

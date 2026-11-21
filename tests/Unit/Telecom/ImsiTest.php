@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 
 #[CoversClass(Imsi::class)]
 #[UsesClass(TelecomRules::class)]
@@ -28,25 +29,30 @@ final class ImsiTest extends TestCase
         self::assertSame('123456789', $imsi->msin(3));
     }
 
-    public function testRefusesAnMncLengthOtherThanTwoOrThree(): void
+    /**
+     * @return iterable<string, array{string, int}>
+     */
+    public static function badMncLengths(): iterable
     {
-        $this->expectException(InvalidArgumentException::class);
-
-        new Imsi('310150123456789')->mnc(4);
+        yield 'one' => ['310150123456789', 1];
+        yield 'four' => ['310150123456789', 4];
+        yield 'leaves no subscriber number' => ['310150', 3];
     }
 
-    public function testRefusesAnMsinLengthOtherThanTwoOrThree(): void
+    #[DataProvider('badMncLengths')]
+    public function testMncRefusesALengthThatIsNotTwoOrThreeOrLeavesNoSubscriberNumber(string $value, int $length): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Imsi('310150123456789')->msin(1);
+        new ReflectionMethod(Imsi::class, 'mnc')->invoke(new Imsi($value), $length);
     }
 
-    public function testRefusesAnMncThatLeavesNoSubscriberNumber(): void
+    #[DataProvider('badMncLengths')]
+    public function testMsinRefusesTheSameLengths(string $value, int $length): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Imsi('310150')->msin(3);
+        new ReflectionMethod(Imsi::class, 'msin')->invoke(new Imsi($value), $length);
     }
 
     public function testShortestImsi(): void
@@ -78,11 +84,21 @@ final class ImsiTest extends TestCase
         }
     }
 
-    public function testMasks(): void
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function masks(): iterable
     {
-        self::assertSame('31015********89', new Imsi('310150123456789')->masked());
-        self::assertSame('31015*', new Imsi('310150')->masked());
-        self::assertSame('31015*1', new Imsi('3101501')->masked());
-        self::assertSame('31015**89', new Imsi('310150189')->masked());
+        yield '6 digits' => ['310150', '31015*'];
+        yield '7 digits' => ['3101501', '31015**'];
+        yield '12 digits: tail not kept' => ['310150123456', '31015*******'];
+        yield '13 digits: tail kept' => ['3101501234567', '31015******67'];
+        yield '15 digits' => ['310150123456789', '31015********89'];
+    }
+
+    #[DataProvider('masks')]
+    public function testMasks(string $value, string $masked): void
+    {
+        self::assertSame($masked, new Imsi($value)->masked());
     }
 }

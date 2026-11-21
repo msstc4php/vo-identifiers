@@ -13,6 +13,8 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTelecomIdentifierExceptio
  */
 final class TelecomRules
 {
+    private const int MIN_MASKED = 6;
+
     /**
      * @param non-empty-string $type
      */
@@ -30,8 +32,9 @@ final class TelecomRules
     }
 
     /**
-     * Keeps the first `$head` and the last `$tail` characters and masks the rest with asterisks; at least one character
-     * is always masked.
+     * Keeps the first `$head` characters and the last `$tail` ones only when at least six characters stay masked;
+     * otherwise only the first `$head`. The rest are asterisks and the length is kept. The caller's `$head` leaves at
+     * least one character.
      *
      * @param int<0, max> $head
      * @param int<0, max> $tail
@@ -41,9 +44,8 @@ final class TelecomRules
     public static function mask(string $value, int $head, int $tail): string
     {
         $length = \strlen($value);
-        $head = \max(0, \min($head, $length - 1));
-        $tail = \max(0, \min($tail, $length - $head - 1));
+        $keptTail = $length - $head - $tail >= self::MIN_MASKED ? $tail : 0;
 
-        return \substr($value, 0, $head) . '*' . \str_repeat('*', \max(0, $length - $head - $tail - 1)) . \substr($value, $length - $tail);
+        return \substr($value, 0, $head) . '*' . \str_repeat('*', $length - $head - $keptTail - 1) . \substr($value, $length - $keptTail);
     }
 }

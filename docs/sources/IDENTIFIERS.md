@@ -46,7 +46,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | DataIdentifierString | format 06 envelope | enforced: ISO/IEC 15434:2005 preview; DI is `\d{0,3}[A-Z]` with a null description (ruling 7): ANSI MH10.8.2-2021 clause 4; **DI table not embeddable** |
 | Imei | 14 digits, Luhn check | enforced: 3GPP TS 23.003 V17.7.0 |
 | Imeisv | 14 + 2 digits | enforced: 3GPP TS 23.003 |
-| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checked: still not reached; 18 to 20 digits accepted (ruling 11) |
+| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checked: still not reached; 6 to 20 digits accepted, the minimum derived from the circular's structure (ruling 11) |
 | Imsi | up to 15 digits | enforced: 3GPP TS 23.003 |
 | Eid | 32 digits, MOD 97-10 check pair | enforced: GSMA SGP.29 v1.1; **no `89` prefix rule** (ruling 1) |
 | CasRegistryNumber | check (weights 1 up from the right, mod 10) | enforced: CAS page (formula is an image) |
@@ -386,11 +386,11 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   Annex B)". ITU IIN page: "Together with MII and CC, it shall have a maximum of 7 digits".
 - ETSI TS 102 221 V17.0.0 clause 13.2 EF_ICCID: "File size: 10 bytes"; "Contents: according to Recommendation ITU-T E.118"; "Coding: BCD, left justified and padded with 'F'": so at most 20 digits.
 - The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
-  not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 18 to 20 digits (20 from ETSI; 18 is the lower end in circulation, no reached source allows less or more). The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum).
+  not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF, 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 6 to 20 digits. 20 is from ETSI (BCD "padded with 'F'", so shorter numbers exist). Neither source gives a minimum; 6 is **derived, not quoted**, from the circular's structure: MII `89`, country code, issuer, individual account (at least one digit each) and the check digit. The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum). Consequence: short `89`-prefixed numbers also fit `Imei`, `Imsi` and `Imeisv`, and the factory reports them ambiguous.
 
 ### Masking
 
-`Imei` keeps the 8-digit TAC and the last 2 digits, `Iccid` the first 7 and the last 2, `Imsi` the first 5 and the last 2, `Eid` the first 8 and the last 2; the rest are asterisks, the length is kept and at least one character is always masked.
+Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the length kept). The leading part and the last 2 digits stay visible only when at least 6 digits remain masked, otherwise only the leading part. Leading part: `Imei` and `Imeisv` the 8-digit TAC, `Iccid` the first 4 digits (`89` + 2), `Imsi` the first 5, `Eid` the first 8. So a 14- or 15-digit IMEI shows the TAC only, a 16-digit IMEISV the TAC and the last 2, and an IMSI of up to 12 digits its first 5. `Imeisv` is Maskable because it holds the whole IMEI.
 
 ### Eid (GSMA SGP.29 v1.1, 22 March 2024)
 
@@ -398,7 +398,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   1. Set the two check digits to 0, 2. Using the resulting 32 digits as a decimal integer, compute the remainder of that number on division by 97, 3. Subtract the remainder from 98, and use the
   decimal result for the two check digits, if the result is one digit long, its value SHALL be prefixed by one digit of 0. Verification: ... compute the remainder of that number on division by 97.
   If the remainder of the division is 1, the verification is successful". That is ISO/IEC 7064 MOD 97-10 on digits (SGP.29 does not name 7064). EID.P06: not required to stay compatible
-  with ISO/IEC 7812-1 ("limit the first 2 digits to 89"); AE.R02: EIDs "SHALL not use EIDs that start with 89". No example EID is printed.
+  with ISO/IEC 7812-1 ("limit the first 2 digits to 89"); AE.R02: EIDs "SHALL not use EIDs that start with 89". No example EID is printed. SGP.02 and SGP.22 were tried (gsma.com, 2026-11-21 UTC) and are not reachable (HTTP 403), so the EID test vectors are self-computed with the clause 10 algorithm, not quoted.
   Copyright notice 2024 GSM Association; the document is non-confidential.
 
 ## Chemistry, trade and energy
