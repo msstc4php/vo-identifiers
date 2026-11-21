@@ -10,8 +10,8 @@ use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
 /**
- * Digital Object Identifier (ISO 26324): a numeric directory indicator (usually `10`; with `10` a registrant code of
- * digits and full stops is mandatory), a slash, and a suffix of any printable Unicode characters, so the suffix may itself
+ * Digital Object Identifier (ISO 26324): a numeric directory indicator (usually `10`), a full stop, a registrant
+ * code of digits and full stops, a slash, and a suffix of any printable Unicode characters, so the suffix may itself
  * hold slashes. Accepted bare, `doi:`-prefixed or as a `doi.org` resolver URL (`www.` and `dx.` hosts too), whose
  * percent-encoding is decoded (RFC 3986); stored bare and decoded, with the case as given. The Handbook calls a DOI case-insensitive without
  * fixing the definition, so {@see equals()} folds ASCII case only. Leading or trailing whitespace and control characters
@@ -52,7 +52,7 @@ final class Doi extends AbstractStringValueObject
             $value = \substr($value, 4);
         }
 
-        $pattern = '~^(?:10(?:\.[0-9]+)+|(?!10[./])[0-9]+(?:\.[0-9]+)*)/[^\p{C}\s](?:\P{C}*[^\p{C}\s])?$~Du';
+        $pattern = '~^[0-9]+(?:\.[0-9]+)+/[^\p{C}\s](?:\P{C}*[^\p{C}\s])?$~Du';
         if (\preg_match($pattern, $value) !== 1) {
             throw PublicationRules::invalidFormat(self::TYPE);
         }

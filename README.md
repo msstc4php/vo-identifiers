@@ -25,7 +25,7 @@ and energy identifiers follow.
 | `Publication\Isan` | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
 | `Publication\Isni` | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
-| `Publication\Doi` | ISO 26324; any numeric directory indicator; bare, `doi:` or resolver URL (percent-decoded), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
+| `Publication\Doi` | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` or resolver URL (percent-decoded), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
 | `Publication\Ror` | MOD 97-10 pair enforced, bare or `https://ror.org/...`, stored lowercase bare; `uri()` |
 | `Publication\Ark` | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `naan()`, `name()` |
 | `Publication\PublicationIdentifierFactory` | `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, which is also a check-less ISAN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |

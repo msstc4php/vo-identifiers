@@ -45,8 +45,6 @@ final class DoiTest extends TestCase
         yield 'percent sign kept in the bare form' => ['10.1000/a%28b', '10.1000/a%28b'];
         yield 'percent sign kept after doi:' => ['doi:10.1000/a%28b', '10.1000/a%28b'];
         yield 'other directory indicator' => ['11.1000/abc', '11.1000/abc'];
-        yield 'other directory indicator without registrant' => ['11/abc', '11/abc'];
-        yield 'three-digit directory indicator' => ['100/abc', '100/abc'];
         yield 'three-digit directory indicator with registrant' => ['100.5/abc', '100.5/abc'];
         yield 'single character suffix' => ['10.1000/a', '10.1000/a'];
     }
@@ -66,6 +64,9 @@ final class DoiTest extends TestCase
         yield 'empty suffix' => ['10.1000/'];
         yield 'no registrant' => ['10./abc'];
         yield 'directory 10 without registrant' => ['10/abc'];
+        yield 'other directory without registrant' => ['11/abc'];
+        yield 'four digits and a slash' => ['1234/5678'];
+        yield 'date-like path' => ['2020/01/05'];
         yield 'letters in the directory' => ['a1.1000/abc'];
         yield 'empty directory' => ['.1000/abc'];
         yield 'percent-encoded invalid UTF-8 in a resolver URL' => ['https://doi.org/10.1000/a%FFb'];

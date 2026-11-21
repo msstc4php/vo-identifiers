@@ -107,6 +107,26 @@ final class PublicationIdentifierFactoryTest extends TestCase
         }
     }
 
+    #[DataProvider('notDois')]
+    public function testPrefixlessNumbersAreNotADoi(string $value): void
+    {
+        try {
+            PublicationIdentifierFactory::fromString($value);
+            self::fail('Expected an exception.');
+        } catch (InvalidPublicationIdentifierException $e) {
+            self::assertSame('Value is not a recognised publication identifier.', $e->getMessage());
+        }
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function notDois(): iterable
+    {
+        yield 'number pair' => ['1234/5678'];
+        yield 'date' => ['2020/01/05'];
+    }
+
     public function testNothingMatches(): void
     {
         try {

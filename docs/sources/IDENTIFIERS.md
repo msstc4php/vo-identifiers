@@ -207,8 +207,8 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   used in the suffix"; examples `10.1000/xyz-123`, `10.1000/123456`, `10.1038/issn.1476-4687`. `doi:` and `https://doi.org/` forms are
   resolver conventions, not Handbook syntax. ASCII folding for `equals()` is the plan's choice within the open definition.
 - Directory indicator (fix round 1): the Handbook text quoted above says only that it "can contain only numeric values" and "is usually 10", so
-  `Doi` accepts any numeric directory indicator; with `10` the registrant code is mandatory ("If the directory indicator is 10 then a registrant code is
-  mandatory"), with another one it is optional (`11/abc`, `100.5/abc`).
+  `Doi` accepts any numeric directory indicator. The prefix is always `<directoryIndicator>.<registrantCode>` (the structure quoted above), so the
+  registrant is mandatory for every directory indicator (fix round 2): `1234/5678` and `2020/01/05` are not DOIs.
 - Resolver-URL decoding: the Handbook's URL-encoding section was **not reachable** (www.doi.org handbook paths answer 404, the Internet Archive copies
   of the old `doi_handbook/*.html` pages hold no text). A resolver URL (`http(s)://[www.][dx.]doi.org/...`) is therefore percent-decoded as RFC 3986
   section 2.1 defines percent-encoding (a standard cited by number); the stored form is the decoded bare DOI. A bare or `doi:` value is never decoded
