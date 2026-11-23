@@ -210,9 +210,18 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   `Doi` accepts any numeric directory indicator. The prefix is always `<directoryIndicator>.<registrantCode>` (the structure quoted above), so the
   registrant is mandatory for every directory indicator (fix round 2): `1234/5678` and `2020/01/05` are not DOIs.
 - Resolver-URL decoding: the Handbook's URL-encoding section was **not reachable** (www.doi.org handbook paths answer 404, the Internet Archive copies
-  of the old `doi_handbook/*.html` pages hold no text). A resolver URL (`http(s)://[www.][dx.]doi.org/...`) is therefore percent-decoded as RFC 3986
+  of the old `doi_handbook/*.html` pages hold no text). A resolver URL (`http(s)://[dx.]doi.org/...`, without its query and fragment) is therefore percent-decoded as RFC 3986
   section 2.1 defines percent-encoding (a standard cited by number); the stored form is the decoded bare DOI. A bare or `doi:` value is never decoded
   (`%` is a legal DOI character). Decoded invalid UTF-8 or control characters are refused.
+- Resolver hosts and URL query (1.0 ruling B4/N9, 2026-11-23 UTC). DOI Handbook chapter 3 (https://www-old.doi.org/doi_handbook/3_Resolution.html),
+  3.7.3: "https://doi.org is preferred, but the earlier syntax dx.doi.org remains fully supported"; 3.8: "(https://doi.org (current, preferred) or
+  earlier syntax http://dx.doi.org)"; `www.doi.org` is named only as the website, not as a resolver, and `www.dx.doi.org` not at all. `Doi` therefore
+  accepts resolver URLs on `doi.org` and `dx.doi.org` only (`www.` forms of 0.x are refused from 1.0; `hdl.handle.net`, a generic Handle proxy, is not
+  accepted and can be added in a minor). DOI resolution documentation (https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation),
+  2 "Encoding DOIs for use in URIs", Table 1 "Mandatory Encoding": `%` (%25), `"` (%22), `#` (%23), SPACE (%20), `?` (%3F); "#test will be treated as
+  a fragment and removed by the web browser before it gets to the proxy." So in a resolver URL a raw `?` or `#` starts the query or fragment
+  (RFC 3986 3.4, 3.5) and is cut before percent-decoding; `%3F` and `%23` decode to characters of the DOI. The handbook prints `doi:10.123/456`
+  without a space; `doi: ` with one space is accepted as a common print form (ruling N9), more spaces are refused.
 - Length: no source states a maximum length for a DOI name, so `Doi` has no cap; `vo-identifiers-doctrine` will map it to a text type.
 
 ### ROR

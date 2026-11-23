@@ -38,8 +38,20 @@ final class DoiTest extends TestCase
         yield 'second slash' => ['10.1000/a/b/c', '10.1000/a/b/c'];
         yield 'unicode suffix' => ['10.1000/日本語/ключ-é', '10.1000/日本語/ключ-é'];
         yield 'inner space' => ['10.1000/a b', '10.1000/a b'];
-        yield 'www resolver' => ['https://www.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
-        yield 'www dx resolver' => ['https://www.dx.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'resolver host in capitals' => ['HTTPS://DX.DOI.ORG/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'resolver URL inside the suffix is kept' => ['10.1000/see-https://doi.org/x', '10.1000/see-https://doi.org/x'];
+        yield 'doi: inside the suffix is kept' => ['10.1000/doi:x', '10.1000/doi:x'];
+        yield 'doi: and a space' => ['doi: 10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'DOI: and a space' => ['DOI: 10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'https dx resolver' => ['https://dx.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'query of a resolver URL is dropped' => ['https://doi.org/10.1000/abc?utm_source=x&b=1', '10.1000/abc'];
+        yield 'fragment of a resolver URL is dropped' => ['https://doi.org/10.1000/abc#section-2', '10.1000/abc'];
+        yield 'query and fragment of a resolver URL are dropped' => ['https://doi.org/10.1000/abc?x=1#y', '10.1000/abc'];
+        yield 'empty query of a resolver URL is dropped' => ['https://doi.org/10.1000/abc?', '10.1000/abc'];
+        yield 'encoded question mark survives' => ['https://doi.org/10.1000/a%3Fb', '10.1000/a?b'];
+        yield 'encoded hash survives' => ['https://doi.org/10.1000/a%23b?x=1', '10.1000/a#b'];
+        yield 'question mark kept in the bare form' => ['10.1000/a?b', '10.1000/a?b'];
+        yield 'hash kept after doi:' => ['doi:10.1000/a#b', '10.1000/a#b'];
         yield 'percent-encoded resolver URL is decoded' => ['https://doi.org/10.1002/%28SICI%291097-4571%28199806%2949:8%3C693::AID-ASI4%3E3.0.CO;2-O', '10.1002/(SICI)1097-4571(199806)49:8<693::AID-ASI4>3.0.CO;2-O'];
         yield 'percent-encoded Unicode in a resolver URL' => ['https://doi.org/10.1000/%E6%97%A5%E6%9C%AC', '10.1000/日本'];
         yield 'percent sign kept in the bare form' => ['10.1000/a%28b', '10.1000/a%28b'];
@@ -81,6 +93,11 @@ final class DoiTest extends TestCase
         yield 'control character' => ["10.1000/a\x01b"];
         yield 'invalid UTF-8' => ["10.1000/a\xFFb"];
         yield 'other host' => ['https://example.org/10.1000/abc'];
+        yield 'www resolver, not listed by the Handbook' => ['https://www.doi.org/10.1000/xyz-123'];
+        yield 'www dx resolver, not listed by the Handbook' => ['https://www.dx.doi.org/10.1000/xyz-123'];
+        yield 'resolver URL with only a query' => ['https://doi.org/?10.1000/abc'];
+        yield 'resolver URL cut inside the prefix' => ['https://doi.org/10.1000?/abc'];
+        yield 'doi: and two spaces' => ['doi:  10.1000/xyz-123'];
         yield 'empty' => [''];
     }
 
