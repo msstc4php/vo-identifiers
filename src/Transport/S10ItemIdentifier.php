@@ -64,7 +64,7 @@ final class S10ItemIdentifier extends AbstractStringValueObject
         }
 
         if (\preg_match('/^[JKSTW]/', $value) === 1) {
-            throw TransportRules::fail(self::TYPE, 'has a reserved service indicator');
+            throw TransportRules::fail(self::TYPE, Reason::RESERVED_SERVICE_INDICATOR);
         }
 
         if (!S10CheckDigit::isValid(\substr($value, 2, 9))) {

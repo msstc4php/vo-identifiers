@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\IssuingAgencyRegister;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -49,7 +50,7 @@ final class Iso15459Identifier extends AbstractStringValueObject
     public static function fromField(DataIdentifierField $field): self
     {
         if ($field->identifier() !== '25S' && $field->identifier() !== 'J') {
-            throw TransportRules::fail(self::TYPE, 'is not carried by data identifier 25S or J');
+            throw TransportRules::fail(self::TYPE, Reason::WRONG_DATA_IDENTIFIER);
         }
 
         if ($field->identifier() === 'J' && \strlen($field->data()) > self::LICENSE_PLATE_MAX_LENGTH) {

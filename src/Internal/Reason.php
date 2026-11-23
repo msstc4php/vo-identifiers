@@ -16,4 +16,8 @@ final class Reason
     public const string WRONG_CHECK_DIGIT = 'has a wrong check digit';
 
     public const string WRONG_CHECK_CHARACTER = 'has a wrong check character';
+
+    public const string RESERVED_SERVICE_INDICATOR = 'has a reserved service indicator';
+
+    public const string WRONG_DATA_IDENTIFIER = 'is not carried by data identifier 25S or J';
 }

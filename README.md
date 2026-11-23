@@ -14,7 +14,8 @@ Initial 0.1.0 content is complete (unreleased): the publication and media, trans
 trade and energy identifiers and the check-digit helpers they use. Exceptions are one per family
 (`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`); no message carries the input.
 A message is `<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong
-check character`. Every class with a bounded length has a `MAX_LENGTH` constant (characters of the longest stored form; the
+check character`, `has a reserved service indicator` (`S10ItemIdentifier`) and `is not carried by data identifier 25S or J`
+(`Iso15459Identifier::fromField()`). The wording is not covered by the backward-compatibility promise. Every class with a bounded length has a `MAX_LENGTH` constant (characters of the longest stored form; the
 Doctrine columns are sized from it). The three factories return a native union of their candidate classes.
 
 ## Serialization
