@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
+use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod37_36;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
@@ -16,7 +17,8 @@ use Override;
  * 16 digits, the second after the version, computed over the 16 digits and the version (not over the first check
  * character). A value without them (16 or 24 digits) is accepted; a check character that is present must be right, and a
  * version needs both or neither. Hyphens, spaces and a leading `ISAN ` are dropped; the stored form is compact and keeps
- * the form given. A bare 16-digit value is also a valid ISNI: {@see PublicationIdentifierFactory} reports it ambiguous.
+ * the form given, and {@see equals()} ignores the check characters. A bare 16-digit value is also a valid ISNI:
+ * {@see PublicationIdentifierFactory} reports it ambiguous.
  *
  * @see https://isan.org/docs/isan_check_digit_calculation_v2.0.pdf ISAN International Agency, "ISAN Check Characters Calculation" v2.0
  * @see docs/sources/IDENTIFIERS.md "ISAN (ISO 15706)"
@@ -56,6 +58,16 @@ final class Isan extends AbstractStringValueObject
         };
     }
 
+    /**
+     * Compares root, episode and version: the check characters are derived from them, so the forms with and without
+     * check characters of one ISAN are equal (the stored string keeps the form given).
+     */
+    #[Override]
+    public function equals(ValueObject $other): bool
+    {
+        return $other instanceof self && $other->withoutCheckCharacters() === $this->withoutCheckCharacters();
+    }
+
     public function hasVersion(): bool
     {
         return \strlen($this->value) >= 24;
@@ -87,6 +99,11 @@ final class Isan extends AbstractStringValueObject
         }
 
         return 'ISAN ' . \implode('-', $groups);
+    }
+
+    private function withoutCheckCharacters(): string
+    {
+        return \substr($this->value, 0, 16) . ($this->version() ?? '');
     }
 
     #[Override]

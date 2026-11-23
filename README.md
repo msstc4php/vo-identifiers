@@ -33,7 +33,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Ismn` | ISMN Users' Manual 2016 | ISO 10957, EAN check enforced, the old `M` form is converted to `979-0...`; `toGtin()` |
 | `Publication\Isrc` | IFPI ISRC structure page | ISO 3901, 12 characters, no check digit; `countryCode()`, `registrant()`, `year()`, `designation()`, `formatted()` |
 | `Publication\Iswc` | ISO 15707:2022 preview | ISO 15707, `T` and 10 digits, format only; `formatted()` |
-| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
+| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
 | `Publication\Isni` | ISO 27729:2012 preview | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISO 27729:2012 preview; ORCID identifier page | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
 | `Publication\Doi` | DOI Handbook (ISO 26324); RFC 3986 for the resolver URL | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` or resolver URL (percent-decoded), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
@@ -70,7 +70,8 @@ forged or stale payload throws the class's own exception, a payload without a st
 ## Equality across forms
 
 `Imei::equals()` compares the first 14 digits, so the 14-digit and the 15-digit form of one IMEI are equal. `Isbn::equals()`
-compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. The stored string keeps the form that was given, so a
+compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. `Isan::equals()` compares root, episode and version, so
+the forms with and without check characters are equal. The stored string keeps the form that was given, so a
 string-keyed index or a UNIQUE column sees two values for what `equals()` calls one. Normalise first (`Imei::withCheckDigit()`
 or the 14 digits, `Isbn::isbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
 ignores hyphens, with the same caveat.

@@ -7,7 +7,9 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Publication;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod37_36;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod11_2;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Isan;
+use MSSTC4PHP\ValueObject\Identifiers\Publication\Isni;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -16,6 +18,8 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Isan::class)]
 #[UsesClass(PublicationRules::class)]
 #[UsesClass(Iso7064Mod37_36::class)]
+#[UsesClass(Iso7064Mod11_2::class)]
+#[UsesClass(Isni::class)]
 final class IsanTest extends TestCase
 {
     private const string WITH_VERSION = 'B159D8FA01240000K9F3A02459';
@@ -132,5 +136,22 @@ final class IsanTest extends TestCase
         self::assertSame('9F3A0245', $isan->version());
         self::assertTrue($isan->hasVersion());
         self::assertSame('ISAN B159-D8FA-0124-0000-K-9F3A-0245-9', $isan->formatted());
+    }
+
+    public function testEqualityIgnoresTheCheckCharacters(): void
+    {
+        self::assertTrue(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA01240000K')));
+        self::assertTrue(new Isan('B159D8FA01240000K')->equals(new Isan('B159D8FA01240000')));
+        self::assertTrue(new Isan('B159D8FA012400009F3A0245')->equals(new Isan(self::WITH_VERSION)));
+        self::assertTrue(new Isan(self::WITH_VERSION)->equals(new Isan('B159D8FA012400009F3A0245')));
+    }
+
+    public function testEqualityKeepsRootEpisodeAndVersionApart(): void
+    {
+        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA01240001')));
+        self::assertFalse(new Isan('B159D8FA01240000K')->equals(new Isan(self::WITH_VERSION)));
+        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA012400009F3A0245')));
+        self::assertFalse(new Isan('B159D8FA012400009F3A0245')->equals(new Isan('B159D8FA012400009F3A0246')));
+        self::assertFalse(new Isan('1422458635730476')->equals(Isni::from('1422458635730476')));
     }
 }
