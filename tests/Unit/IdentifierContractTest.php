@@ -59,6 +59,7 @@ use MSSTC4PHP\ValueObject\Identifiers\Transport\IcaoAirportCode;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\ImoNumber;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\Iso15459Identifier;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\Mmsi;
+use MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiType;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\S10ItemIdentifier;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\UicVehicleNumber;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\UnLocode;
@@ -467,7 +468,8 @@ final class IdentifierContractTest extends TestCase
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source, FilesystemIterator::SKIP_DOTS)) as $entry) {
             self::assertInstanceOf(SplFileInfo::class, $entry);
             $class = 'MSSTC4PHP\\ValueObject\\Identifiers\\' . \str_replace('/', '\\', \substr($entry->getPathname(), \strlen($source) + 1, -4));
-            if (\str_contains($class, '\\Internal\\') || !\class_exists($class)) {
+            // Loading the alias would run its file-level code under this test's coverage attributes; MmsiTypeTest covers it.
+            if (\str_contains($class, '\\Internal\\') || $class === MmsiType::class || !\class_exists($class)) {
                 continue;
             }
 

@@ -19,18 +19,30 @@ wording, `Internal\` and `@internal`, and `masked()` hiding more. CI runs PHP 8.
   `data()` instead of `value()`, the constructor parameter `$data` instead of `$value`, and `tryFrom()` and `isValid()`.
 - `Transport\DataIdentifierString::serial()` is `serialNumber()`, as on the other classes; `fromFields()` takes a
   `non-empty-list`.
-- `Transport\MmsiType` is `Transport\MmsiStationType` (the bridge's `MmsiType` is the Doctrine type of `Mmsi`); cases and
-  backed values are unchanged.
 - `Transport\Vin::modelYear()` is `modelYears()` (it returns the candidates); `Transport\UicVehicleNumber::countryCode()`
   is `uicCountryCode()` (the UIC numeric code, not ISO letters).
-- `Publication\Doi` cuts a resolver URL at a raw `?` or `#` (query and fragment were kept as part of the DOI) and accepts
-  resolver URLs on `doi.org` and `dx.doi.org` only, the hosts the DOI Handbook names: `www.doi.org` and `www.dx.doi.org`
-  URLs are refused. `doi: ` with one space is accepted.
+- `Publication\Doi` cuts a resolver URL at a raw `?` or `#` (query and fragment were kept as part of the DOI), so such a
+  URL gives a shorter DOI than in 0.x. When the part before the raw `?` or `#` is no DOI (`https://doi.org/10.1000/?x`),
+  the whole rest is decoded as before, so every URL 0.x accepted is still accepted.
 - `Publication\Issn` refuses seven digits (they were completed with a computed check character); `Issn::fromParts()` does
-  that on request.
+  that on request. The same applies to `Issn::tryFrom()` (null), `Issn::isValid()` (false) and
+  `PublicationIdentifierFactory::fromString()` (`InvalidPublicationIdentifierException` instead of an `Issn`).
 - `Publication\Isan::equals()` ignores the check characters, so the forms with and without them are equal.
 - The six `Exception\Invalid*IdentifierException` classes are `final`; the three factories have a private constructor.
 - `Trade\TariffCode` messages start "Tariff code" (was "tariff code").
+
+### Changed
+
+- `Transport\MmsiType` is `Transport\MmsiStationType` (the bridge's `MmsiType` is the Doctrine type of `Mmsi`); cases and
+  backed values are unchanged. `Transport\MmsiType` stays as a class alias, so this is no break before 2.0.
+- `Transport\Iso15459Identifier` accepts `-` and `/` after the first character (DoD UID Guide v2.5, Business Rule 21 and
+  footnote 88: significant in a serial number carried under `25S`); a `J` license plate keeps capital letters and digits.
+- `Publication\Doi` accepts `doi: ` with one space. Resolver URLs on `doi.org`, `dx.doi.org`, `www.doi.org` and
+  `www.dx.doi.org` stay accepted (frozen lenience; the source note cites the DOI Handbook 2025).
+
+### Deprecated
+
+- `Transport\MmsiType`, an alias of `Transport\MmsiStationType`; removed in 2.0.
 
 ### Added
 
@@ -44,12 +56,21 @@ wording, `Internal\` and `@internal`, and `masked()` hiding more. CI runs PHP 8.
 - `DataIdentifierField::value()` → `data()`; `new DataIdentifierField(identifier: …, value: …)` → `data: …`;
   `(string) $field` or `$field->value` for the whole field.
 - `DataIdentifierString::serial()` → `serialNumber()`.
-- `Transport\MmsiType` → `Transport\MmsiStationType` (`use` statements, type hints).
+- `Transport\MmsiType` → `Transport\MmsiStationType` in `use` statements, type hints, Doctrine and ODM
+  `enumType: MmsiType::class` mappings and framework attributes (Symfony `#[Assert\Choice(callback: [MmsiType::class,
+  'cases'])]`). Until 2.0 the old name is a deprecated alias, so these keep working, and enum cases serialized by 0.x
+  (`E:…\Transport\MmsiType:Ship`, in caches, Messenger messages, sessions) unserialize to `MmsiStationType` cases;
+  `serialize()` writes the new name. Static analysis sees `MmsiType` as a separate deprecated enum, so code that compares
+  its cases with `Mmsi::type()` should switch to the new name. Rows are unaffected (the backed values are the same).
 - `Vin::modelYear()` → `modelYears()`; `UicVehicleNumber::countryCode()` → `uicCountryCode()`.
 - A seven-digit ISSN: `Issn::fromParts($sevenDigits)` instead of `new Issn($sevenDigits)`.
-- A DOI resolver URL on `www.doi.org` or `www.dx.doi.org`: strip the host first or rewrite it to `doi.org`. A DOI stored
-  from a URL with a query or fragment under 0.x keeps it; find such values (`?` or `#` that the source URL did not
-  percent-encode) and clean them.
+- A seven-digit ISSN through `Issn::tryFrom()`, `Issn::isValid()` or `PublicationIdentifierFactory`: complete it with
+  `Issn::fromParts()` first.
+- A DOI stored from a resolver URL with a query or fragment under 0.x keeps it (`10.1000/x?a=b`), while 1.0 builds
+  `10.1000/x` from the same URL, so equality lookups built from such URLs no longer match those rows until they are
+  cleaned. One-off cleanup: list the candidates (`WHERE doi LIKE '%?%' OR doi LIKE '%#%'`), check each against its source
+  URL (a DOI may itself hold a `?` or `#` that the URL percent-encoded), and rewrite the affected rows to
+  `(string) new Doi('https://doi.org/' . $stored)`.
 - Code that extended an exception class: catch it instead, or extend vo-base `InvalidValueObjectException`.
 - Code that instantiated a factory: call `fromString()` statically.
 - Serialized payloads and stored strings of 0.2 read unchanged (the `value` key and the canonical forms are the same).

@@ -12,9 +12,12 @@ use Override;
  * International Standard Recording Code (ISO 3901): twelve characters, two letters, three letters or digits, two digits
  * (the year) and five digits, with no check digit. Hyphens, spaces and a leading `ISRC ` are dropped and the letters
  * uppercased; the stored form is compact. The first five characters are the prefix code the registrant was given; the
- * two letters are not checked against ISO 3166 (agencies also hand out non-country prefixes).
+ * two letters are not checked against ISO 3166: new prefixes are allocated as one five-character block, and the agency
+ * code list allocates codes such as `QM` (United States) and `ZZ` (worldwide) that are no country code.
  *
  * @see https://isrc.ifpi.org/isrc-standard/isrc-structure IFPI, ISRC structure
+ * @see https://isrc.ifpi.org/images/downloads/ISRC_Handbook.pdf ISRC Handbook, 4th edition 2021, 3.3.2 (prefix code)
+ * @see https://isrc.ifpi.org/images/downloads/Valid-Characters-in-the-ISRC-Prefix.pdf ISRC Agency Code Allocations
  * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISRC (ISO 3901)"
  */
 final class Isrc extends AbstractStringValueObject
@@ -25,8 +28,8 @@ final class Isrc extends AbstractStringValueObject
     private const string TYPE = 'ISRC';
 
     /**
-     * The two letters ISO 3901 calls the country code; not checked against ISO 3166, as agencies also hand out
-     * non-country prefixes.
+     * The two letters earlier editions of ISO 3901 called the country code; not checked against ISO 3166, as some
+     * allocated codes are no country code.
      */
     public function countryCode(): string
     {

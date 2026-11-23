@@ -44,6 +44,13 @@ final class DoiTest extends TestCase
         yield 'doi: and a space' => ['doi: 10.1000/xyz-123', '10.1000/xyz-123'];
         yield 'DOI: and a space' => ['DOI: 10.1000/xyz-123', '10.1000/xyz-123'];
         yield 'https dx resolver' => ['https://dx.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'www resolver, accepted since 0.1' => ['https://www.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'www dx resolver, accepted since 0.1' => ['https://www.dx.doi.org/10.1000/xyz-123', '10.1000/xyz-123'];
+        yield 'www resolver in capitals with a query' => ['HTTP://WWW.DOI.ORG/10.1000/abc?x=1', '10.1000/abc'];
+        yield 'raw question mark right after the suffix slash, as 0.x' => ['https://doi.org/10.1000/?x', '10.1000/?x'];
+        yield 'raw hash right after the suffix slash, as 0.x' => ['https://doi.org/10.1000/#x', '10.1000/#x'];
+        yield 'fallback decodes the whole rest' => ['https://doi.org/10.1000/?a%3Fb#c', '10.1000/?a?b#c'];
+        yield 'newline inside a query is dropped' => ["https://doi.org/10.1000/abc?x=\ny", '10.1000/abc'];
         yield 'query of a resolver URL is dropped' => ['https://doi.org/10.1000/abc?utm_source=x&b=1', '10.1000/abc'];
         yield 'fragment of a resolver URL is dropped' => ['https://doi.org/10.1000/abc#section-2', '10.1000/abc'];
         yield 'query and fragment of a resolver URL are dropped' => ['https://doi.org/10.1000/abc?x=1#y', '10.1000/abc'];
@@ -93,10 +100,10 @@ final class DoiTest extends TestCase
         yield 'control character' => ["10.1000/a\x01b"];
         yield 'invalid UTF-8' => ["10.1000/a\xFFb"];
         yield 'other host' => ['https://example.org/10.1000/abc'];
-        yield 'www resolver, not listed by the Handbook' => ['https://www.doi.org/10.1000/xyz-123'];
-        yield 'www dx resolver, not listed by the Handbook' => ['https://www.dx.doi.org/10.1000/xyz-123'];
         yield 'resolver URL with only a query' => ['https://doi.org/?10.1000/abc'];
         yield 'resolver URL cut inside the prefix' => ['https://doi.org/10.1000?/abc'];
+        yield 'fallback keeps a newline of the query' => ["https://doi.org/10.1000/?x\ny"];
+        yield 'fallback keeps a newline of the fragment' => ["https://doi.org/10.1000/#x\ny"];
         yield 'doi: and two spaces' => ['doi:  10.1000/xyz-123'];
         yield 'empty' => [''];
     }

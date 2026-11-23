@@ -45,7 +45,10 @@ Rules:
 - A new edition of the embedded AIM register ships in a minor and never makes an accepted value refused: it changes only
   what `issuingAgencyCode()` and `issuingAgencyName()` return, and an entry removed upstream stays as legacy.
 - Deliberate lenience is frozen too: `EnergyIdentificationCode` takes `-` in every position but the last, `HsCode` and
-  `TariffCode` take the quoted print forms, `Doi` takes `doi: ` with one space.
+  `TariffCode` take the quoted print forms, `Doi` takes `doi: ` with one space and resolver URLs on `doi.org`,
+  `dx.doi.org`, `www.doi.org` and `www.dx.doi.org`, and `Iso15459Identifier` takes `-` and `/` after its first character.
+- `Transport\MmsiType`, the 0.x name of `MmsiStationType`, stays a deprecated alias until 2.0, so `enumType: MmsiType::class`
+  mappings and enum cases serialized by 0.x keep loading; new serializations write `MmsiStationType`.
 
 Not covered: exception message wording; everything in `Internal\` or marked `@internal`; the `masked()` format, which may
 hide more in a minor, never less.
@@ -86,7 +89,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
 | `Publication\Isni` | ISO 27729:2012 preview | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISO 27729:2012 preview; ORCID identifier page | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
-| `Publication\Doi` | DOI Handbook (ISO 26324), 3.7.3 and 3.8 for the resolver hosts; RFC 3986 for the resolver URL | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` (one space may follow) or a `doi.org` / `dx.doi.org` resolver URL (query and fragment dropped, the rest percent-decoded, so `%3F` is a `?` of the DOI), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
+| `Publication\Doi` | DOI Handbook (ISO 26324); DOI Handbook 2025, 4.4.4, 4.7 and 6.3.1 for the resolver URL; RFC 3986 | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` (one space may follow) or a resolver URL on `doi.org`, `dx.doi.org` (deprecated by the Handbook, still resolving) or their `www.` forms (query and fragment dropped, the rest percent-decoded, so `%3F` is a `?` of the DOI; when the part before a raw `?` or `#` is no DOI, the whole rest is decoded, as in 0.x), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
 | `Publication\Ror` | ROR identifier page (cites ISO/IEC 7064) | MOD 97-10 pair enforced, bare or `https://ror.org/...`, stored lowercase bare; `uri()` |
 | `Publication\Ark` | draft-kunze-ark-40 | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `?` and `??` inflections stay in the Name (no quote says otherwise); `naan()`, `name()` |
 | `Publication\PublicationIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, which is also a check-less ISAN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |
@@ -100,7 +103,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Transport\UicVehicleNumber` | Commission Decision 2007/756/EC, Appendix 6 part 3 | 12 digits, Luhn enforced; printed (`31 51 3320 198-0`) or compact, stored compact; `vehicleType()` and `uicCountryCode()` are raw digits (the UIC numeric code, not ISO 3166) |
 | `Transport\UnLocode` | UNECE Recommendation 16 | UNECE Rec. 16, 2 letters + 3 of letters and 2-9, format only; `country(): ?CountryCode` |
 | `Transport\IataAirportCode`, `IcaoAirportCode` | none (format only) | 3 and 4 letters, format only |
-| `Transport\Iso15459Identifier` | ISO/IEC 15459 (AIM register 2026-06-16); ANSI MH10.8.2 DI `25S`, `J` | at least 3 capital letters and digits (IAC + company number + serial); `issuingAgencyCode()` and `issuingAgencyName()` from the AIM register (null when unregistered, still accepted); `fromField()` for data identifiers `25S` and `J` (a `J` plate is at most 35 characters) |
+| `Transport\Iso15459Identifier` | ISO/IEC 15459 (AIM register 2026-06-16); ANSI MH10.8.2 DI `25S`, `J`; DoD UID Guide v2.5, Business Rule 21 and footnote 88 (`-` and `/` significant in `25S`) | at least 3 capital letters, digits, `-` and `/`, starting with a letter or digit (IAC + company number + serial; no length cap); `issuingAgencyCode()` and `issuingAgencyName()` from the AIM register (null when unregistered, still accepted); `fromField()` for data identifiers `25S` and `J` (a `J` plate is at most 35 capital letters and digits) |
 | `Transport\DataIdentifierString`, `DataIdentifierField` | ISO/IEC 15434:2005 preview; ANSI MH10.8.2-2021 | ISO/IEC 15434 format `06` envelope, kept byte-exact (RS, GS, EOT included); `fields()`, `field()`, typed `serialNumber()` (DI `S`), `fromFields()`; a field has `identifier()`, `data()` and `$value` (both together), `tryFrom()`, `isValid()`; DIs are `\d{0,3}[A-Z]` with no description |
 | `Transport\TransportIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; three letters that are both a WMI and an IATA code throw `AmbiguousValueException`, and any seven digits are an `ImoNumber`; none throws `InvalidTransportIdentifierException` |
 | `Telecom\Imei` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 14 digits, or 15 with a Luhn check digit; spaces and hyphens dropped; `equals()` compares the first 14 digits, so both forms of one IMEI are equal; `tac()`, `serialNumber()`, `checkDigit()`, `withCheckDigit()`; `masked()` |
@@ -121,7 +124,8 @@ forged or stale payload throws the class's own exception, a payload without a st
 
 `Imei::equals()` compares the first 14 digits, so the 14-digit and the 15-digit form of one IMEI are equal. `Isbn::equals()`
 compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. `Isan::equals()` compares root, episode and version, so
-the forms with and without check characters are equal. The stored string keeps the form that was given, so a
+the forms with and without check characters are equal; a 16-character ISAN (no version) and a 24-character one with
+version `0000-0000` are not equal, as one has no version. The stored string keeps the form that was given, so a
 string-keyed index or a UNIQUE column sees two values for what `equals()` calls one. Normalise first (`Imei::withCheckDigit()`
 or the 14 digits, `Isbn::toIsbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
 ignores hyphens, with the same caveat.

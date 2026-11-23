@@ -152,6 +152,7 @@ final class IsanTest extends TestCase
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('A159D8FA01240000')));
         self::assertFalse(new Isan('B159D8FA01240000K')->equals(new Isan(self::WITH_VERSION)));
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA012400009F3A0245')));
+        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA0124000000000000')));
         self::assertFalse(new Isan('B159D8FA012400009F3A0245')->equals(new Isan('B159D8FA012400009F3A0246')));
         self::assertFalse(new Isan('1422458635730476')->equals(Isni::from('1422458635730476')));
     }

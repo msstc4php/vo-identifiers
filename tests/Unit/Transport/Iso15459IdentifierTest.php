@@ -97,10 +97,53 @@ final class Iso15459IdentifierTest extends TestCase
         }
     }
 
-    public function testBadDataInAField(): void
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function dodUniqueItemIdentifiers(): iterable
     {
-        $this->expectException(InvalidTransportIdentifierException::class);
-        Iso15459Identifier::fromField(new DataIdentifierField('J', 'LN-1'));
+        yield 'dash and slash in the serial' => ['UN077991289ABC-1/2'];
+        yield 'dash only' => ['UN077991289-10'];
+        yield 'slash only' => ['D123451/2'];
+        yield 'trailing slash' => ['LN1/'];
+    }
+
+    #[DataProvider('dodUniqueItemIdentifiers')]
+    public function testKeepsDashesAndSlashes(string $value): void
+    {
+        self::assertSame($value, (new Iso15459Identifier($value))->value);
+        self::assertSame($value, Iso15459Identifier::fromField(new DataIdentifierField('25S', \strtolower($value)))->value);
+    }
+
+    public function testDashAndSlashDoNotChangeTheAgencyDecoding(): void
+    {
+        self::assertSame('LN', new Iso15459Identifier('LN-1/2')->issuingAgencyCode());
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function licensePlatesWithSpecialCharacters(): iterable
+    {
+        yield 'dash' => ['LN-1'];
+        yield 'slash' => ['LN1/2'];
+        yield 'dash at the 35-character cap' => ['LN-' . \str_repeat('1', 32)];
+    }
+
+    #[DataProvider('licensePlatesWithSpecialCharacters')]
+    public function testLicensePlateKeepsTheAlphanumericSet(string $plate): void
+    {
+        try {
+            Iso15459Identifier::fromField(new DataIdentifierField('J', $plate));
+            self::fail('Expected an exception.');
+        } catch (InvalidTransportIdentifierException $e) {
+            self::assertSame('ISO/IEC 15459 identifier has an invalid format.', $e->getMessage());
+        }
+    }
+
+    public function testLowercaseLicensePlateIsUppercased(): void
+    {
+        self::assertSame('LN12345', Iso15459Identifier::fromField(new DataIdentifierField('J', 'ln12345'))->value);
     }
 
     /**
@@ -109,7 +152,11 @@ final class Iso15459IdentifierTest extends TestCase
     public static function invalid(): iterable
     {
         yield 'two' => ['LN'];
-        yield 'hyphen' => ['LN-123'];
+        yield 'two and a dash' => ['L-'];
+        yield 'leading dash' => ['-LN123'];
+        yield 'leading slash' => ['/LN123'];
+        yield 'other special character' => ['LN.123'];
+        yield 'underscore' => ['LN_123'];
         yield 'space' => ['LN 123'];
         yield 'newline' => ["LN123\n"];
         yield 'empty' => [''];

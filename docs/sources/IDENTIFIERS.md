@@ -155,6 +155,14 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   prefix code comprises 2 letters followed by 3 alphanumeric characters."; year of reference: "the last two digits of that
   year"; "The Designation Code consists of five digits assigned by the Registrant." Example `ISRC AA-6QZ-20-00047`. No check
   digit is mentioned. ISRC Handbook 4th edition 2021 (CC BY-ND 4.0) at the same site.
+- Prefix letters (1.0 review CR-006, 2026-11-23 UTC). ISRC Handbook, 4th edition 2021, https://isrc.ifpi.org/images/downloads/ISRC_Handbook.pdf,
+  3.3.2 "Prefix Code": "This comprises 2 letters followed by 3 alphanumeric characters. This is for compatibility with previous versions of the ISRC
+  standard where the two letters represented the country of assignment, and the three alphanumeric characters were allocated to the particular
+  Registrant. New allocations remove this distinction and a single block of five characters is allocated, though users may find that the ISRC
+  Registration Agency in their country still provides a prefix with a country code in the initial position." IFPI "ISRC Agency Code Allocations -
+  October 2026", https://isrc.ifpi.org/images/downloads/Valid-Characters-in-the-ISRC-Prefix.pdf ("First two Characters of ISRC Prefix", agency,
+  territory): for example `QM`, `QT`, `QZ` RIAA, United States; `BC`, `BK`, `BP`, `BX` Pro-música Brazil; `CP`, `QN`, `VV`, `ZZ` International ISRC
+  Registration Authority, "Worldwide". So `Isrc::countryCode()` returns the two letters unchecked; the allocation list (which changes) is not embedded.
 
 ### ISWC (ISO 15707)
 
@@ -217,19 +225,30 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - Directory indicator (fix round 1): the Handbook text quoted above says only that it "can contain only numeric values" and "is usually 10", so
   `Doi` accepts any numeric directory indicator. The prefix is always `<directoryIndicator>.<registrantCode>` (the structure quoted above), so the
   registrant is mandatory for every directory indicator (fix round 2): `1234/5678` and `2020/01/05` are not DOIs.
-- Resolver-URL decoding: the Handbook's URL-encoding section was **not reachable** (www.doi.org handbook paths answer 404, the Internet Archive copies
-  of the old `doi_handbook/*.html` pages hold no text). A resolver URL (`http(s)://[dx.]doi.org/...`, without its query and fragment) is therefore percent-decoded as RFC 3986
-  section 2.1 defines percent-encoding (a standard cited by number); the stored form is the decoded bare DOI. A bare or `doi:` value is never decoded
-  (`%` is a legal DOI character). Decoded invalid UTF-8 or control characters are refused.
-- Resolver hosts and URL query (1.0 ruling B4/N9, 2026-11-23 UTC). DOI Handbook chapter 3 (https://www-old.doi.org/doi_handbook/3_Resolution.html),
-  3.7.3: "https://doi.org is preferred, but the earlier syntax dx.doi.org remains fully supported"; 3.8: "(https://doi.org (current, preferred) or
-  earlier syntax http://dx.doi.org)"; `www.doi.org` is named only as the website, not as a resolver, and `www.dx.doi.org` not at all. `Doi` therefore
-  accepts resolver URLs on `doi.org` and `dx.doi.org` only (`www.` forms of 0.x are refused from 1.0; `hdl.handle.net`, a generic Handle proxy, is not
-  accepted and can be added in a minor). DOI resolution documentation (https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation),
-  2 "Encoding DOIs for use in URIs", Table 1 "Mandatory Encoding": `%` (%25), `"` (%22), `#` (%23), SPACE (%20), `?` (%3F); "#test will be treated as
-  a fragment and removed by the web browser before it gets to the proxy." So in a resolver URL a raw `?` or `#` starts the query or fragment
-  (RFC 3986 3.4, 3.5) and is cut before percent-decoding; `%3F` and `%23` decode to characters of the DOI. The handbook prints `doi:10.123/456`
-  without a space; `doi: ` with one space is accepted as a common print form (ruling N9), more spaces are refused.
+- Resolver-URL decoding (1.0 review CR-009, 2026-11-23 UTC): DOI Handbook 2025 (https://www.doi.org/doi-handbook/DOIHandbook_2025.pdf), 4.7
+  "Percent-Encoding" (listed as 3.7 in its table of contents): "The percent-encoding algorithm specified at RFC 3986 is applied whenever a DOI name is
+  used in the path component of a URL, such as in the HTTP Proxy Form"; every byte other than ALPHA, DIGIT and `- . _ ~ ! $ & ' ( ) * + ; = : @` is
+  percent-encoded; "EXAMPLE: The DOI name 10.1000/456#789 is percent-encoded to "10.1000/456%23789". Thus the web browser does not encounter the bare
+  "#", which it would normally treat as the end of the URL and the start of a fragment". A resolver URL is therefore percent-decoded (RFC 3986
+  section 2.1); the stored form is the decoded bare DOI. A bare or `doi:` value is never decoded (`%` is a legal DOI character). Decoded invalid UTF-8
+  or control characters are refused.
+- Resolver hosts (1.0 review CR-002, owner rule "never refuse a still-valid value", 2026-11-23 UTC). DOI Handbook 2025, 4.4.4 "HTTP proxy form": "the
+  URL shall be created by percent-encoding the result of concatenating the string "https://doi.org/" with the percent-encoded DOI name"; "Other HTTP
+  proxy forms starting with the string "https://dx.doi.org" are deprecated." 6.3.1, footnote: "An earlier proxy address (https://dx.doi.org) is
+  deprecated and its use is discouraged." The Handbook does not name `www.doi.org` or `www.dx.doi.org` as proxies and forbids neither; both answer
+  with a redirect to `https://doi.org/<doi>` (302 and 301, checked 2026-11-23 UTC), and 0.1 and 0.2 accepted them. A URL on any of the four hosts
+  wraps a valid DOI and the stored form is the bare DOI, so `Doi` accepts `doi.org`, `dx.doi.org` (deprecated, still resolving) and their `www.` forms
+  as frozen lenience for 1.x (README "Backward compatibility"). `hdl.handle.net`, a generic Handle proxy, is not accepted and can be added in a minor.
+  History: the 2017 edition, chapter 3 (https://www-old.doi.org/doi_handbook/3_Resolution.html), 3.7.3: "https://doi.org is preferred, but the
+  earlier syntax dx.doi.org remains fully supported".
+- Resolver URL query and fragment (1.0 ruling B4, 2026-11-23 UTC). DOI resolution documentation
+  (https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation), 2 "Encoding DOIs for use in URIs", Table 1 "Mandatory
+  Encoding": `%` (%25), `"` (%22), `#` (%23), SPACE (%20), `?` (%3F); "#test will be treated as a fragment and removed by the web browser before it
+  gets to the proxy." So in a resolver URL a raw `?` or `#` starts the query or fragment (RFC 3986 3.4, 3.5) and is cut before percent-decoding;
+  `%3F` and `%23` decode to characters of the DOI. When the part before the raw `?` or `#` is no DOI (`https://doi.org/10.1000/?x`: the suffix
+  would be empty), the whole rest is decoded as 0.x did, so no URL that 0.x accepted is refused (it stores `10.1000/?x`, as 0.x).
+- `doi:` label: the 2025 Handbook, 4.4.1, prints `doi:10.1006/jmbi.1998.2354` without a space; `doi: ` with one space is accepted as a common print
+  form (ruling N9; 0.x refused it), more spaces are refused.
 - Length: no source states a maximum length for a DOI name, so `Doi` has no cap; `vo-identifiers-doctrine` will map it to a text type.
 
 ### ROR
@@ -380,18 +399,25 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 
 - S10: the service indicators `JA-JZ`, `KA-KZ`, `SA-SZ`, `TA-TZ`, `WA-WZ` are refused (footnote 1: "cannot be assigned as valid service indicator values"; ruling of round 2).
 - Mmsi: only the leading-digit rules quoted above classify; the handheld-VHF format is not quoted precisely enough (the note says "recommends 3") and `979` (AMRD Group B) has no type of its own, so both are `Unclassified`.
-- Iso15459Identifier: `[A-Z0-9]{3,}`; carried under DI `25S` or `J` only, the two DIs quoted above. The an..35 length of the quoted `J` definition is the only cap, applied to `J` fields only; `25S` has no quoted length. `issuingAgencyCode()` and `issuingAgencyName()` read the code from the start by the AIM register (version 2026-06-16, section 2, code to agency name; no terms of use are printed in it, contact details are not copied). The register text does not state that codes are prefix-free; in this edition they are (0-9, `D`, `J` and two- and three-letter codes, none the beginning of another; a unit test asserts it), so the longest match is the only match. A value starting with no entry decodes to null and is accepted.
+- Iso15459Identifier: `[A-Z0-9]{3,}` (1.0 adds `-` and `/`, see "Character set" below); carried under DI `25S` or `J` only, the two DIs quoted above. The an..35 length of the quoted `J` definition is the only cap, applied to `J` fields only; `25S` has no quoted length. `issuingAgencyCode()` and `issuingAgencyName()` read the code from the start by the AIM register (version 2026-06-16, section 2, code to agency name; no terms of use are printed in it, contact details are not copied). The register text does not state that codes are prefix-free; in this edition they are (0-9, `D`, `J` and two- and three-letter codes, none the beginning of another; a unit test asserts it), so the longest match is the only match. A value starting with no entry decodes to null and is accepted.
 - Mmsi: group, coast, AIS aid to navigation, SAR aircraft and craft-associated forms are classified only when the MID digit after the fixed prefix is 2 to 7 (the MID table runs 201 to 775); otherwise `Unclassified`. No separators are stripped: M.585 prints nine contiguous digits.
 - AirWaybillNumber: only the hyphen after the prefix is accepted, as ABF and IATA print it (`020-12345675`); spaces are not stripped.
 - DataIdentifierString: one format-06 envelope only. ISO/IEC 15434 Table 1 and 4.1 (preview) give the header, GS after the format header, RS format trailer and EOT message trailer; the preview ends before the 4.3.7 data rules, so a field is a DI followed by UTF-8 data without RS, GS, EOT (MH10.8.2 clause 5).
 - Wmi is a factory candidate and collides with `IataAirportCode` on three letters without I, O, Q.
-- Character set (1.0 ruling N6, 2026-11-23 UTC): `[A-Z0-9]{3,}` rests on MH10.8.2 clause 4, "The allowable alphanumeric (an) character set
-  shall be A-Z and 0-9", the `an` set of the `25S` and `J` definitions. `fromField()` and `parse()` uppercase the data, so `fromField()` is not
-  byte-exact; with that set the uppercasing loses nothing. DoD IUID (MIL-STD-130, the DoD UID Guide) constructs that carry `-` or `/` in a
-  serial number were checked on 2026-11-23: the DoD UID Guide on acq.osd.mil and its archive copies, and the DLA DLMS manual (dla.mil answers
-  403), were **not reached**; a search snippet of the DLA manual (secondary, not quoted) says serial fields allow A-Z, 0-9, dashes and forward
-  slashes. Outcome: no official text reached puts `-` or `/` into an ISO/IEC 15459 identifier under `25S`, so the set stays as quoted. If an
-  official text is reached later, the set is widened in a minor (G1 allows accepting more; the type has no length bound, so no column changes).
+- Character set (1.0 ruling N6, review CR-001, 2026-11-23 UTC). MH10.8.2 clause 4: "The allowable alphanumeric (an) character set shall be A-Z and
+  0-9", the `an` set of the `25S` and `J` definitions. DoD Guide to Uniquely Identifying Items v2.5 (15 Sep 2012), appendix "Business Rules (Version
+  4.1)", UNT web-archive copy of acq.osd.mil:
+  https://webarchive.library.unt.edu/web/20130223193613id_/http://www.acq.osd.mil/dpap/UID/attachments/DoDUIDGuideVer2_5.pdf. Rule 21, "When
+  constructing the UII": "All special characters shall be deleted from the enterprise identifier." "All special characters, except for dashes (-) and
+  forward slashes (/) shall be deleted from the original part number, lot or batch number, and serial number." "The UII shall only contain uppercase
+  English alphabet characters A through Z, numeric characters 0 through 9, and the special characters "-" and "/"." Footnote 88: "For application in
+  IUID the use of dashes (-) and slashes (/) is permitted in DIs as significant characters for part numbers, lot or batch numbers, and serial numbers,
+  and in DIs that are composed from these numbers (i.e., S, 18S, 25S, 1P, 30P, 1T, and 30T)." So `Iso15459Identifier` accepts A-Z, 0-9, `-` and `/`
+  (at least 3 characters). The first character must be a letter or digit: the value starts with the issuing agency code (codes in the AIM register are
+  letters and digits) and Rule 21 removes special characters from the enterprise identifier, so `-` and `/` only occur in the serial part. Rule 19
+  caps a DoD UII at 50 characters; that is a DoD profile of the generic ISO/IEC 15459 identifier carried under `25S`, so no cap is applied (a
+  report-only check can be added in a minor). Footnote 88 does not list `J`, so a `J` license plate keeps the `an..35` set of its MH10.8.2
+  definition (0.x accepted only that set). `fromField()` and `parse()` uppercase the data; with these sets the uppercasing loses nothing.
 
 ## Telecom
 

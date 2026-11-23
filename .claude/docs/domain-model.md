@@ -15,6 +15,7 @@ are in `docs/sources/IDENTIFIERS.md` ("Outcome per class"); the README class tab
 - `Transport\DataIdentifierField` is a composite (not on the string base): `identifier()`, `data()`, public `$value` (both together, the
   string and serialized form), `tryFrom()`, `isValid()`. `DataIdentifierString::serialNumber()` is the data of DI `S`.
 - Enums: `Transport\MmsiStationType` (renamed from `MmsiType` in 1.0, to keep the bridge's `<Vo>Type` names free) and `Energy\EicObjectType`; cases may
-  be added in a minor, backed values are frozen.
+  be added in a minor, backed values are frozen. `Transport\MmsiType` is a deprecated `class_alias` until 2.0 (0.x `enumType` mappings and `E:`
+  payloads); `src/Transport/MmsiType.php` also holds a never-executed enum declaration so that PHPStan sees the name.
 - `Vin::modelYears()` (candidates), `UicVehicleNumber::uicCountryCode()` (UIC numeric), `Isrc::countryCode()` (ISO 3901 letters, unchecked).
 - Canonical forms and the BC promise: README "Canonical forms" and "Backward compatibility".
