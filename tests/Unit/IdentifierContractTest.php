@@ -411,7 +411,39 @@ final class IdentifierContractTest extends TestCase
             self::fail('A value longer than MAX_LENGTH was accepted.');
         } catch (InvalidValueObjectException $e) {
             self::assertStringEndsWith(' has an invalid format.', $e->getMessage());
+            self::assertStringNotContainsString((string) (\strlen($value) + 1), $e->getMessage());
         }
+    }
+
+    /**
+     * No message carries the input or its length: an over-long value gets the same message as a one-character one.
+     *
+     * @param class-string<StringConvertible&ValueObject> $class
+     */
+    #[DataProvider('classes')]
+    public function testTheMessageForAnOverLongValueHoldsNoPartOfIt(string $class): void
+    {
+        $long = \str_repeat('9', 4321) . self::NOT_AN_IDENTIFIER;
+        $message = $this->messageFor($class, $long);
+
+        self::assertSame($this->messageFor($class, self::NOT_AN_IDENTIFIER), $message);
+        self::assertStringNotContainsString('4321', $message);
+        self::assertStringNotContainsString('4322', $message);
+        self::assertStringNotContainsString('99', $message);
+    }
+
+    /**
+     * @param class-string<StringConvertible&ValueObject> $class
+     */
+    private function messageFor(string $class, string $value): string
+    {
+        try {
+            $class::from($value);
+        } catch (InvalidValueObjectException $e) {
+            return $e->getMessage();
+        }
+
+        self::fail('The value was accepted.');
     }
 
     /**
