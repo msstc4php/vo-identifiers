@@ -66,7 +66,7 @@ final class TariffCodeTest extends TestCase
             new TariffCode($value);
             self::fail('Expected an exception.');
         } catch (InvalidTradeIdentifierException $e) {
-            self::assertSame('tariff code has an invalid format.', $e->getMessage());
+            self::assertSame('Tariff code has an invalid format.', $e->getMessage());
         }
     }
 }
