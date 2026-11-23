@@ -14,7 +14,7 @@ use Override;
  * reachable and the manufacturer list is licensed.
  *
  * @see https://www.law.cornell.edu/cfr/text/49/565.15 49 CFR 565.15(a), (c)
- * @see docs/sources/IDENTIFIERS.md "VIN (ISO 3779) and WMI (ISO 3780)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "VIN (ISO 3779) and WMI (ISO 3780)"
  */
 final class Wmi extends AbstractStringValueObject
 {

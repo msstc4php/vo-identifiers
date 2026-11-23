@@ -21,7 +21,7 @@ use Override;
  * {@see PublicationIdentifierFactory} reports it ambiguous.
  *
  * @see https://isan.org/docs/isan_check_digit_calculation_v2.0.pdf ISAN International Agency, "ISAN Check Characters Calculation" v2.0
- * @see docs/sources/IDENTIFIERS.md "ISAN (ISO 15706)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISAN (ISO 15706)"
  */
 final class Isan extends AbstractStringValueObject
 {

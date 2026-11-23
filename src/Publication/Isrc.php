@@ -15,7 +15,7 @@ use Override;
  * two letters are not checked against ISO 3166 (agencies also hand out non-country prefixes).
  *
  * @see https://isrc.ifpi.org/isrc-standard/isrc-structure IFPI, ISRC structure
- * @see docs/sources/IDENTIFIERS.md "ISRC (ISO 3901)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISRC (ISO 3901)"
  */
 final class Isrc extends AbstractStringValueObject
 {

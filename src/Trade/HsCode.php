@@ -13,7 +13,7 @@ use Override;
  * nomenclature is under WCO licence and is not embedded, so a well-formed code is never checked against it.
  *
  * @see https://www.wcoomd.org/en/topics/nomenclature/overview/harmonized_system_faq.aspx WCO, Harmonized System FAQ
- * @see docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
  */
 final class HsCode extends AbstractStringValueObject
 {

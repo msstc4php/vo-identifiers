@@ -16,7 +16,7 @@ use Override;
  * country digits are returned raw: the UIC code tables were not read.
  *
  * @see https://legislation.gov.uk/eudn/2007/756/annex/appendix/6/part/3/2020-12-31 Commission Decision 2007/756/EC, Appendix 6 part 3
- * @see docs/sources/IDENTIFIERS.md "UicVehicleNumber"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UicVehicleNumber"
  */
 final class UicVehicleNumber extends AbstractStringValueObject
 {

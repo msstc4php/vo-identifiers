@@ -20,7 +20,7 @@ use Override;
  *
  * @see https://www.itu.int/dms_pub/itu-t/md/25/tsb/cir/T25-TSB-CIR-0136!!MSW-E.docx ITU-T TSB Circular 136 (IIN, MII 89, Luhn)
  * @see https://www.etsi.org/deliver/etsi_ts/102200_102299/102221/17.00.00_60/ts_102221v170000p.pdf ETSI TS 102 221 V17.0.0, 13.2
- * @see docs/sources/IDENTIFIERS.md "Iccid"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Iccid"
  */
 final class Iccid extends AbstractStringValueObject implements Maskable
 {

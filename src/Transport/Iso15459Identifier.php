@@ -21,7 +21,7 @@ use Override;
  * @see https://www.aimglobal.org/registration-authority-iso-iec-15459/ AIM, Registration Authority for ISO/IEC 15459
  * @see https://www.aimglobal.org/wp-content/uploads/2026/06/Register-IAC-15459-2-20260616.pdf Register of Issuing Agency Codes
  * @see https://www.mhi.org/standards/mh10 ANSI MH10.8.2, data identifiers 25S and J
- * @see docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
  */
 final class Iso15459Identifier extends AbstractStringValueObject
 {

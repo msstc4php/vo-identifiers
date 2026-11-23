@@ -15,7 +15,7 @@ use Override;
  * looked up in the UN/LOCODE list, which changes twice a year.
  *
  * @see https://vocab-locode-40898c.opensource.unicc.org/recommendation16 UNECE Recommendation 16
- * @see docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
  */
 final class UnLocode extends AbstractStringValueObject
 {

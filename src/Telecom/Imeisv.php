@@ -14,7 +14,7 @@ use Override;
  * Number of 2 digits; there is no check digit. Spaces and hyphens are dropped.
  *
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, 6.2.2
- * @see docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
  */
 final class Imeisv extends AbstractStringValueObject implements Maskable
 {

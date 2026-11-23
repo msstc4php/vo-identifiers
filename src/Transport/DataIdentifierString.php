@@ -17,7 +17,7 @@ use Override;
  *
  * @see https://www.iso.org/standard/36783.html ISO/IEC 15434:2005, 4.1 and Table 1
  * @see https://www.mhi.org/standards/mh10 ANSI MH10.8.2, clause 4
- * @see docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
  */
 final class DataIdentifierString extends AbstractStringValueObject
 {

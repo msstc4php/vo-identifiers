@@ -12,7 +12,7 @@ use Override;
  * IATA three-letter location identifier, uppercased. Format only: the list is licensed and not embedded.
  *
  * @see https://www.icao.int/operational-safety/Designators-and-indicators ICAO, Doc 7910 and the IATA location identifiers
- * @see docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
  */
 final class IataAirportCode extends AbstractStringValueObject
 {

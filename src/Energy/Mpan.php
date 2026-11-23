@@ -14,7 +14,7 @@ use Override;
  * and the check digit is not verified.
  *
  * @see https://ssen.co.uk/globalassets/what-is-a-mpan/mpan-process-for-demand-customers.pdf SSEN, MPAN process for demand customers
- * @see docs/sources/IDENTIFIERS.md "Mpan"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Mpan"
  */
 final class Mpan extends AbstractStringValueObject
 {

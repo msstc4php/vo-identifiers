@@ -17,7 +17,7 @@ use Override;
  *
  * @see https://legislation.gov.uk/eur/1987/2658/pdfs/eur_19872658_2016-06-01_en.pdf Regulation (EEC) No 2658/87, Article 3
  * @see https://www.usitc.gov/documents/hts/hts_external_user_guide.pdf USITC, HTS external user guide
- * @see docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
  */
 final class TariffCode extends AbstractStringValueObject
 {

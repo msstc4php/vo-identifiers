@@ -17,7 +17,7 @@ use Override;
  * check digit is kept). Hyphens, spaces and a leading `ISMN ` are dropped; the stored form is the 13 digits.
  *
  * @see https://ismn-international.org/web_ismn_users_manual_2016/ ISMN Users' Manual 2016, 2, 2.1.1 and 10
- * @see docs/sources/IDENTIFIERS.md "ISMN (ISO 10957)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISMN (ISO 10957)"
  */
 final class Ismn extends AbstractStringValueObject
 {

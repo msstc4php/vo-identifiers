@@ -16,7 +16,7 @@ use Override;
  *
  * @see https://www.bic-code.org/bic-codes/ BIC, the structure of a container code
  * @see https://www.bic-code.org/check-digit-calculator/ BIC, the equipment category letters
- * @see docs/sources/IDENTIFIERS.md "ContainerNumber (ISO 6346, BIC)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ContainerNumber (ISO 6346, BIC)"
  */
 final class ContainerNumber extends AbstractStringValueObject
 {

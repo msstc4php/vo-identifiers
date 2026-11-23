@@ -16,7 +16,7 @@ use Override;
  *
  * @see https://www.law.cornell.edu/cfr/text/49/565.13 49 CFR 565.13(g), the character set
  * @see https://www.law.cornell.edu/cfr/text/49/565.15 49 CFR 565.15(c), (d), the check digit and the model year
- * @see docs/sources/IDENTIFIERS.md "VIN (ISO 3779) and WMI (ISO 3780)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "VIN (ISO 3779) and WMI (ISO 3780)"
  */
 final class Vin extends AbstractStringValueObject
 {

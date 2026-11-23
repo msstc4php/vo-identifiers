@@ -24,7 +24,7 @@ use Override;
  *
  * @see https://www.isbn-international.org/sites/default/files/ISBN%20International%20Users%20Manual%20-%207th%20edition_absolutely_final.docx ISBN Users' Manual 7th edition, 4.1 and appendix 1
  * @see http://web.archive.org/web/20051228025615/http://www.isbn-international.org:80/en/userman/chapter4.html ISBN Users' Manual online, 4.4 (ISBN-10 check digit, Internet Archive copy)
- * @see docs/sources/IDENTIFIERS.md "ISBN (ISO 2108)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISBN (ISO 2108)"
  */
 final class Isbn extends AbstractStringValueObject
 {

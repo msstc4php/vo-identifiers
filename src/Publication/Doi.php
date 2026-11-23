@@ -21,7 +21,7 @@ use Override;
  * @see https://www.doi.org/doi-handbook/HTML/ DOI Handbook, syntax specification
  * @see https://www-old.doi.org/doi_handbook/3_Resolution.html DOI Handbook, 3.7.3 and 3.8 (the proxy hosts)
  * @see https://www.doi.org/the-identifier/resources/factsheets/doi-resolution-documentation DOI resolution documentation, 2 (mandatory encoding of `?` and `#`)
- * @see docs/sources/IDENTIFIERS.md "DOI (ISO 26324)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "DOI (ISO 26324)"
  */
 final class Doi extends AbstractStringValueObject
 {

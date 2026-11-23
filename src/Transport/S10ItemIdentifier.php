@@ -17,7 +17,7 @@ use Override;
  * service indicators JA-JZ, KA-KZ, SA-SZ, TA-TZ and WA-WZ are reserved and cannot be assigned, so they are refused.
  *
  * @see https://upu.int/UPU/media/upu/files/postalSolutions/programmesAndServices/standards/S10-12.pdf UPU S10-12, 5.4
- * @see docs/sources/IDENTIFIERS.md "S10ItemIdentifier"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "S10ItemIdentifier"
  */
 final class S10ItemIdentifier extends AbstractStringValueObject
 {

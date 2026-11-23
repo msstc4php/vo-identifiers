@@ -18,7 +18,7 @@ use Override;
  * an invalid IMSI: it throws a bare `InvalidArgumentException`, which {@see tryFrom()} does not absorb.
  *
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, 2.2
- * @see docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"
  */
 final class Imsi extends AbstractStringValueObject implements Maskable
 {

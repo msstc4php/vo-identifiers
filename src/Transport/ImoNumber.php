@@ -13,7 +13,7 @@ use Override;
  * verified (no IMO text gives the weights). The prefix is optional on input; the stored form is `IMO` plus the digits.
  *
  * @see https://wwwcdn.imo.org/localresources/en/KnowledgeCentre/IndexofIMOResolutions/AssemblyDocuments/A.1215(34).pdf IMO Assembly Resolution A.1215(34), paragraph 5
- * @see docs/sources/IDENTIFIERS.md "ImoNumber"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ImoNumber"
  */
 final class ImoNumber extends AbstractStringValueObject
 {

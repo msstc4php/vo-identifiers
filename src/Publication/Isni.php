@@ -16,7 +16,7 @@ use Override;
  * the same form: see {@see Orcid}.
  *
  * @see https://standards.iteh.ai/catalog/standards/iso/6ba7c022-bf45-4860-a066-ff57650ab09e/iso-27729-2012 ISO 27729:2012, clause 4 and annex A
- * @see docs/sources/IDENTIFIERS.md "ISNI (ISO 27729) and ORCID"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISNI (ISO 27729) and ORCID"
  */
 final class Isni extends AbstractStringValueObject
 {

@@ -19,7 +19,7 @@ use Override;
  * its string form and is validated again on unserialize.
  *
  * @see https://www.mhi.org/standards/mh10 ANSI MH10.8.2, clause 4 (data identifier format)
- * @see docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Iso15459Identifier and DataIdentifierString"
  */
 final readonly class DataIdentifierField implements StringConvertible, ValueObject
 {

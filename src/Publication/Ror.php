@@ -15,7 +15,7 @@ use Override;
  * (ISO/IEC 7064 MOD 97-10 over the decoded value). Accepted bare or as `https://ror.org/...`; stored bare and lowercase.
  *
  * @see https://ror.readme.io/docs/identifier ROR, "Identifier pattern"
- * @see docs/sources/IDENTIFIERS.md "ROR"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ROR"
  */
 final class Ror extends AbstractStringValueObject
 {

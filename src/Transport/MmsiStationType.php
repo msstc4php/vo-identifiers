@@ -10,7 +10,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
  * Cases may be added in a minor release, so a `match` over the cases needs a default arm; the backed values never change.
  *
  * @see https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.585-10-202604-I!!PDF-E.pdf ITU-R M.585-10, Annexes 1 and 2
- * @see docs/sources/IDENTIFIERS.md "Mmsi"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Mmsi"
  */
 enum MmsiStationType: string
 {

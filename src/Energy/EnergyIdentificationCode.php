@@ -16,7 +16,7 @@ use Override;
  *
  * @see https://eepublicdownloads.entsoe.eu/clean-documents/EDI/Library/EIC_Short_Guide_and_FAQ_V3_Approved%20April%202016.pdf ENTSO-E, EIC Short Guide and FAQ V3
  * @see https://eepublicdownloads.entsoe.eu/clean-documents/EDI/Library/cim_based/EIC_Data_Exchange_IG_v1.2.pdf ENTSO-E, EIC Data Exchange Implementation Guide v1.2
- * @see docs/sources/IDENTIFIERS.md "EnergyIdentificationCode (ENTSO-E)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "EnergyIdentificationCode (ENTSO-E)"
  */
 final class EnergyIdentificationCode extends AbstractStringValueObject
 {

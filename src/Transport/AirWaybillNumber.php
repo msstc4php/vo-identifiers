@@ -16,7 +16,7 @@ use Override;
  * Australian Border Force's published algorithm; IATA Resolution 600a was not reachable.
  *
  * @see https://www.abf.gov.au/sdg-subsite/Pages/Check-Digit-Algorithms/Air-Waybill-Number-Validation.aspx Australian Border Force, Air Waybill Number Validation
- * @see docs/sources/IDENTIFIERS.md "AirWaybillNumber"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "AirWaybillNumber"
  */
 final class AirWaybillNumber extends AbstractStringValueObject
 {

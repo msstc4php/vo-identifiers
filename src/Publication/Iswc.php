@@ -14,7 +14,7 @@ use Override;
  * `ISWC ` are dropped; the stored form is compact.
  *
  * @see https://cisaciswcuat.developer.azure-api.net/content/SPE_20190806_ISWC_EDI_FileFormat.pdf CISAC ISWC business rules (ISO 15707:2022 clause 4 as quoted in the source notes)
- * @see docs/sources/IDENTIFIERS.md "ISWC (ISO 15707)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISWC (ISO 15707)"
  */
 final class Iswc extends AbstractStringValueObject
 {

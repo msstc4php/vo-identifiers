@@ -13,7 +13,7 @@ use Override;
  * the stored form is `UN` plus the digits. Format only: no check exists and no substance list is embedded.
  *
  * @see https://unece.org/sites/default/files/2025-09/ST_SG_AC10_1_Rev24e_Vol_II_1.pdf UN Model Regulations (Orange Book) Rev. 24
- * @see docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnNumber, HsCode, TariffCode"
  */
 final class UnNumber extends AbstractStringValueObject
 {

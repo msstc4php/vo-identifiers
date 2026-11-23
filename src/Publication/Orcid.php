@@ -16,7 +16,7 @@ use Override;
  * and the scheme-less `orcid.org/...`). The assigned ORCID blocks are not enforced: they are an allocation, not part of the syntax.
  *
  * @see https://support.orcid.org/hc/en-us/articles/360006897674 ORCID, "Structure of the ORCID Identifier"
- * @see docs/sources/IDENTIFIERS.md "ISNI (ISO 27729) and ORCID"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISNI (ISO 27729) and ORCID"
  */
 final class Orcid extends AbstractStringValueObject
 {

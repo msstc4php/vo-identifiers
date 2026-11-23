@@ -15,7 +15,7 @@ use Override;
  * forbids `89` for the EIDs it defines, while EIDs of the E.118 scheme start with it.
  *
  * @see https://www.gsma.com/solutions-and-impact/technologies/esim/wp-content/uploads/2024/03/SGP.29-v1.1.pdf GSMA SGP.29 v1.1, EID.R01 and clause 10
- * @see docs/sources/IDENTIFIERS.md "Eid"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Eid"
  */
 final class Eid extends AbstractStringValueObject implements Maskable
 {

@@ -15,7 +15,7 @@ use Override;
  * optional on input, all or none. Leading zeros of the first part are dropped (CAS prints none), so one number has one form.
  *
  * @see https://www.cas.org/support/documentation/chemical-substances/checkdig CAS, "Check Digit Verification of CAS Registry Numbers"
- * @see docs/sources/IDENTIFIERS.md "CasRegistryNumber"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "CasRegistryNumber"
  */
 final class CasRegistryNumber extends AbstractStringValueObject
 {

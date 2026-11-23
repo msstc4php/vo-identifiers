@@ -15,7 +15,7 @@ use Override;
  * {@see MmsiStationType::Unclassified}, as is a form whose MID would not start with 2 to 7.
  *
  * @see https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.585-10-202604-I!!PDF-E.pdf ITU-R M.585-10, Annexes 1 and 2
- * @see docs/sources/IDENTIFIERS.md "Mmsi"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "Mmsi"
  */
 final class Mmsi extends AbstractStringValueObject
 {

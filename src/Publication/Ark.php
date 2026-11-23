@@ -17,7 +17,7 @@ use Override;
  * specification says they are insignificant.
  *
  * @see https://datatracker.ietf.org/doc/html/draft-kunze-ark-40 The ARK Identifier Scheme (draft-kunze-ark-40)
- * @see docs/sources/IDENTIFIERS.md "ARK"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ARK"
  */
 final class Ark extends AbstractStringValueObject
 {

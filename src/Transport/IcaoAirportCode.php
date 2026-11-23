@@ -13,7 +13,7 @@ use Override;
  * not decoded.
  *
  * @see https://www.icao.int/operational-safety/Designators-and-indicators ICAO, Doc 7910 Location Indicators
- * @see docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "UnLocode, IATA, ICAO"
  */
 final class IcaoAirportCode extends AbstractStringValueObject
 {

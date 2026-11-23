@@ -15,7 +15,7 @@ use Override;
  * stored as `NNN-NNN-N`. The hyphens are optional on input, all or none.
  *
  * @see https://echa.europa.eu/about-ec-and-list-numbers ECHA, "About EC and list numbers"
- * @see docs/sources/IDENTIFIERS.md "EcNumber"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "EcNumber"
  */
 final class EcNumber extends AbstractStringValueObject
 {

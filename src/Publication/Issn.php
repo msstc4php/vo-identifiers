@@ -21,7 +21,7 @@ use Override;
  *
  * @see https://www.issn.org/wp-content/uploads/2025/05/Manual-ISSN_ENG-marc21_May2025.pdf ISSN Manual (December 2024), 5.1.1
  * @see https://www.issn.org/fr/comprendre-lissn/politique-dattribution/lidentification-avec-le-code-a-barres-ean-13/ ISSN International Centre, the 977 EAN-13
- * @see docs/sources/IDENTIFIERS.md "ISSN (ISO 3297)"
+ * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISSN (ISO 3297)"
  */
 final class Issn extends AbstractStringValueObject
 {
