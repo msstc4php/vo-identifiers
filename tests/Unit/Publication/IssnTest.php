@@ -33,9 +33,6 @@ final class IssnTest extends TestCase
         yield 'no hyphen' => ['03178471', '0317-8471'];
         yield 'space' => ['0317 8471', '0317-8471'];
         yield 'label' => ['ISSN 0317-8471', '0317-8471'];
-        yield 'seven digits without the check' => ['0317847', '0317-8471'];
-        yield 'seven digits hyphenated' => ['0317-847', '0317-8471'];
-        yield 'seven digits ending in X' => ['2434-561', '2434-561X'];
     }
 
     #[DataProvider('valid')]
@@ -54,6 +51,8 @@ final class IssnTest extends TestCase
         yield 'X inside' => ['03X7-8471'];
         yield 'nine digits' => ['0317-84711'];
         yield 'six digits' => ['0317-84'];
+        yield 'seven digits without the check' => ['0317847'];
+        yield 'seven digits hyphenated' => ['0317-847'];
         yield 'letters' => ['ABCD-EFGH'];
         yield 'trailing newline' => ["0317-8471\n"];
         yield 'empty' => [''];
@@ -64,6 +63,47 @@ final class IssnTest extends TestCase
     {
         $this->expectException(InvalidPublicationIdentifierException::class);
         new Issn($value);
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function sevenDigits(): iterable
+    {
+        yield 'ISSN Manual example' => ['0317847', '0317-8471'];
+        yield 'check character X' => ['2434561', '2434-561X'];
+        yield 'remainder zero' => ['0000000', '0000-0000'];
+    }
+
+    #[DataProvider('sevenDigits')]
+    public function testFromPartsComputesTheCheckCharacter(string $sevenDigits, string $expected): void
+    {
+        self::assertSame($expected, Issn::fromParts($sevenDigits)->value);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function notSevenDigits(): iterable
+    {
+        yield 'six digits' => ['031784'];
+        yield 'eight digits' => ['03178471'];
+        yield 'hyphenated' => ['0317-847'];
+        yield 'X' => ['031784X'];
+        yield 'label' => ['ISSN 0317847'];
+        yield 'trailing newline' => ["0317847\n"];
+        yield 'empty' => [''];
+    }
+
+    #[DataProvider('notSevenDigits')]
+    public function testFromPartsRefusesAnythingButSevenDigits(string $value): void
+    {
+        try {
+            Issn::fromParts($value);
+            self::fail('Expected an exception.');
+        } catch (InvalidPublicationIdentifierException $e) {
+            self::assertSame('ISSN has an invalid format.', $e->getMessage());
+        }
     }
 
     public function testMessageNamesOnlyTheType(): void

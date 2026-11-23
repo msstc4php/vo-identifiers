@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
 use InvalidArgumentException;
 use MSSTC4PHP\ValueObject\Gs1\Key\Gtin;
+use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Ean13CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
@@ -15,8 +16,8 @@ use Override;
 
 /**
  * International Standard Serial Number (ISO 3297): seven digits and a modulus 11 check character (`X` for ten), printed
- * `NNNN-NNNC` and stored that way. A value typed without its check character (seven digits) is accepted and completed.
- * Hyphens, spaces and a leading `ISSN ` are dropped.
+ * `NNNN-NNNC` and stored that way. Hyphens, spaces and a leading `ISSN ` are dropped. Seven digits are refused: a
+ * truncated ISSN would otherwise become another valid one; {@see fromParts()} adds the check character on request.
  *
  * @see https://www.issn.org/wp-content/uploads/2025/05/Manual-ISSN_ENG-marc21_May2025.pdf ISSN Manual (December 2024), 5.1.1
  * @see https://www.issn.org/fr/comprendre-lissn/politique-dattribution/lidentification-avec-le-code-a-barres-ean-13/ ISSN International Centre, the 977 EAN-13
@@ -28,6 +29,20 @@ final class Issn extends AbstractStringValueObject
     public const int MAX_LENGTH = 9;
 
     private const string TYPE = 'ISSN';
+
+    /**
+     * The ISSN of seven digits and the check character the ISSN Manual's modulus 11 algorithm gives them.
+     *
+     * @throws InvalidPublicationIdentifierException when the value is not exactly seven ASCII digits
+     */
+    public static function fromParts(string $sevenDigits): self
+    {
+        if (\preg_match('/^[0-9]{7}$/D', $sevenDigits) !== 1) {
+            throw PublicationRules::invalidFormat(self::TYPE);
+        }
+
+        return new self($sevenDigits . Mod11CheckDigit::compute($sevenDigits));
+    }
 
     /**
      * The 977 GTIN-13: `977`, the seven ISSN digits, the two-digit variant (`00` for a normal title) and the EAN check
@@ -51,11 +66,11 @@ final class Issn extends AbstractStringValueObject
     {
         $value = PublicationRules::compact($value, 'ISSN');
 
-        if (\preg_match('/^[0-9]{7}$/D', $value) === 1) {
-            $value .= Mod11CheckDigit::compute($value);
-        } elseif (\preg_match('/^[0-9]{7}[0-9X]$/D', $value) !== 1) {
+        if (\preg_match('/^[0-9]{7}[0-9X]$/D', $value) !== 1) {
             throw PublicationRules::invalidFormat(self::TYPE);
-        } elseif (!Mod11CheckDigit::isValid($value)) {
+        }
+
+        if (!Mod11CheckDigit::isValid($value)) {
             throw PublicationRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);
         }
 

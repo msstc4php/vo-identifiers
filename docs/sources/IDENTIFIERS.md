@@ -124,6 +124,9 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   11 minus the remainder. Example `0317-8471`: digits 0317847, sum 120, remainder 10, check digit 1 (the Library of Congress
   excerpt https://www.loc.gov/issn/check.html prints the same table). Structure (field 022 text): "The check digit shall be
   calculated from the other seven digits on a modulus 11 basis with weights 8 to 2, using X in lieu of 10".
+- Seven digits (1.0 ruling S2, 2026-11-23 UTC): the Manual defines eight characters and quotes no completion of a value typed without its check
+  character, and a truncated ISSN would become another valid ISSN. `Issn` refuses seven digits (0.x completed them); `Issn::fromParts()` computes
+  the check character for seven digits on an explicit call, by the 5.1.1 algorithm above.
 - Review Focus value `0378-5955` satisfies the rule (weights 8 to 2 over 0378595: sum 160, remainder 6, check digit 5), but no ISSN
   text prints it.
 - GTIN, issn.org French page https://www.issn.org/fr/comprendre-lissn/politique-dattribution/lidentification-avec-le-code-a-barres-ean-13/:
