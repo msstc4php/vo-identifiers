@@ -65,7 +65,9 @@ final class Isan extends AbstractStringValueObject
     #[Override]
     public function equals(ValueObject $other): bool
     {
-        return $other instanceof self && $other->withoutCheckCharacters() === $this->withoutCheckCharacters();
+        return $other instanceof self
+            && \substr($other->value, 0, 16) === \substr($this->value, 0, 16)
+            && $other->version() === $this->version();
     }
 
     public function hasVersion(): bool
@@ -122,10 +124,5 @@ final class Isan extends AbstractStringValueObject
         }
 
         return $value;
-    }
-
-    private function withoutCheckCharacters(): string
-    {
-        return \substr($this->value, 0, 16) . ($this->version() ?? '');
     }
 }

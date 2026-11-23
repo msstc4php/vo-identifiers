@@ -149,6 +149,7 @@ final class IsanTest extends TestCase
     public function testEqualityKeepsRootEpisodeAndVersionApart(): void
     {
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA01240001')));
+        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('A159D8FA01240000')));
         self::assertFalse(new Isan('B159D8FA01240000K')->equals(new Isan(self::WITH_VERSION)));
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA012400009F3A0245')));
         self::assertFalse(new Isan('B159D8FA012400009F3A0245')->equals(new Isan('B159D8FA012400009F3A0246')));
