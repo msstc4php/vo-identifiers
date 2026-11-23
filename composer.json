@@ -61,7 +61,10 @@
     "autoload": {
         "psr-4": {
             "MSSTC4PHP\\ValueObject\\Identifiers\\": "src/"
-        }
+        },
+        "files": [
+            "src/Transport/MmsiType.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

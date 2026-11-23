@@ -414,7 +414,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   IUID the use of dashes (-) and slashes (/) is permitted in DIs as significant characters for part numbers, lot or batch numbers, and serial numbers,
   and in DIs that are composed from these numbers (i.e., S, 18S, 25S, 1P, 30P, 1T, and 30T)." So `Iso15459Identifier` accepts A-Z, 0-9, `-` and `/`
   (at least 3 characters). The first character must be a letter or digit: the value starts with the issuing agency code (codes in the AIM register are
-  letters and digits) and Rule 21 removes special characters from the enterprise identifier, so `-` and `/` only occur in the serial part. Rule 19
+  letters and digits) and Rule 21 removes special characters from the enterprise identifier, so `-` and `/` only occur in the part, lot or
+  serial number that follows. Footnote 41: a 25S value is "the concatenation of the IAC, enterprise identifier, and
+  unique serial number"; footnote 88 permits `-` and `/` only "as significant characters" of those numbers, not as
+  separators between the components. Rule 19
   caps a DoD UII at 50 characters; that is a DoD profile of the generic ISO/IEC 15459 identifier carried under `25S`, so no cap is applied (a
   report-only check can be added in a minor). Footnote 88 does not list `J`, so a `J` license plate keeps the `an..35` set of its MH10.8.2
   definition (0.x accepted only that set). `fromField()` and `parse()` uppercase the data; with these sets the uppercasing loses nothing.

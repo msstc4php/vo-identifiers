@@ -8,6 +8,7 @@ use BackedEnum;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiStationType;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiType;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use ReflectionEnum;
 
@@ -66,5 +67,19 @@ final class MmsiTypeTest extends TestCase
             'E:64:"MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiStationType:Ship";',
             \serialize($oldName::from('ship')),
         );
+    }
+
+    /**
+     * A type check or `instanceof` does not autoload, so the alias must exist before anything names `MmsiType`
+     * (composer `autoload.files`).
+     *
+     * @param class-string<BackedEnum> $oldName
+     */
+    #[DataProvider('oldName')]
+    #[RunInSeparateProcess]
+    public function testTheAliasExistsBeforeAnyCodeNamesIt(string $oldName): void
+    {
+        self::assertTrue(\enum_exists($oldName, false));
+        self::assertTrue(MmsiStationType::Ship instanceof $oldName);
     }
 }

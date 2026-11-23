@@ -468,7 +468,7 @@ final class IdentifierContractTest extends TestCase
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source, FilesystemIterator::SKIP_DOTS)) as $entry) {
             self::assertInstanceOf(SplFileInfo::class, $entry);
             $class = 'MSSTC4PHP\\ValueObject\\Identifiers\\' . \str_replace('/', '\\', \substr($entry->getPathname(), \strlen($source) + 1, -4));
-            // Loading the alias would run its file-level code under this test's coverage attributes; MmsiTypeTest covers it.
+            // The deprecated alias is no class of its own; MmsiTypeTest covers it.
             if (\str_contains($class, '\\Internal\\') || $class === MmsiType::class || !\class_exists($class)) {
                 continue;
             }

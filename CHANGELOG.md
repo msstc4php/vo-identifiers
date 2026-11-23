@@ -58,7 +58,8 @@ wording, `Internal\` and `@internal`, and `masked()` hiding more. CI runs PHP 8.
 - `DataIdentifierString::serial()` → `serialNumber()`.
 - `Transport\MmsiType` → `Transport\MmsiStationType` in `use` statements, type hints, Doctrine and ODM
   `enumType: MmsiType::class` mappings and framework attributes (Symfony `#[Assert\Choice(callback: [MmsiType::class,
-  'cases'])]`). Until 2.0 the old name is a deprecated alias, so these keep working, and enum cases serialized by 0.x
+  'cases'])]`). Until 2.0 the old name is a deprecated alias, declared when Composer's autoloader loads (so type
+  checks and `instanceof` see it too), so these keep working, and enum cases serialized by 0.x
   (`E:…\Transport\MmsiType:Ship`, in caches, Messenger messages, sessions) unserialize to `MmsiStationType` cases;
   `serialize()` writes the new name. Static analysis sees `MmsiType` as a separate deprecated enum, so code that compares
   its cases with `Mmsi::type()` should switch to the new name. Rows are unaffected (the backed values are the same).
@@ -70,7 +71,8 @@ wording, `Internal\` and `@internal`, and `masked()` hiding more. CI runs PHP 8.
   `10.1000/x` from the same URL, so equality lookups built from such URLs no longer match those rows until they are
   cleaned. One-off cleanup: list the candidates (`WHERE doi LIKE '%?%' OR doi LIKE '%#%'`), check each against its source
   URL (a DOI may itself hold a `?` or `#` that the URL percent-encoded), and rewrite the affected rows to
-  `(string) new Doi('https://doi.org/' . $stored)`.
+  a bare `Doi` built from the stored value cut at its first `?` or `#` (`new Doi(\strtok($stored, '?#'))`; not through a
+  resolver URL, which would percent-decode the already decoded value a second time).
 - Code that extended an exception class: catch it instead, or extend vo-base `InvalidValueObjectException`.
 - Code that instantiated a factory: call `fromString()` statically.
 - Serialized payloads and stored strings of 0.2 read unchanged (the `value` key and the canonical forms are the same).
