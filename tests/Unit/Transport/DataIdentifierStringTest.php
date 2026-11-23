@@ -32,15 +32,15 @@ final class DataIdentifierStringTest extends TestCase
         self::assertSame(self::ENVELOPE, $message->jsonSerialize());
         self::assertSame(['25SLN12345', 'S000001', '1PABC-1'], \array_map(strval(...), $message->fields()));
         self::assertSame('25S', $message->fields()[0]->identifier());
-        self::assertSame('LN12345', $message->fields()[0]->value());
+        self::assertSame('LN12345', $message->fields()[0]->data());
     }
 
     public function testTypedSerialAccessor(): void
     {
         $message = new DataIdentifierString(self::ENVELOPE);
 
-        self::assertSame('000001', $message->serial());
-        self::assertSame('ABC-1', $message->field('1P')?->value());
+        self::assertSame('000001', $message->serialNumber());
+        self::assertSame('ABC-1', $message->field('1P')?->data());
         self::assertNull($message->field('Q'));
     }
 
@@ -54,14 +54,14 @@ final class DataIdentifierStringTest extends TestCase
 
     public function testSerialIsNullWithoutTheField(): void
     {
-        self::assertNull(DataIdentifierString::fromFields([new DataIdentifierField('P', 'X')])->serial());
+        self::assertNull(DataIdentifierString::fromFields([new DataIdentifierField('P', 'X')])->serialNumber());
     }
 
     public function testTheFirstFieldWithAnIdentifierWins(): void
     {
         $message = DataIdentifierString::fromFields([new DataIdentifierField('S', 'A'), new DataIdentifierField('S', 'B')]);
 
-        self::assertSame('A', $message->serial());
+        self::assertSame('A', $message->serialNumber());
     }
 
     public function testBuildsBackFromFields(): void
@@ -78,7 +78,8 @@ final class DataIdentifierStringTest extends TestCase
     public function testBuildingFromNoFieldsIsACallerError(): void
     {
         try {
-            DataIdentifierString::fromFields([]);
+            // Reason: the runtime guard is what is tested; the PHPDoc type already forbids the call.
+            DataIdentifierString::fromFields([]); // @phpstan-ignore argument.type
             self::fail('Expected an exception.');
         } catch (InvalidArgumentException $e) {
             self::assertNotInstanceOf(InvalidTransportIdentifierException::class, $e);
@@ -103,7 +104,7 @@ final class DataIdentifierStringTest extends TestCase
         $restored = \unserialize($serialized);
         self::assertInstanceOf(DataIdentifierString::class, $restored);
         self::assertTrue($message->equals($restored));
-        self::assertSame('000001', $restored->serial());
+        self::assertSame('000001', $restored->serialNumber());
         self::assertSame(['25SLN12345', 'S000001', '1PABC-1'], \array_map(strval(...), $restored->fields()));
     }
 
@@ -126,7 +127,7 @@ final class DataIdentifierStringTest extends TestCase
 
         self::assertInstanceOf(DataIdentifierString::class, $restored);
         self::assertSame(['25SLN12345', 'S000001', '1PABC-1'], \array_map(strval(...), $restored->fields()));
-        self::assertSame('000001', $restored->serial());
+        self::assertSame('000001', $restored->serialNumber());
     }
 
     /**
@@ -161,7 +162,7 @@ final class DataIdentifierStringTest extends TestCase
         }
 
         self::assertSame(self::ENVELOPE, $message->value);
-        self::assertSame('000001', $message->serial());
+        self::assertSame('000001', $message->serialNumber());
     }
 
     /**

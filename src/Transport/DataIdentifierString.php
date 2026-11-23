@@ -33,9 +33,10 @@ final class DataIdentifierString extends AbstractStringValueObject
     private array $parsedFields = [];
 
     /**
-     * @param list<DataIdentifierField> $fields
+     * @param non-empty-list<DataIdentifierField> $fields
      *
-     * @throws InvalidArgumentException when there is no field
+     * @throws InvalidArgumentException when there is no field: a programming error, not an invalid identifier, so
+     *                                  {@see tryFrom()} does not absorb it
      */
     public static function fromFields(array $fields): self
     {
@@ -78,9 +79,9 @@ final class DataIdentifierString extends AbstractStringValueObject
     /**
      * The data of the serial number field (data identifier `S`).
      */
-    public function serial(): ?string
+    public function serialNumber(): ?string
     {
-        return $this->field('S')?->value();
+        return $this->field('S')?->data();
     }
 
     #[Override]

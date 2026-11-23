@@ -34,14 +34,23 @@ final class DataIdentifierFieldTest extends TestCase
     }
 
     #[DataProvider('valid')]
-    public function testParses(string $text, string $identifier, string $value): void
+    public function testParses(string $text, string $identifier, string $data): void
     {
         $field = DataIdentifierField::from($text);
 
         self::assertSame($identifier, $field->identifier());
-        self::assertSame($value, $field->value());
+        self::assertSame($data, $field->data());
+        self::assertSame($text, $field->value);
         self::assertSame($text, (string) $field);
         self::assertSame($text, $field->jsonSerialize());
+        self::assertTrue($field->equals(new DataIdentifierField(identifier: $identifier, data: $data)));
+        self::assertTrue(DataIdentifierField::isValid($text));
+        self::assertTrue($field->equals(DataIdentifierField::tryFrom($text) ?? new Wmi('1G4')));
+    }
+
+    public function testTheValueIsTheIdentifierAndTheDataTogether(): void
+    {
+        self::assertSame('25SLN12345', new DataIdentifierField('25S', 'LN12345')->value);
     }
 
     public function testEquality(): void
@@ -78,6 +87,9 @@ final class DataIdentifierFieldTest extends TestCase
         } catch (InvalidTransportIdentifierException $e) {
             self::assertSame('Data identifier field has an invalid format.', $e->getMessage());
         }
+
+        self::assertNull(DataIdentifierField::tryFrom($text));
+        self::assertFalse(DataIdentifierField::isValid($text));
     }
 
     public function testConstructorRefusesABadIdentifier(): void
@@ -100,9 +112,9 @@ final class DataIdentifierFieldTest extends TestCase
     }
 
     #[DataProvider('invalidParts')]
-    public function testConstructorRefusesBadParts(string $identifier, string $value): void
+    public function testConstructorRefusesBadParts(string $identifier, string $data): void
     {
         $this->expectException(InvalidTransportIdentifierException::class);
-        new DataIdentifierField($identifier, $value);
+        new DataIdentifierField($identifier, $data);
     }
 }

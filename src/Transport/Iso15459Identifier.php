@@ -52,11 +52,11 @@ final class Iso15459Identifier extends AbstractStringValueObject
             throw TransportRules::fail(self::TYPE, 'is not carried by data identifier 25S or J');
         }
 
-        if ($field->identifier() === 'J' && \strlen($field->value()) > self::LICENSE_PLATE_MAX_LENGTH) {
+        if ($field->identifier() === 'J' && \strlen($field->data()) > self::LICENSE_PLATE_MAX_LENGTH) {
             throw TransportRules::invalidFormat(self::TYPE);
         }
 
-        return new self($field->value());
+        return new self($field->data());
     }
 
     #[Override]
