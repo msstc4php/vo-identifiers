@@ -12,9 +12,16 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierExce
  * Builds the one identifier type that accepts the value, or throws {@see AmbiguousValueException} listing every type
  * that does. A bare ISNI and an ORCID iD are the same form, so only an ORCID URL (or a label such as `ISNI `) decides
  * between them, and a 16-digit ISAN without check characters is also an ISNI. The factory never picks silently.
+ *
+ * The candidate classes are frozen for 1.x: a new identifier class joins a factory only in the next major, so a value
+ * that resolves to one class keeps resolving to it.
  */
 final class PublicationIdentifierFactory
 {
+    private function __construct()
+    {
+    }
+
     public static function fromString(string $value): Isbn|Issn|Ismn|Isrc|Iswc|Isan|Isni|Orcid|Doi|Ror|Ark
     {
         $matches = \array_values(\array_filter([

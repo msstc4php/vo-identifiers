@@ -13,9 +13,16 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierExcept
  * that does. Three letters are both a WMI and an IATA airport code, so such a value is ambiguous. The ISO/IEC 15459
  * identifier is not a candidate: it has no syntax of its own, only the data identifier that carries it. Any seven
  * digits are an IMO number (the `IMO` prefix is optional).
+ *
+ * The candidate classes are frozen for 1.x: a new identifier class joins a factory only in the next major, so a value
+ * that resolves to one class keeps resolving to it.
  */
 final class TransportIdentifierFactory
 {
+    private function __construct()
+    {
+    }
+
     public static function fromString(string $value): Vin|Wmi|ContainerNumber|ImoNumber|Mmsi|S10ItemIdentifier|AirWaybillNumber|UicVehicleNumber|UnLocode|IataAirportCode|IcaoAirportCode|DataIdentifierString
     {
         $matches = \array_values(\array_filter([

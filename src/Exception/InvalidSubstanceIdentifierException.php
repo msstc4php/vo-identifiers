@@ -6,6 +6,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Exception;
 
 use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 
-class InvalidSubstanceIdentifierException extends InvalidValueObjectException
+final class InvalidSubstanceIdentifierException extends InvalidValueObjectException
 {
 }

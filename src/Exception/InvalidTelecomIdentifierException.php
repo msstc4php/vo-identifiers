@@ -6,6 +6,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Exception;
 
 use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 
-class InvalidTelecomIdentifierException extends InvalidValueObjectException
+final class InvalidTelecomIdentifierException extends InvalidValueObjectException
 {
 }
