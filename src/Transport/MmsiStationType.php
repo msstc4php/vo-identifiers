@@ -10,7 +10,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
  * @see https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.585-10-202604-I!!PDF-E.pdf ITU-R M.585-10, Annexes 1 and 2
  * @see docs/sources/IDENTIFIERS.md "Mmsi"
  */
-enum MmsiType: string
+enum MmsiStationType: string
 {
     case Ship = 'ship';
     case GroupShip = 'group_ship';
