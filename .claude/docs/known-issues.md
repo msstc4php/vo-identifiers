@@ -38,3 +38,14 @@ Covered MSI 99.2% over `src/Internal`. The five escaped mutants are equivalent: 
 44, a multiple of 11, so shifting every digit by a constant cannot change the sum modulo 11, and the plus/minus mutant likewise);
 `AirWaybillCheckDigit` `(int)` cast (PHP converts the numeric string itself); `Iso7064Mod97::isValid` empty-string guard (an
 empty value fails the remainder test anyway).
+
+## 1.0 release decisions, 2026-11-23 (UTC)
+
+- `Doi` accepts resolver URLs on `doi.org` and `dx.doi.org` only (Handbook 3.7.3, 3.8) and cuts at a raw `?`/`#` before decoding; `www.` hosts of 0.x
+  are refused. A DOI stored from such a URL under 0.x keeps its query (no migration in the package).
+- `Ark` keeps `?`/`??` inflections in the Name: no quote of the draft's inflection text is in `docs/sources`. Stripping them changes stored forms and
+  `equals()`, so it waits for 2.0 even if a quote is found.
+- `Iso15459Identifier` stays `[A-Z0-9]{3,}`; DoD IUID texts that may allow `-` and `/` were not reachable. Widening is allowed in a minor.
+- `Issn` no longer completes seven digits (`fromParts()` does). `TelecomIdentifierFactory` stays: bare 14/15 digits are always ambiguous (documented).
+- Infection after the 1.0 changes: MSI 98.35 % (unit suite); the escaped mutants are the pre-1.0 ones (regex `D` flags and carets that the compaction or
+  a later check makes equivalent, the helpers listed below, `Imei::masked()` thresholds, `explode` limits); none in code changed for 1.0.

@@ -1,5 +1,59 @@
 # Changelog
 
+## [1.0.0] - unreleased
+
+First stable release: from here on a breaking change needs 2.0.
+
+Backward compatibility (README "Backward compatibility"): 1.x covers public classes, methods, parameter names and return
+types, the JSON and string forms, the `value` serialization key and the canonical stored strings, enum backed values and
+case names, `MAX_LENGTH`, and the exception classes with their parents. A minor never refuses a value that an earlier 1.x
+accepted (a check sourced later is only reported by `hasValid…(): bool`), may accept more only within `MAX_LENGTH`, adds a
+class to a factory only in the next major, and may add enum cases and AIM register editions. Not covered: message
+wording, `Internal\` and `@internal`, and `masked()` hiding more. CI runs PHP 8.4 and 8.5.
+
+### Changed (BC)
+
+- Requires `msstc4php/vo-gs1 ^1.0` (was `^0.1`; the `toGtin()` methods return its `Key\Gtin`) and `msstc4php/vo-base ^1.4`
+  (was `^1.3`).
+- `Transport\DataIdentifierField` follows the value-object API: a public `$value` (data identifier and data together),
+  `data()` instead of `value()`, the constructor parameter `$data` instead of `$value`, and `tryFrom()` and `isValid()`.
+- `Transport\DataIdentifierString::serial()` is `serialNumber()`, as on the other classes; `fromFields()` takes a
+  `non-empty-list`.
+- `Transport\MmsiType` is `Transport\MmsiStationType` (the bridge's `MmsiType` is the Doctrine type of `Mmsi`); cases and
+  backed values are unchanged.
+- `Transport\Vin::modelYear()` is `modelYears()` (it returns the candidates); `Transport\UicVehicleNumber::countryCode()`
+  is `uicCountryCode()` (the UIC numeric code, not ISO letters).
+- `Publication\Doi` cuts a resolver URL at a raw `?` or `#` (query and fragment were kept as part of the DOI) and accepts
+  resolver URLs on `doi.org` and `dx.doi.org` only, the hosts the DOI Handbook names: `www.doi.org` and `www.dx.doi.org`
+  URLs are refused. `doi: ` with one space is accepted.
+- `Publication\Issn` refuses seven digits (they were completed with a computed check character); `Issn::fromParts()` does
+  that on request.
+- `Publication\Isan::equals()` ignores the check characters, so the forms with and without them are equal.
+- The six `Exception\Invalid*IdentifierException` classes are `final`; the three factories have a private constructor.
+- `Trade\TariffCode` messages start "Tariff code" (was "tariff code").
+
+### Added
+
+- `Publication\Isbn::toIsbn13()`, `Publication\Issn::fromParts()`.
+- `Internal\Reason` holds all five failure reasons; README "Backward compatibility" and "Canonical forms"; class
+  docblocks link the source notes on GitHub; the README says how the framework bridges map the value objects (unreleased
+  docs commit after 0.2.0).
+
+### Upgrading from 0.2
+
+- `DataIdentifierField::value()` → `data()`; `new DataIdentifierField(identifier: …, value: …)` → `data: …`;
+  `(string) $field` or `$field->value` for the whole field.
+- `DataIdentifierString::serial()` → `serialNumber()`.
+- `Transport\MmsiType` → `Transport\MmsiStationType` (`use` statements, type hints).
+- `Vin::modelYear()` → `modelYears()`; `UicVehicleNumber::countryCode()` → `uicCountryCode()`.
+- A seven-digit ISSN: `Issn::fromParts($sevenDigits)` instead of `new Issn($sevenDigits)`.
+- A DOI resolver URL on `www.doi.org` or `www.dx.doi.org`: strip the host first or rewrite it to `doi.org`. A DOI stored
+  from a URL with a query or fragment under 0.x keeps it; find such values (`?` or `#` that the source URL did not
+  percent-encode) and clean them.
+- Code that extended an exception class: catch it instead, or extend vo-base `InvalidValueObjectException`.
+- Code that instantiated a factory: call `fromString()` statically.
+- Serialized payloads and stored strings of 0.2 read unchanged (the `value` key and the canonical forms are the same).
+
 ## [0.2.0] - 2026-11-23
 
 ### Changed

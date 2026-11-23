@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-No version is released yet; `main` is supported until 1.0.
+Supported: 1.x (the latest minor receives fixes).
 
 Runtime requirement: PHP >= 8.4.
 

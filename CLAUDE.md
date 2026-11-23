@@ -10,8 +10,8 @@ UIC vehicle number, UN/LOCODE, ISO/IEC 15459 and MH10.8.2 data identifiers), tel
 EID) and chemistry, trade and energy identifiers (CAS, EC, UN number, HS, EIC, MPAN). PHP >= 8.4. Namespace
 `MSSTC4PHP\ValueObject\Identifiers\`. Framework-agnostic; Doctrine storage is the separate `vo-identifiers-doctrine` bridge.
 Requirements and the plan live in `../vo-base/docs/` (plan `2026-11-21-001-feat-identifiers-wave-plan.md`); the source notes, the
-authority for every rule, are in `docs/sources/IDENTIFIERS.md`. Depends on `msstc4php/vo-gs1 ^0.1` for the GTIN form of ISBN,
-ISMN and ISSN.
+authority for every rule, are in `docs/sources/IDENTIFIERS.md`. Depends on `msstc4php/vo-base ^1.4` and `msstc4php/vo-gs1 ^1.0` (the GTIN form of
+ISBN, ISMN and ISSN). Stable since 1.0.0: the README "Backward compatibility" section is binding.
 
 ## Common commands
 
@@ -20,7 +20,7 @@ Local install against the sibling `../vo-base` and `../vo-gs1`: `COMPOSER=compos
 
 `composer-local.json` is gitignored. Create it from `composer-ci.json`: copy the file and replace the VCS repositories
 with `{"type": "path", "url": "../vo-base", "options": {"symlink": true}}` and the same for `../vo-gs1`, and require
-`msstc4php/vo-base` as `dev-main as 1.3.0` and `msstc4php/vo-gs1` as `dev-main as 0.1.0`.
+`msstc4php/vo-base` as `dev-main as 1.4.0` and `msstc4php/vo-gs1` as `dev-main as 1.0.0`.
 
 - `COMPOSER=composer-local.json make check`, `make test`, `make infection` (`php -d memory_limit=-1` if the reporter
   runs out of memory), `make fix`.
@@ -43,6 +43,8 @@ copyright-restricted tables are not embedded (the table terms are in `docs/sourc
 
 - `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) compare across forms; the stored string keeps the form given, so a
   string-keyed index or UNIQUE column sees two values.
+- 1.x: never refuse a value an earlier 1.x accepted (a newly sourced check is a `hasValid…(): bool`), never change a
+  canonical form, `MAX_LENGTH` or a factory's candidate set; new reasons go into `Internal\Reason`.
 - Every string value object is validated again on unserialize by vo-base `^1.3` (`parse()` runs again); a composite
   one defines `__serialize()`/`__unserialize()` itself, as `Transport\DataIdentifierField` does. A new class must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.
 - The embedded AIM IAC register (edition 2026-06-16) is prefix-free by inspection; the test asserting it is updated together with the register.

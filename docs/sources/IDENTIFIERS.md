@@ -82,6 +82,11 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 11. **Iccid:** `89` prefix and Luhn as the ITU circular states; lengths only as reached (ETSI TS 102 221: at most 20 digits); Task 4 re-checks E.118 and never
     refuses a length a reached source allows.
 12. This file and the README "format only" list record each ruling with its reason.
+13. **1.0 rulings (2026-11-23 UTC).** `Doi` cuts a resolver URL at a raw `?` or `#` and accepts the hosts the Handbook names, `doi.org` and
+    `dx.doi.org` (DOI section); `Issn` refuses seven digits and `Issn::fromParts()` completes them on request (ISSN section); `Ark` keeps
+    inflections, no quote (ARK section); `Iso15459Identifier` keeps `[A-Z0-9]`, the DoD IUID texts were not reached (Iso15459Identifier section);
+    `EnergyIdentificationCode` keeps `-` allowed in every position but the last (deliberate lenience, frozen for 1.x); a check that gets an
+    official source after 1.0 (`ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported by a `hasValid…(): bool` until 2.0.
 
 ## ISBN, ISSN, ISMN, ISRC, ISWC, ISAN, ISNI, ORCID, DOI, ROR, ARK
 
@@ -248,6 +253,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   character is present in an ARK, by convention it is the right-most character of the Base Name" (optional, not mandated). Normalization:
   "ark:" lowercase, NAAN letters lowercase, otherwise case-sensitive; "Hyphens are considered to be insignificant and are always
   ignored in ARKs." Format only.
+- Inflections (1.0 ruling S12, 2026-11-23 UTC): the draft's `?` and `??` inflections (requests for metadata) are not quoted in these notes, and
+  the quotes above do not say that a trailing `?` is outside the identifier. `Ark` therefore keeps the 0.x behaviour: `?`, `??` and an NMA URL's
+  query stay in the stored Name, so `ark:12345/x5wf6pv?` and `ark:12345/x5wf6pv` are unequal. Stripping them needs a quote of the draft's
+  inflection text first; until then nothing that 0.x accepted is refused or rewritten. Changing the stored form later is a 2.0 change (G1).
 
 ## Transport and logistics
 
@@ -376,6 +385,13 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - AirWaybillNumber: only the hyphen after the prefix is accepted, as ABF and IATA print it (`020-12345675`); spaces are not stripped.
 - DataIdentifierString: one format-06 envelope only. ISO/IEC 15434 Table 1 and 4.1 (preview) give the header, GS after the format header, RS format trailer and EOT message trailer; the preview ends before the 4.3.7 data rules, so a field is a DI followed by UTF-8 data without RS, GS, EOT (MH10.8.2 clause 5).
 - Wmi is a factory candidate and collides with `IataAirportCode` on three letters without I, O, Q.
+- Character set (1.0 ruling N6, 2026-11-23 UTC): `[A-Z0-9]{3,}` rests on MH10.8.2 clause 4, "The allowable alphanumeric (an) character set
+  shall be A-Z and 0-9", the `an` set of the `25S` and `J` definitions. `fromField()` and `parse()` uppercase the data, so `fromField()` is not
+  byte-exact; with that set the uppercasing loses nothing. DoD IUID (MIL-STD-130, the DoD UID Guide) constructs that carry `-` or `/` in a
+  serial number were checked on 2026-11-23: the DoD UID Guide on acq.osd.mil and its archive copies, and the DLA DLMS manual (dla.mil answers
+  403), were **not reached**; a search snippet of the DLA manual (secondary, not quoted) says serial fields allow A-Z, 0-9, dashes and forward
+  slashes. Outcome: no official text reached puts `-` or `/` into an ISO/IEC 15459 identifier under `25S`, so the set stays as quoted. If an
+  official text is reached later, the set is widened in a minor (G1 allows accepting more; the type has no length bound, so no column changes).
 
 ## Telecom
 

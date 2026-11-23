@@ -10,13 +10,62 @@ format only.
 
 ## Status
 
-Initial 0.1.0 content is complete (unreleased): the publication and media, transport and logistics, telecom, chemistry,
-trade and energy identifiers and the check-digit helpers they use. Exceptions are one per family
-(`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`); no message carries the input.
-A message is `<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong
-check character`, `has a reserved service indicator` (`S10ItemIdentifier`) and `is not carried by data identifier 25S or J`
-(`Iso15459Identifier::fromField()`). The wording is not covered by the backward-compatibility promise. Every class with a bounded length has a `MAX_LENGTH` constant (characters of the longest stored form; the
-Doctrine columns are sized from it). The three factories return a native union of their candidate classes.
+Stable since 1.0.0: from here on a breaking change needs 2.0 (see "Backward compatibility"). The package covers the
+publication and media, transport and logistics, telecom, chemistry, trade and energy identifiers and the check-digit
+helpers they use. Exceptions are one final class per family
+(`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`, each extending vo-base
+`InvalidValueObjectException`); no message carries the input or any part of it, not even its length. A message is
+`<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong check
+character`, `has a reserved service indicator` (`S10ItemIdentifier`) and `is not carried by data identifier 25S or J`
+(`Iso15459Identifier::fromField()`). Every class with a bounded length has a public `MAX_LENGTH` constant (characters of
+the longest stored form; the Doctrine columns are sized from it). The three factories return a native union of their
+candidate classes. CI runs PHP 8.4 and 8.5.
+
+## Backward compatibility
+
+Covered by 1.x:
+
+- public classes, methods and parameter names (named arguments), return types;
+- JSON and string forms, the `__serialize()` payload key (`value`) and the canonical stored strings (see "Canonical
+  forms");
+- enum backed values and case names (`MmsiStationType`, `EicObjectType`);
+- `MAX_LENGTH` values (the Doctrine column lengths of the bridge);
+- exception classes and their parents.
+
+Rules:
+
+- A minor release never refuses a value that an earlier 1.x release accepted. A check that gets an official source later
+  (the format-only `ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported, by a `hasValid…(): bool` method;
+  refusing waits for 2.0. A minor may accept more (relax a rule), but only within `MAX_LENGTH`.
+- The candidate sets of `PublicationIdentifierFactory`, `TransportIdentifierFactory` and `TelecomIdentifierFactory` are
+  frozen per major: a new class is usable directly in a minor and joins a factory in the next major, so a value that
+  resolves to one class keeps resolving to it.
+- Enum cases may be added in a minor, so a `match` over them needs a default arm (`MmsiStationType::Unclassified` and a
+  null `objectType()` already exist for that reason). Backed values never change.
+- A new edition of the embedded AIM register ships in a minor and never makes an accepted value refused: it changes only
+  what `issuingAgencyCode()` and `issuingAgencyName()` return, and an entry removed upstream stays as legacy.
+- Deliberate lenience is frozen too: `EnergyIdentificationCode` takes `-` in every position but the last, `HsCode` and
+  `TariffCode` take the quoted print forms, `Doi` takes `doi: ` with one space.
+
+Not covered: exception message wording; everything in `Internal\` or marked `@internal`; the `masked()` format, which may
+hide more in a minor, never less.
+
+## Canonical forms
+
+The stored string (`__toString()`, JSON, the serialized `value`, the Doctrine column) is frozen for 1.x:
+
+| Form | Classes |
+|---|---|
+| compact, letters uppercased, the form given kept | `Isbn` (10 or 13 digits), `Isan` (16, 17, 24 or 26 characters), `Imei` (14 or 15 digits) |
+| compact, letters uppercased | `Ismn` (`979-0` form, an `M` form converted), `Isrc`, `Iswc`, `Isni`, `Vin`, `Wmi`, `ContainerNumber`, `S10ItemIdentifier`, `AirWaybillNumber` (11 digits), `UicVehicleNumber`, `UnLocode`, `IataAirportCode`, `IcaoAirportCode`, `Iso15459Identifier`, `Imeisv`, `Iccid`, `Imsi`, `Eid`, `HsCode` (6 digits), `TariffCode` (8 or 10 digits), `EnergyIdentificationCode`, `Mpan` (13 or 21 digits), `Mmsi` (9 digits) |
+| hyphenated | `Issn` (`NNNN-NNNC`), `Orcid` (`NNNN-NNNN-NNNN-NNNC`), `CasRegistryNumber` (`N…-NN-N`, leading zeros of the first part dropped), `EcNumber` (`NNN-NNN-N`) |
+| with the label | `ImoNumber` (`IMO` + 7 digits), `UnNumber` (`UN` + 4 digits), `Ark` (`ark:NAAN/Name`, label and NAAN lowercased, the Name as given) |
+| lowercased | `Ror` (bare, 9 characters) |
+| as given | `Doi` (bare and percent-decoded, case as given), `DataIdentifierString` and `DataIdentifierField` (byte-exact) |
+
+`formatted()` (on `Isan`, `Isni`, `ImoNumber`, `Isrc`, `Iswc`, `ContainerNumber`, `AirWaybillNumber`,
+`UicVehicleNumber`) is the issuing body's print form, which is why some include the label (`ISAN …`, `ISNI …`,
+`IMO …`) and some do not.
 
 ## Serialization
 
@@ -37,9 +86,9 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
 | `Publication\Isni` | ISO 27729:2012 preview | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISO 27729:2012 preview; ORCID identifier page | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
-| `Publication\Doi` | DOI Handbook (ISO 26324); RFC 3986 for the resolver URL | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` or resolver URL (percent-decoded), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
+| `Publication\Doi` | DOI Handbook (ISO 26324), 3.7.3 and 3.8 for the resolver hosts; RFC 3986 for the resolver URL | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` (one space may follow) or a `doi.org` / `dx.doi.org` resolver URL (query and fragment dropped, the rest percent-decoded, so `%3F` is a `?` of the DOI), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
 | `Publication\Ror` | ROR identifier page (cites ISO/IEC 7064) | MOD 97-10 pair enforced, bare or `https://ror.org/...`, stored lowercase bare; `uri()` |
-| `Publication\Ark` | draft-kunze-ark-40 | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `naan()`, `name()` |
+| `Publication\Ark` | draft-kunze-ark-40 | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `?` and `??` inflections stay in the Name (no quote says otherwise); `naan()`, `name()` |
 | `Publication\PublicationIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, which is also a check-less ISAN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |
 | `Transport\Vin` | ISO 3779 preview; 49 CFR 565.15(c) | ISO 3779, 17 characters without `I`, `O`, `Q`, uppercased; position 9 never refuses, `hasValidCheckDigit()` follows 49 CFR 565.15(c); `wmi()`, `vds()`, `vis()`, `modelYears(): list<int>` (the candidates 30 years apart, empty for `0`, `U`, `Z`) |
 | `Transport\Wmi` | ISO 3780 preview (format only) | ISO 3780, 3 characters; raw `allocation()`, `manufacturer()`, `isSmallManufacturer()` (a `9` in position 3); no region or country decoding |
@@ -52,19 +101,19 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Transport\UnLocode` | UNECE Recommendation 16 | UNECE Rec. 16, 2 letters + 3 of letters and 2-9, format only; `country(): ?CountryCode` |
 | `Transport\IataAirportCode`, `IcaoAirportCode` | none (format only) | 3 and 4 letters, format only |
 | `Transport\Iso15459Identifier` | ISO/IEC 15459 (AIM register 2026-06-16); ANSI MH10.8.2 DI `25S`, `J` | at least 3 capital letters and digits (IAC + company number + serial); `issuingAgencyCode()` and `issuingAgencyName()` from the AIM register (null when unregistered, still accepted); `fromField()` for data identifiers `25S` and `J` (a `J` plate is at most 35 characters) |
-| `Transport\DataIdentifierString`, `DataIdentifierField` | ISO/IEC 15434:2005 preview; ANSI MH10.8.2-2021 | ISO/IEC 15434 format `06` envelope, kept byte-exact (RS, GS, EOT included); `fields()`, `field()`, typed `serial()` (DI `S`), `fromFields()`; DIs are `\d{0,3}[A-Z]` with no description |
+| `Transport\DataIdentifierString`, `DataIdentifierField` | ISO/IEC 15434:2005 preview; ANSI MH10.8.2-2021 | ISO/IEC 15434 format `06` envelope, kept byte-exact (RS, GS, EOT included); `fields()`, `field()`, typed `serialNumber()` (DI `S`), `fromFields()`; a field has `identifier()`, `data()` and `$value` (both together), `tryFrom()`, `isValid()`; DIs are `\d{0,3}[A-Z]` with no description |
 | `Transport\TransportIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; three letters that are both a WMI and an IATA code throw `AmbiguousValueException`, and any seven digits are an `ImoNumber`; none throws `InvalidTransportIdentifierException` |
 | `Telecom\Imei` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 14 digits, or 15 with a Luhn check digit; spaces and hyphens dropped; `equals()` compares the first 14 digits, so both forms of one IMEI are equal; `tac()`, `serialNumber()`, `checkDigit()`, `withCheckDigit()`; `masked()` |
 | `Telecom\Imeisv` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 16 digits, no check digit; `softwareVersion()`, `toImei()`; `masked()` |
 | `Telecom\Iccid` | ITU-T Circular TSB 136; ETSI TS 102 221 | ITU-T Circular 136 and ETSI TS 102 221: `89` prefix, Luhn, 6 to 20 digits (the minimum is derived, not quoted); `issuerIdentifier()` raw; `masked()` |
 | `Telecom\Imsi` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 6 to 15 digits; `mcc()`, `mnc(int)`, `msin(int)` (the caller gives the MNC length); `masked()` |
 | `Telecom\Eid` | GSMA SGP.29 v1.1 | GSMA SGP.29: 32 digits with the MOD 97-10 pair, no prefix rule; `masked()` |
-| `Telecom\TelecomIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; a value that fits several types (an IMEI and an IMSI, an `89`-prefixed number that is also an ICCID, IMEISV or IMSI) throws `AmbiguousValueException`; the return type is the union of the five classes; none throws `InvalidTelecomIdentifierException` |
+| `Telecom\TelecomIdentifierFactory` | - | `fromString()` builds the one type that accepts the value; a value that fits several types (bare 14 or 15 digits are always an IMEI and an IMSI, only an IMEI typed with spaces or hyphens resolves; an `89`-prefixed number that is also an ICCID, IMEISV or IMSI) throws `AmbiguousValueException`; the return type is the union of the five classes; none throws `InvalidTelecomIdentifierException` |
 | `Substance\CasRegistryNumber` | CAS check-digit page | CAS: 2 to 7 digits, 2 digits, check digit enforced; hyphens all or none, stored hyphenated; leading zeros of the first part dropped (`0050-00-0` is `50-00-0`); `checkDigit()` |
 | `Substance\EcNumber` | ECHA EC and list numbers page | ECHA EC or list number, `NNN-NNN-N`, mod 11 check digit enforced; hyphens all or none |
 | `Substance\UnNumber` | UNECE Model Regulations Rev. 24 | UNECE Model Regulations Rev. 24, 4 digits, `UN` optional on input and always stored, no spaces; `number()`; format only |
 | `Trade\HsCode` | WCO HS FAQ and Convention | WCO HS FAQ and Convention, 6 digits, unbroken or as printed by the WCO (`0103.10`) or the EU (`1806 10`); `chapter()`, `heading()`, `subheading()`; format only |
-| `Trade\TariffCode` | EU Commission CN page; Regulation 2658/87 Art. 3; USITC HTS guide | EU CN 8 digits, TARIC 10, US HTS 8 or 10 (other national lengths are not quoted and are refused); unbroken, spaced as the EU prints (`1806 10 15`) or dotted as the USITC prints (`9801.00.10.10`); `hsSubheading(): HsCode`; format only |
+| `Trade\TariffCode` | EU Commission CN page; Regulation 2658/87 Art. 3; USITC HTS guide | an 8- or 10-digit national extension of an HS code, scheme unknown (EU CN 8 digits, TARIC 10, US HTS 8 or 10 are the quoted ones; the same digits in two nomenclatures are equal; other lengths are not quoted and are refused); unbroken, spaced as the EU prints (`1806 10 15`) or dotted as the USITC prints (`9801.00.10.10`); `hsSubheading(): HsCode`; format only |
 | `Energy\EnergyIdentificationCode`, `EicObjectType` | ENTSO-E EIC Data Exchange IG v1.2; EIC Short Guide V3 | ENTSO-E EIC, 16 characters, check character validated; `issuingOffice()`, `objectType(): ?EicObjectType` (null for a letter outside the Short Guide's seven), `objectTypeCode()`, `checkCharacter()` |
 | `Energy\Mpan` | none reached (format only) | GB MPAN, 13 digits or 21, digits only, format only; neither form is decoded (no layout reached) |
 
@@ -119,7 +168,7 @@ A rule is enforced only when an official source is quoted for it; otherwise the 
 
 ## Install
 
-Not on Packagist yet; register the GitHub repositories:
+Register the GitHub repositories:
 
 ```json
 {
@@ -129,16 +178,18 @@ Not on Packagist yet; register the GitHub repositories:
         { "type": "vcs", "url": "https://github.com/msstc4php/vo-identifiers" }
     ],
     "require": {
-        "msstc4php/vo-identifiers": "^0.1"
+        "msstc4php/vo-identifiers": "^1.0"
     }
 }
 ```
 
-Runtime requirements: `msstc4php/vo-base ^1.3` and `msstc4php/vo-gs1 ^0.1`. No framework.
+Runtime requirements: PHP >= 8.4, `msstc4php/vo-base ^1.4` and `msstc4php/vo-gs1 ^1.0` (the `toGtin()` methods of `Isbn`,
+`Issn` and `Ismn` return its `Key\Gtin`). No framework.
 
 ## With the bridges
 
-Every class is a string value object (`Transport\DataIdentifierField` included), so `ValueObjectMapper` (vo-base)
+Every class is a string value object (`Transport\DataIdentifierField`, a composite, has the same `from()`, `$value`,
+`__toString()` and serialization), so `ValueObjectMapper` (vo-base)
 and every [framework bridge](https://github.com/msstc4php/vo-base#framework-integration) (Symfony, Laravel, Yii 2,
 CodeIgniter 4, Cycle, Spiral) validates, binds and stores it with no codec: the stored value is the canonical string,
 in the form given where a class keeps several (see "Equality across forms"). Type a column, a property or a parameter
