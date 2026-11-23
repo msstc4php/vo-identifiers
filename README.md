@@ -134,6 +134,17 @@ Not on Packagist yet; register the GitHub repositories:
 
 Runtime requirements: `msstc4php/vo-base ^1.3` and `msstc4php/vo-gs1 ^0.1`. No framework.
 
+## With the bridges
+
+Every class is a string value object (`Transport\DataIdentifierField` included), so `ValueObjectMapper` (vo-base)
+and every [framework bridge](https://github.com/msstc4php/vo-base#framework-integration) (Symfony, Laravel, Yii 2,
+CodeIgniter 4, Cycle, Spiral) validates, binds and stores it with no codec: the stored value is the canonical string,
+in the form given where a class keeps several (see "Equality across forms"). Type a column, a property or a parameter
+with the concrete class; the `*IdentifierFactory` classes are for input whose kind is not known in advance, and their
+results are stored under their own class. For Doctrine use
+[`msstc4php/vo-identifiers-doctrine`](https://github.com/msstc4php/vo-identifiers-doctrine) (one ORM and ODM type
+per class).
+
 ## License
 
 MIT, see [`LICENSE`](LICENSE).
