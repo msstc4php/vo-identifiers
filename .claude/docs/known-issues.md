@@ -47,5 +47,5 @@ empty value fails the remainder test anyway).
   `equals()`, so it waits for 2.0 even if a quote is found.
 - `Iso15459Identifier` stays `[A-Z0-9]{3,}`; DoD IUID texts that may allow `-` and `/` were not reachable. Widening is allowed in a minor.
 - `Issn` no longer completes seven digits (`fromParts()` does). `TelecomIdentifierFactory` stays: bare 14/15 digits are always ambiguous (documented).
-- Infection after the 1.0 changes: MSI 98.35 % (unit suite); the escaped mutants are the pre-1.0 ones (regex `D` flags and carets that the compaction or
+- Infection after the 1.0 changes: MSI 98.40 % (unit suite, 1835 mutants, 29 escaped); the escaped mutants are the pre-1.0 ones (regex `D` flags and carets that the compaction or
   a later check makes equivalent, the helpers listed below, `Imei::masked()` thresholds, `explode` limits); none in code changed for 1.0.
