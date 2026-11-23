@@ -44,8 +44,8 @@
         }
     ],
     "require": {
-        "msstc4php/vo-base": "^1.3",
-        "msstc4php/vo-gs1": "^0.1",
+        "msstc4php/vo-base": "^1.4",
+        "msstc4php/vo-gs1": "dev-main as 1.0.0",
         "php": ">=8.4"
     },
     "require-dev": {
