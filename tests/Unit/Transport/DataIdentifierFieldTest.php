@@ -117,4 +117,14 @@ final class DataIdentifierFieldTest extends TestCase
         $this->expectException(InvalidTransportIdentifierException::class);
         new DataIdentifierField($identifier, $data);
     }
+
+    public function testReadsAPayloadWrittenBy02(): void
+    {
+        $field = \unserialize('O:63:"MSSTC4PHP\\ValueObject\\Identifiers\\Transport\\DataIdentifierField":1:{s:5:"value";s:10:"25SLN12345";}');
+
+        self::assertInstanceOf(DataIdentifierField::class, $field);
+        self::assertSame('25S', $field->identifier());
+        self::assertSame('LN12345', $field->data());
+        self::assertSame('25SLN12345', $field->value);
+    }
 }
