@@ -65,7 +65,7 @@ final class VinTest extends TestCase
     #[DataProvider('years')]
     public function testModelYearCandidates(string $value, array $expected): void
     {
-        self::assertSame($expected, new Vin($value)->modelYear());
+        self::assertSame($expected, new Vin($value)->modelYears());
     }
 
     /**

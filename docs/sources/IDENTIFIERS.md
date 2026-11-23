@@ -29,7 +29,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | Ror | `0` + 6 Crockford base32 + 2 digits | **enforced** (ruling 3): ROR cites ISO/IEC 7064 with two numeric check digits, which is the MOD 97-10 system; input is the decimal value of the six characters (see the ROR section) |
 | Ark | `ark:` NAAN `/` name | format only (check character optional): draft-kunze-ark-40 |
 | Vin | 17 characters, set without I O Q | enforced: 49 CFR 565.13(g) |
-| Vin | position 9 check | `hasValidCheckDigit()` per 49 CFR 565.15(c); **never a reason to refuse** (ruling 4); `modelYear(): list<int>` always returns the candidates |
+| Vin | position 9 check | `hasValidCheckDigit()` per 49 CFR 565.15(c); **never a reason to refuse** (ruling 4); `modelYears(): list<int>` always returns the candidates |
 | Wmi | region and country tables | **not built** (ruling 6): ISO 3780 text and SAE J1044 unreachable; `Wmi` keeps its 3-character format and raw accessors |
 | ContainerNumber | structure | enforced: BIC |
 | ContainerNumber | check digit | **format only** (ruling 3): the ISO 6346 algorithm text is not reachable; matching BIC's example `BICU 123456 5` is not a quote |
@@ -68,7 +68,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
    `Iso6346CheckDigit` is deleted. ROR cites "ISO/IEC 7064:2003" with two numeric check digits, which is the MOD 97-10 system (the 7064 system with a
    two-digit numeric check pair), so Ror is enforced; the input decoding is in the ROR section.
 4. **Vin.** Position 9 is never a reason to refuse: 49 CFR 565.15 binds vehicles by the market they are sold in (565.11), which a VIN does not carry, and no
-   Canadian, Mexican, Chinese or EU text reached makes it mandatory. `hasValidCheckDigit(): bool` follows 565.15(c); `modelYear(): list<int>` always returns
+   Canadian, Mexican, Chinese or EU text reached makes it mandatory. `hasValidCheckDigit(): bool` follows 565.15(c); `modelYears(): list<int>` always returns
    the candidates (Table VII), never narrowed by position 7.
 5. **Eic.** Validation only: ENTSO-E allows the algorithm only "for the purpose of checking the validity of an allocated EIC code". `EicCheckDigit` has a
    public `isValid()` and no method that computes a check character.
@@ -265,7 +265,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - Model year, 565.15(d)(1), Table VII: 2009 = 9, 2010 = A ... 2030 = Y, 2031 = 1 ... 2039 = 9 (and 1980-2009 the same letters and digits one
   cycle earlier). "Note to Table VII: For passenger cars, and for multipurpose passenger vehicles and trucks with a gross vehicle weight
   rating of 4536 kg (10,000 lb) or less, ... If position 7 is alphabetic, the Model Year in Position 10 of the VIN refers to a year in the
-  range 2010-2039"; otherwise 1980-2009. `modelYear(): list<int>` returns the candidates 30 years apart and is never narrowed by position 7 (ruling 4).
+  range 2010-2039"; otherwise 1980-2009. `modelYears(): list<int>` returns the candidates 30 years apart and is never narrowed by position 7 (ruling 4).
 - 565.15(a): "A "9" shall be placed in the third position of the VIN if the manufacturer identifier is six characters" (WMI of low-volume
   makers uses positions 1-3 plus 12-14). NSAI (Irish WMI issuer, ISO 3780): "A WMI is the first 3 characters of a vehicle Identification
   Number".
@@ -336,7 +336,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   (counting from the right) are taken at their own decimal value"; odd positions are doubled (factors 2 1 2 1 ...), the digits of the products are added, "units digit", the
   check digit is the complement to 10 ("If the units digit is 0, the check digit is also 0"). Examples: basic number 33844796100 gives 33 84 4796 100-8 (digit sum 52); 31513320198 gives
   31 51 3320 198-0 (sum 40). Structure, from the headings of the same Decision's Appendix 6 (legislation.gov.uk/eudn/2007/756/annex/appendix/6/2020-12-31; the Agency for Railways keeps the EVN registers under Regulation (EU) 2016/796, so this is a regulator's act): "PART 4 - CODING OF THE COUNTRIES IN WHICH THE VEHICLES ARE REGISTERED (DIGITS 3-4 AND ABBREVIATION)"; "PART 6 - INTEROPERABILITY CODES USED FOR WAGONS (DIGITS 1-2)"; "PART 3 - RULES FOR THE DETERMINATION OF THE CHECK-DIGIT (DIGIT 12)"; "PART 9 - STANDARD NUMERICAL MARKING OF WAGONS (DIGITS 5 TO 8)".
-  The vehicle-type and country tables of Appendix 6 parts 9-13 are ERA downloads and were not read: `vehicleType()` and `countryCode()` are raw digits.
+  The vehicle-type and country tables of Appendix 6 parts 9-13 are ERA downloads and were not read: `vehicleType()` and `uicCountryCode()` are raw digits.
 
 ### UnLocode, IATA, ICAO
 

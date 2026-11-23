@@ -34,9 +34,9 @@ final class UicVehicleNumber extends AbstractStringValueObject
     }
 
     /**
-     * The third and fourth digits, the UIC numeric country code.
+     * The third and fourth digits, the UIC numeric country code (not an ISO 3166 code).
      */
-    public function countryCode(): string
+    public function uicCountryCode(): string
     {
         return \substr($this->value, 2, 2);
     }
@@ -54,7 +54,7 @@ final class UicVehicleNumber extends AbstractStringValueObject
         return \sprintf(
             '%s %s %s %s-%s',
             $this->vehicleType(),
-            $this->countryCode(),
+            $this->uicCountryCode(),
             \substr($this->value, 4, 4),
             \substr($this->value, 8, 3),
             $this->checkDigit(),

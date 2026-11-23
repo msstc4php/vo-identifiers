@@ -24,6 +24,10 @@ final class Isrc extends AbstractStringValueObject
 
     private const string TYPE = 'ISRC';
 
+    /**
+     * The two letters ISO 3901 calls the country code; not checked against ISO 3166, as agencies also hand out
+     * non-country prefixes.
+     */
     public function countryCode(): string
     {
         return $this->part(0, 2);

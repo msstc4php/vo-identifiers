@@ -40,7 +40,7 @@ final class UicVehicleNumberTest extends TestCase
         $number = new UicVehicleNumber('31 51 3320 198-0');
 
         self::assertSame('31', $number->vehicleType());
-        self::assertSame('51', $number->countryCode());
+        self::assertSame('51', $number->uicCountryCode());
         self::assertSame('0', $number->checkDigit());
         self::assertSame('31 51 3320 198-0', $number->formatted());
     }

@@ -64,7 +64,7 @@ final class Vin extends AbstractStringValueObject
      *
      * @return list<int>
      */
-    public function modelYear(): array
+    public function modelYears(): array
     {
         $code = $this->value[9];
         $position = \strpos(self::LETTER_YEARS, $code);
