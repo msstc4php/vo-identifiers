@@ -7,7 +7,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Telecom;
 use MSSTC4PHP\ValueObject\Contract\Maskable;
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Luhn;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -22,8 +21,6 @@ use Override;
  */
 final class Imei extends AbstractStringValueObject implements Maskable
 {
-    use ReparsesOnUnserialize;
-
     /** Characters of the longest stored form. */
     public const int MAX_LENGTH = 15;
 

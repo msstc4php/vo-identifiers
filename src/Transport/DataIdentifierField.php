@@ -66,12 +66,12 @@ final readonly class DataIdentifierField implements StringConvertible, ValueObje
     public function __unserialize(array $data): void
     {
         if (isset($this->dataIdentifier)) {
-            throw new LogicException('An identifier is immutable; __unserialize() runs only on a new object.');
+            throw new LogicException('A value object is immutable; __unserialize() runs only on a new object.');
         }
 
         $value = $data['value'] ?? null;
         if (!\is_string($value)) {
-            throw new InvalidValueObjectException('A serialized identifier must hold its value, as a string.');
+            throw new InvalidValueObjectException(\sprintf('A serialized %s must hold its value as a string.', self::class));
         }
 
         $field = self::from($value);

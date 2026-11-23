@@ -20,7 +20,7 @@ Local install against the sibling `../vo-base` and `../vo-gs1`: `COMPOSER=compos
 
 `composer-local.json` is gitignored. Create it from `composer-ci.json`: copy the file and replace the VCS repositories
 with `{"type": "path", "url": "../vo-base", "options": {"symlink": true}}` and the same for `../vo-gs1`, and require
-`msstc4php/vo-base` as `dev-main as 1.2.0` and `msstc4php/vo-gs1` as `dev-main as 0.1.0`.
+`msstc4php/vo-base` as `dev-main as 1.3.0` and `msstc4php/vo-gs1` as `dev-main as 0.1.0`.
 
 - `COMPOSER=composer-local.json make check`, `make test`, `make infection` (`php -d memory_limit=-1` if the reporter
   runs out of memory), `make fix`.
@@ -43,6 +43,7 @@ copyright-restricted tables are not embedded (the table terms are in `docs/sourc
 
 - `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) compare across forms; the stored string keeps the form given, so a
   string-keyed index or UNIQUE column sees two values.
-- Every value object uses `Internal\ReparsesOnUnserialize` (vo-base does not re-validate on unserialize); a new class must too, and must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.
+- Every string value object is validated again on unserialize by vo-base `^1.3` (`parse()` runs again); a composite
+  one defines `__serialize()`/`__unserialize()` itself, as `Transport\DataIdentifierField` does. A new class must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.
 - The embedded AIM IAC register (edition 2026-06-16) is prefix-free by inspection; the test asserting it is updated together with the register.
 - Controller rulings and every source decision: `docs/sources/IDENTIFIERS.md`; format-only and not-built lists with reasons: README.

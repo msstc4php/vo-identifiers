@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Energy;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\CommodityRules;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -19,8 +18,6 @@ use Override;
  */
 final class Mpan extends AbstractStringValueObject
 {
-    use ReparsesOnUnserialize;
-
     /** Characters of the longest stored form. */
     public const int MAX_LENGTH = 21;
 

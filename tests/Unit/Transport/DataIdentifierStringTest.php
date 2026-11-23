@@ -157,7 +157,7 @@ final class DataIdentifierStringTest extends TestCase
             $message->__unserialize(['value' => "[)>\x1E06\x1D1PA\x1E\x04"]);
             self::fail('Expected an exception.');
         } catch (LogicException $e) {
-            self::assertSame('An identifier is immutable; __unserialize() runs only on a new object.', $e->getMessage());
+            self::assertSame('A value object is immutable; __unserialize() runs only on a new object.', $e->getMessage());
         }
 
         self::assertSame(self::ENVELOPE, $message->value);

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] - unreleased
+
+### Changed
+
+- Requires `msstc4php/vo-base ^1.3` (was `^1.2`). vo-base 1.3 runs `parse()` again on `unserialize()` for every string
+  value object, so `Internal\ReparsesOnUnserialize` is removed and the identifiers rely on the base. Behaviour is the
+  same except the messages: a payload without a string value now fails with "A serialized <class> must hold its value
+  as a string." (was "A serialized identifier must hold its value, as a string.") and `__unserialize()` on a built
+  object with "A value object is immutable; __unserialize() runs only on a new object." (was "An identifier is
+  immutable; ..."). `Transport\DataIdentifierField`, a composite, keeps its own methods and uses the same messages.
+- `^1.3` and not `^1.3.1` on purpose: 1.3.1 fixes vo-base's composite value objects, which this package does not use.
+
 ## [0.1.0] - 2026-11-22
 
 ### Added

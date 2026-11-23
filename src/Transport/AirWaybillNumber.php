@@ -6,7 +6,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Identifiers\Internal\AirWaybillCheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -21,8 +20,6 @@ use Override;
  */
 final class AirWaybillNumber extends AbstractStringValueObject
 {
-    use ReparsesOnUnserialize;
-
     /** Characters of the longest stored form. */
     public const int MAX_LENGTH = 11;
 

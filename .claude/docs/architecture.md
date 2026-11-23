@@ -12,6 +12,5 @@ more than one type accepts the value; `Iso15459Identifier`, the chemistry, trade
 - per-family rules (`PublicationRules`, `TransportRules`, `TelecomRules` incl. `mask()`, `CommodityRules` for substance/trade/energy):
   `fail`, `invalidFormat`, `compact` strip the printed label and separators;
 - `IssuingAgencyRegister` (the one embedded table, AIM IAC register 2026-06-16);
-- `ReparsesOnUnserialize` (trait, see conventions).
 
 `deptrac.yaml` forbids every framework namespace; Doctrine lives in `vo-identifiers-doctrine`.

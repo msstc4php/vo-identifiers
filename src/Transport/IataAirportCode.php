@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TransportRules;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
@@ -17,8 +16,6 @@ use Override;
  */
 final class IataAirportCode extends AbstractStringValueObject
 {
-    use ReparsesOnUnserialize;
-
     /** Characters of the longest stored form. */
     public const int MAX_LENGTH = 3;
 

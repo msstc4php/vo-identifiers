@@ -7,7 +7,6 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod37_36;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Reason;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Support\AbstractStringValueObject;
 use Override;
 
@@ -24,8 +23,6 @@ use Override;
  */
 final class Isan extends AbstractStringValueObject
 {
-    use ReparsesOnUnserialize;
-
     /** Characters of the longest stored form. */
     public const int MAX_LENGTH = 26;
 

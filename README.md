@@ -132,7 +132,7 @@ Not on Packagist yet; register the GitHub repositories:
 }
 ```
 
-Runtime requirements: `msstc4php/vo-base ^1.2` and `msstc4php/vo-gs1 ^0.1`. No framework.
+Runtime requirements: `msstc4php/vo-base ^1.3` and `msstc4php/vo-gs1 ^0.1`. No framework.
 
 ## License
 

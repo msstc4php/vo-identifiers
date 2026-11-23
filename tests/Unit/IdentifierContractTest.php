@@ -24,7 +24,6 @@ use MSSTC4PHP\ValueObject\Identifiers\Internal\IssuingAgencyRegister;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Luhn;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Mod11CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\ReparsesOnUnserialize;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\RorCheckDigits;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\S10CheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\TelecomRules;
@@ -66,7 +65,6 @@ use MSSTC4PHP\ValueObject\Identifiers\Transport\UnLocode;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\Vin;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\Wmi;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -79,7 +77,6 @@ use SplFileInfo;
  * Every identifier value object: string and JSON round trips, equality, serialization that validates again, and the
  * `MAX_LENGTH` the Doctrine columns are sized from.
  */
-#[CoversTrait(ReparsesOnUnserialize::class)]
 #[CoversClass(Ark::class)]
 #[CoversClass(Doi::class)]
 #[CoversClass(Isan::class)]
@@ -307,7 +304,7 @@ final class IdentifierContractTest extends TestCase
     public function testAPayloadWithoutAStringValueIsRefused(string $class, array $data): void
     {
         $this->expectException(InvalidValueObjectException::class);
-        $this->expectExceptionMessage('A serialized identifier must hold its value, as a string.');
+        $this->expectExceptionMessage('A serialized ' . $class . ' must hold its value as a string.');
 
         \unserialize($this->payload($class, $data));
     }
@@ -325,7 +322,7 @@ final class IdentifierContractTest extends TestCase
             $identifier->__unserialize(['value' => $other]);
             self::fail('__unserialize() on a built object must throw.');
         } catch (LogicException $e) {
-            self::assertSame('An identifier is immutable; __unserialize() runs only on a new object.', $e->getMessage());
+            self::assertSame('A value object is immutable; __unserialize() runs only on a new object.', $e->getMessage());
         }
 
         self::assertSame($canonical, (string) $identifier);
