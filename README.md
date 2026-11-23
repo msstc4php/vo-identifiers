@@ -29,7 +29,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 
 | Class | Source | Value |
 |---|---|---|
-| `Publication\Isbn` | ISBN Users' Manual 5th-7th ed. (ISBN-13); agency 4th-ed. manual, Internet Archive (ISBN-10); ISMN Manual 2.1.1 (979-0) | ISO 2108; ISBN-13 (978, 979-1 to 979-9) and ISBN-10 both accepted, 979-0 refused (it is an ISMN), the stored form keeps the length given; `isbn13()`, `isbn10()` (null for 979), `isIsbn10()`, `toGtin()`; `equals()` compares the ISBN-13 forms |
+| `Publication\Isbn` | ISBN Users' Manual 5th-7th ed. (ISBN-13); agency 4th-ed. manual, Internet Archive (ISBN-10); ISMN Manual 2.1.1 (979-0) | ISO 2108; ISBN-13 (978, 979-1 to 979-9) and ISBN-10 both accepted, 979-0 refused (it is an ISMN), the stored form keeps the length given; `isbn13()`, `isbn10()` (null for 979), `isIsbn10()`, `toIsbn13()`, `toGtin()`; `equals()` compares the ISBN-13 forms |
 | `Publication\Issn` | ISSN Manual Dec 2024; issn.org EAN-13 page | ISO 3297, mod 11 enforced, stored `NNNN-NNNC`; seven digits are refused, `fromParts($sevenDigits)` adds the check character; `toGtin($variant = '00')` gives the 977 GTIN (`InvalidArgumentException` for a bad variant) |
 | `Publication\Ismn` | ISMN Users' Manual 2016 | ISO 10957, EAN check enforced, the old `M` form is converted to `979-0...`; `toGtin()` |
 | `Publication\Isrc` | IFPI ISRC structure page | ISO 3901, 12 characters, no check digit; `countryCode()` (ISO 3901's term; not checked against ISO 3166), `registrant()`, `year()`, `designation()`, `formatted()` |
@@ -74,7 +74,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. `Isan::equals()` compares root, episode and version, so
 the forms with and without check characters are equal. The stored string keeps the form that was given, so a
 string-keyed index or a UNIQUE column sees two values for what `equals()` calls one. Normalise first (`Imei::withCheckDigit()`
-or the 14 digits, `Isbn::isbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
+or the 14 digits, `Isbn::toIsbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
 ignores hyphens, with the same caveat.
 
 ## Separators

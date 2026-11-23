@@ -53,6 +53,14 @@ final class Isbn extends AbstractStringValueObject
     }
 
     /**
+     * The same ISBN in its 13-digit form, for a store that has to deduplicate (`equals()` already compares these).
+     */
+    public function toIsbn13(): self
+    {
+        return $this->isIsbn10() ? new self($this->isbn13()) : $this;
+    }
+
+    /**
      * Null for a 979 ISBN, which has no ISBN-10.
      */
     public function isbn10(): ?string

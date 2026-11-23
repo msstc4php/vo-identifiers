@@ -144,4 +144,22 @@ final class IsbnTest extends TestCase
         self::assertSame('0306406152', (string) $isbn);
         self::assertSame('"0306406152"', \json_encode($isbn));
     }
+
+    public function testToIsbn13GivesTheThirteenDigitForm(): void
+    {
+        $isbn = new Isbn('0-8436-1072-7');
+        $isbn13 = $isbn->toIsbn13();
+
+        self::assertSame('9780843610727', $isbn13->value);
+        self::assertTrue($isbn13->equals($isbn));
+        self::assertSame('0843610727', $isbn->value);
+    }
+
+    public function testToIsbn13KeepsAThirteenDigitIsbn(): void
+    {
+        $isbn = new Isbn('9780843610727');
+        self::assertSame($isbn, $isbn->toIsbn13());
+        self::assertSame('9789295055124', new Isbn('978-92-95055-12-4')->toIsbn13()->value);
+        self::assertSame('9791034300624', new Isbn('979-10-343-0062-4')->toIsbn13()->value);
+    }
 }
