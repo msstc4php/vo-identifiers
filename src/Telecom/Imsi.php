@@ -14,7 +14,8 @@ use Override;
  * International Mobile Subscriber Identity: not more than 15 digits, the Mobile Country Code (3), the Mobile Network Code (2
  * or 3, depending on the MCC) and the subscriber number. The MNC length is not in the value, so the caller passes it
  * to {@see mnc()} and {@see msin()}; the MCC table is under ITU copyright and is not embedded. At least six digits are
- * required (MCC, a two-digit MNC and one digit of subscriber number).
+ * required (MCC, a two-digit MNC and one digit of subscriber number). A wrong MNC length is a programming error, not
+ * an invalid IMSI: it throws a bare `InvalidArgumentException`, which {@see tryFrom()} does not absorb.
  *
  * @see https://www.etsi.org/deliver/etsi_ts/123000_123099/123003/17.07.00_60/ts_123003v170700p.pdf 3GPP TS 23.003 V17.7.0, 2.2
  * @see docs/sources/IDENTIFIERS.md "Imei, Imeisv, Imsi"

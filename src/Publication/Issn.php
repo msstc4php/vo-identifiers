@@ -48,7 +48,8 @@ final class Issn extends AbstractStringValueObject
      * The 977 GTIN-13: `977`, the seven ISSN digits, the two-digit variant (`00` for a normal title) and the EAN check
      * digit.
      *
-     * @throws InvalidArgumentException when the variant is not two digits (a caller error, not an invalid ISSN)
+     * @throws InvalidArgumentException when the variant is not two digits: a programming error, not an invalid ISSN, so it is
+     *                                  not the family exception
      */
     public function toGtin(string $variant = '00'): Gtin
     {

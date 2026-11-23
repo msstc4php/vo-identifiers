@@ -31,12 +31,17 @@ final class Iso15459Identifier extends AbstractStringValueObject
 
     /**
      * The issuing agency code at the start of the identifier; null when no register entry starts it.
+     *
+     * @return non-empty-string|null
      */
     public function issuingAgencyCode(): ?string
     {
         return IssuingAgencyRegister::codeOf($this->value);
     }
 
+    /**
+     * @return non-empty-string|null
+     */
     public function issuingAgencyName(): ?string
     {
         $code = $this->issuingAgencyCode();

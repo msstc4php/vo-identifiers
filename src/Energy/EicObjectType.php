@@ -7,6 +7,8 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Energy;
 /**
  * The object types an EIC code can identify, by the letter in its third position.
  *
+ * Cases may be added in a minor release, so a `match` over the cases needs a default arm; the backed values never change.
+ *
  * @see https://eepublicdownloads.entsoe.eu/clean-documents/EDI/Library/EIC_Short_Guide_and_FAQ_V3_Approved%20April%202016.pdf ENTSO-E, EIC Short Guide and FAQ V3
  */
 enum EicObjectType: string
