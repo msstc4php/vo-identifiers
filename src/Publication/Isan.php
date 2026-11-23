@@ -101,11 +101,6 @@ final class Isan extends AbstractStringValueObject
         return 'ISAN ' . \implode('-', $groups);
     }
 
-    private function withoutCheckCharacters(): string
-    {
-        return \substr($this->value, 0, 16) . ($this->version() ?? '');
-    }
-
     #[Override]
     protected function parse(string $value): string
     {
@@ -127,5 +122,10 @@ final class Isan extends AbstractStringValueObject
         }
 
         return $value;
+    }
+
+    private function withoutCheckCharacters(): string
+    {
+        return \substr($this->value, 0, 16) . ($this->version() ?? '');
     }
 }

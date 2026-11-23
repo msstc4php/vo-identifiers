@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Publication;
 
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod11_2;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod37_36;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
-use MSSTC4PHP\ValueObject\Identifiers\Internal\Iso7064Mod11_2;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Isan;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Isni;
 use PHPUnit\Framework\Attributes\CoversClass;
