@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.0] - unreleased
+## [1.2.0] - 2026-11-24
 
 Nothing that 1.1 accepted is refused; `equals()`, the canonical forms and `MAX_LENGTH` are unchanged.
 
