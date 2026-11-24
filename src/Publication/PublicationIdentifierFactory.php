@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Publication;
 
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Exception\AmbiguousValueException;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
 
 /**
@@ -43,6 +44,16 @@ final class PublicationIdentifierFactory
             1 => $matches[0],
             default => throw new AmbiguousValueException('publication identifier', self::classesOf($matches)),
         };
+    }
+
+    /** Null when no candidate or several fit; fromString() says which. */
+    public static function tryFromString(string $value): Isbn|Issn|Ismn|Isrc|Iswc|Isan|Isni|Orcid|Doi|Ror|Ark|null
+    {
+        try {
+            return self::fromString($value);
+        } catch (InvalidValueObjectException) {
+            return null;
+        }
     }
 
     /**

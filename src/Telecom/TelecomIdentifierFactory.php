@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Telecom;
 
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Exception\AmbiguousValueException;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTelecomIdentifierException;
 
 /**
@@ -38,6 +39,16 @@ final class TelecomIdentifierFactory
             1 => $matches[0],
             default => throw new AmbiguousValueException('telecom identifier', self::classesOf($matches)),
         };
+    }
+
+    /** Null when no candidate or several fit; fromString() says which. */
+    public static function tryFromString(string $value): Imei|Imeisv|Iccid|Imsi|Eid|null
+    {
+        try {
+            return self::fromString($value);
+        } catch (InvalidValueObjectException) {
+            return null;
+        }
     }
 
     /**

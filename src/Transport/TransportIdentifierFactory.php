@@ -6,6 +6,7 @@ namespace MSSTC4PHP\ValueObject\Identifiers\Transport;
 
 use MSSTC4PHP\ValueObject\Contract\ValueObject;
 use MSSTC4PHP\ValueObject\Exception\AmbiguousValueException;
+use MSSTC4PHP\ValueObject\Exception\InvalidValueObjectException;
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierException;
 
 /**
@@ -45,6 +46,16 @@ final class TransportIdentifierFactory
             1 => $matches[0],
             default => throw new AmbiguousValueException('transport identifier', self::classesOf($matches)),
         };
+    }
+
+    /** Null when no candidate or several fit; fromString() says which. */
+    public static function tryFromString(string $value): Vin|Wmi|ContainerNumber|ImoNumber|Mmsi|S10ItemIdentifier|AirWaybillNumber|UicVehicleNumber|UnLocode|IataAirportCode|IcaoAirportCode|DataIdentifierString|null
+    {
+        try {
+            return self::fromString($value);
+        } catch (InvalidValueObjectException) {
+            return null;
+        }
     }
 
     /**

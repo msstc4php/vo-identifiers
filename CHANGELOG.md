@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0] - unreleased
+
+### Added
+
+- `PublicationIdentifierFactory::tryFromString()`, `TransportIdentifierFactory::tryFromString()` and
+  `TelecomIdentifierFactory::tryFromString()`: null where `fromString()` throws a value refusal (vo-base
+  `InvalidValueObjectException`, including `AmbiguousValueException`).
+- `Transport\Iso15459Identifier::hasValidDodUiiLength()`: true when the value has at most 50 characters (DoD UID Guide
+  v2.5, Business Rule 19); report-only, a longer value is still accepted.
+
 ## [1.0.0] - 2026-11-23
 
 First stable release: from here on a breaking change needs 2.0.

@@ -172,4 +172,15 @@ final class Iso15459IdentifierTest extends TestCase
             self::assertSame('ISO/IEC 15459 identifier has an invalid format.', $e->getMessage());
         }
     }
+
+    public function testDodUiiLengthIsReportedNotEnforced(): void
+    {
+        $atLimit = 'LN' . \str_repeat('1', 48);
+        $overLimit = 'LN' . \str_repeat('1', 49);
+
+        self::assertTrue(new Iso15459Identifier($atLimit)->hasValidDodUiiLength());
+        self::assertTrue(new Iso15459Identifier('LN1')->hasValidDodUiiLength());
+        self::assertFalse(new Iso15459Identifier($overLimit)->hasValidDodUiiLength());
+        self::assertSame($overLimit, (new Iso15459Identifier($overLimit))->value);
+    }
 }

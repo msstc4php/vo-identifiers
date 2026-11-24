@@ -24,3 +24,7 @@
   export-ignored). Enums and factories carry their 1.x evolution rule in the docblock.
 - `IdentifierContractTest::testTheMessageForAnOverLongValueHoldsNoPartOfIt` asserts that an over-long value gets the same message as `!`; a class
   whose message varies with the input fails it.
+
+- 1.1.0: the three `*IdentifierFactory` classes have a `tryFromString()` twin that catches only vo-base
+  `InvalidValueObjectException` (the `Invalid*IdentifierException` classes and `AmbiguousValueException` extend it).
+  `Iso15459Identifier::hasValidDodUiiLength()` (at most 50 characters, DoD Rule 19) is report-only; no length cap in `parse()`.

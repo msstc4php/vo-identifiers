@@ -136,4 +136,23 @@ final class PublicationIdentifierFactoryTest extends TestCase
             self::assertSame('Value is not a recognised publication identifier.', $e->getMessage());
         }
     }
+
+    public function testTryFromStringBuildsWhatFromStringBuilds(): void
+    {
+        $value = '0317-8471';
+        $built = PublicationIdentifierFactory::tryFromString($value);
+
+        self::assertInstanceOf(Issn::class, $built);
+        self::assertEquals(PublicationIdentifierFactory::fromString($value), $built);
+    }
+
+    public function testTryFromStringIsNullForNoMatch(): void
+    {
+        self::assertNull(PublicationIdentifierFactory::tryFromString('not an identifier!'));
+    }
+
+    public function testTryFromStringIsNullForAnAmbiguousValue(): void
+    {
+        self::assertNull(PublicationIdentifierFactory::tryFromString('1422458635730476'));
+    }
 }

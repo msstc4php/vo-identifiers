@@ -32,6 +32,8 @@ final class Iso15459Identifier extends AbstractStringValueObject
 
     private const int LICENSE_PLATE_MAX_LENGTH = 35;
 
+    private const int DOD_UII_MAX_LENGTH = 50;
+
     /**
      * The issuing agency code at the start of the identifier; null when no register entry starts it.
      *
@@ -50,6 +52,12 @@ final class Iso15459Identifier extends AbstractStringValueObject
         $code = $this->issuingAgencyCode();
 
         return $code === null ? null : IssuingAgencyRegister::nameOf($code);
+    }
+
+    /** Business Rule 19 of the DoD UID Guide v2.5 caps a UII at 50 characters; the value is never refused for more. */
+    public function hasValidDodUiiLength(): bool
+    {
+        return \strlen($this->value) <= self::DOD_UII_MAX_LENGTH;
     }
 
     /**

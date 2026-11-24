@@ -417,9 +417,10 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   letters and digits) and Rule 21 removes special characters from the enterprise identifier, so `-` and `/` only occur in the part, lot or
   serial number that follows. Footnote 41: a 25S value is "the concatenation of the IAC, enterprise identifier, and
   unique serial number"; footnote 88 permits `-` and `/` only "as significant characters" of those numbers, not as
-  separators between the components. Rule 19
-  caps a DoD UII at 50 characters; that is a DoD profile of the generic ISO/IEC 15459 identifier carried under `25S`, so no cap is applied (a
-  report-only check can be added in a minor). Footnote 88 does not list `J`, so a `J` license plate keeps the `an..35` set of its MH10.8.2
+  separators between the components. Rule 19 (metadata requirements): "The UII is a non-parsable field, not to exceed 50 characters in length (excludes
+  overhead characters). Overhead characters in the encoded data string, such as syntax and data qualifiers, are not part of the UII and are eliminated when
+  the UII is constructed." That is a DoD profile of the generic ISO/IEC 15459 identifier carried under `25S`, so no cap is applied; since 1.1.0
+  `hasValidDodUiiLength()` only reports whether the value has at most 50 characters (the value is the UII itself, no overhead characters). Footnote 88 does not list `J`, so a `J` license plate keeps the `an..35` set of its MH10.8.2
   definition (0.x accepted only that set). `fromField()` and `parse()` uppercase the data; with these sets the uppercasing loses nothing.
 
 ## Telecom

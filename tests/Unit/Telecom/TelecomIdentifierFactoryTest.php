@@ -88,4 +88,22 @@ final class TelecomIdentifierFactoryTest extends TestCase
             self::assertSame('Value is not a recognised telecom identifier.', $e->getMessage());
         }
     }
+
+    public function testTryFromStringBuildsWhatFromStringBuilds(): void
+    {
+        $imeisv = TelecomIdentifierFactory::tryFromString('2605317931138301');
+
+        self::assertInstanceOf(Imeisv::class, $imeisv);
+        self::assertEquals(TelecomIdentifierFactory::fromString('2605317931138301'), $imeisv);
+    }
+
+    public function testTryFromStringIsNullForNoMatch(): void
+    {
+        self::assertNull(TelecomIdentifierFactory::tryFromString('not an identifier'));
+    }
+
+    public function testTryFromStringIsNullForAnAmbiguousValue(): void
+    {
+        self::assertNull(TelecomIdentifierFactory::tryFromString('490154203237518'));
+    }
 }

@@ -115,4 +115,23 @@ final class TransportIdentifierFactoryTest extends TestCase
             self::assertSame('Value is not a recognised transport identifier.', $e->getMessage());
         }
     }
+
+    public function testTryFromStringBuildsWhatFromStringBuilds(): void
+    {
+        $value = '1G4AH59H45G118341';
+        $built = TransportIdentifierFactory::tryFromString($value);
+
+        self::assertInstanceOf(Vin::class, $built);
+        self::assertEquals(TransportIdentifierFactory::fromString($value), $built);
+    }
+
+    public function testTryFromStringIsNullForNoMatch(): void
+    {
+        self::assertNull(TransportIdentifierFactory::tryFromString('not an identifier!'));
+    }
+
+    public function testTryFromStringIsNullForAnAmbiguousValue(): void
+    {
+        self::assertNull(TransportIdentifierFactory::tryFromString('SYD'));
+    }
 }
