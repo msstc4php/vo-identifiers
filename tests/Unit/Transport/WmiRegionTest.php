@@ -18,9 +18,9 @@ final class WmiRegionTest extends TestCase
                 'Africa' => 'africa',
                 'Asia' => 'asia',
                 'Europe' => 'europe',
-                'NorthAmerica' => 'north-america',
+                'NorthAmerica' => 'north_america',
                 'Oceania' => 'oceania',
-                'SouthAmerica' => 'south-america',
+                'SouthAmerica' => 'south_america',
             ],
             \array_column(\array_map(static fn (WmiRegion $case): array => [$case->name, $case->value], WmiRegion::cases()), 1, 0),
         );

@@ -169,6 +169,7 @@ final class IsanTest extends TestCase
         yield 'first private version' => ['B159D8FA01240000F0000000', true];
         yield 'last private version' => ['B159D8FA01240000FFFFFFFF', true];
         yield 'lowercase input' => ['b159d8fa01240000f0000000', true];
+        yield 'private version, 26 characters' => ['B159D8FA01240000KF0000000M', true];
     }
 
     #[DataProvider('privateVersions')]

@@ -17,7 +17,7 @@ enum WmiRegion: string
     case Africa = 'africa';
     case Asia = 'asia';
     case Europe = 'europe';
-    case NorthAmerica = 'north-america';
+    case NorthAmerica = 'north_america';
     case Oceania = 'oceania';
-    case SouthAmerica = 'south-america';
+    case SouthAmerica = 'south_america';
 }

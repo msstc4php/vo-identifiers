@@ -66,7 +66,7 @@ empty value fails the remainder test anyway).
 
 - Every 1.2 addition is report-only or an accessor (ruling 14 in `docs/sources/IDENTIFIERS.md`); the only accepted-set change is the AWB serial
   space (`020-1234 5675`), checked unambiguous in the transport factory; `MAX_LENGTH` stays 11 (stored form), so the bridge is unchanged.
-- `WmiRegion` backed values are lowercase kebab strings (`north-america`); reserved first characters (`D`-`H`, `7`, `0`) give null, not a case, so
+- `WmiRegion` backed values are lowercase snake_case strings (`north_america`, the package style); reserved first characters (`D`-`H`, `7`, `0`) give null, not a case, so
   SAE allocating them later only adds cases.
 - `Mpan::core()` is `substr(-13)` for both forms: Ofgem R0083 puts the MPAN core on the bottom line, after the top line.
 - Infection (`--git-diff-lines`, 2026-11-24 UTC): 125 mutants, 2 escaped, both equivalent in `IswcCheckDigit::compute`: `$i = -1` adds

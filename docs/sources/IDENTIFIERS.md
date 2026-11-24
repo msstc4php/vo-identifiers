@@ -72,7 +72,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
    the candidates (Table VII), never narrowed by position 7.
 5. **Eic.** Validation only: ENTSO-E allows the algorithm only "for the purpose of checking the validity of an allocated EIC code". `EicCheckDigit` has a
    public `isValid()` and no method that computes a check character.
-6. **Not built:** `Wmi::region()` (built in 1.2, ruling 14.2) and `country()` (no official table), `Mmsi::country()` (ITU copyright), `Isbn::formatted()` (RangeMessage terms),
+6. **Not built:** `Wmi::country()` (ISO 3780 Table A.1 assigns countries cell by cell under ISO copyright, as of 2009, reallocated since; `region()` is built since 1.2, ruling 14.2), `Mmsi::country()` (ITU copyright), `Isbn::formatted()` (RangeMessage terms),
    `IcaoAirportCode::region()` (Doc 7910 not reached). `Wmi` keeps its 3-character format and raw accessors.
 7. **Data identifiers.** `\d{0,3}[A-Z]`, null description (MH10.8.2 clause 4 says "preceded by one, two, or three digits" while Table 1 lists bare `S`, `J`, `P`).
 8. **vo-identifiers-doctrine** covered MSI is 66.67 % on the empty registrar; fixed in Task 6; nothing is pushed before the repositories exist.
