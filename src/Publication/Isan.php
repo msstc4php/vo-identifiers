@@ -75,6 +75,15 @@ final class Isan extends AbstractStringValueObject
         return \strlen($this->value) >= 24;
     }
 
+    /**
+     * A version segment from `F0000000` to `FFFFFFFF`, reserved for private numbers that are not registered (ISO
+     * 15706-2:2023, 4.6). False without a version.
+     */
+    public function isPrivateVersion(): bool
+    {
+        return \str_starts_with($this->version() ?? '', 'F');
+    }
+
     public function hasCheckCharacters(): bool
     {
         return \strlen($this->value) === 17 || \strlen($this->value) === 26;

@@ -7,7 +7,7 @@ not be quoted is marked **unreachable** or **not confirmed**; for it the outcome
 length and character set, never a check digit or a table no official source gives). No test vector comes from Wikipedia
 or a library.
 
-Research date: 2026-11-21 (UTC). Status words: **reached** (read the source text), **preview** (publisher's unmodified
+Research date: 2026-11-21 (UTC); 1.2 sources re-read 2026-11-24 (UTC). Status words: **reached** (read the source text), **preview** (publisher's unmodified
 preview of a paid standard), **archive** (Internet Archive copy of an official page), **unreachable**, **not confirmed**
 (only a secondary statement). Quotes are short; the full text is at the link.
 
@@ -22,15 +22,15 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | Issn | `toGtin()` (977) | enforced: issn.org page on the EAN-13 (French) |
 | Ismn | check (EAN weights), `M` form | enforced: ISMN Users' Manual 2016 |
 | Isrc | 12 characters, no check digit | enforced (structure): IFPI ISRC pages |
-| Iswc | `T` + 9 digits + check | structure enforced (ISO 15707:2022 preview); **check digit format only** (ruling 3): Annex B is not reachable and matching the standard's example is not a quote |
-| Isan | MOD 37,36 check characters | enforced: ISAN-IA "ISAN Check Characters Calculation" v2.0 |
+| Iswc | `T` + 9 digits + check | structure enforced (ISO 15707:2022 preview); **check digit format only** (ruling 3); since 1.2 `hasValidCheckDigit()` reports it per the project leader's Annex B text in ISO/TC 46/SC 9 N 268 (ruling 14.1), never refuses |
+| Isan | MOD 37,36 check characters | enforced: ISAN-IA "ISAN Check Characters Calculation" v2.0; second character's coverage (R, E, V; not X) quoted from ISO 15706-2:2023 preview; `isPrivateVersion()` per its 4.6 (ruling 14.6) |
 | Isni, Orcid | MOD 11-2 check | enforced: ISO 27729:2012 preview (Annex A), ORCID page |
 | Doi | `10.` prefix, `/`, suffix; case-insensitive | enforced (structure): DOI Handbook |
 | Ror | `0` + 6 Crockford base32 + 2 digits | **enforced** (ruling 3): ROR cites ISO/IEC 7064 with two numeric check digits, which is the MOD 97-10 system; input is the decimal value of the six characters (see the ROR section) |
 | Ark | `ark:` NAAN `/` name | format only (check character optional): draft-kunze-ark-40 |
 | Vin | 17 characters, set without I O Q | enforced: 49 CFR 565.13(g) |
 | Vin | position 9 check | `hasValidCheckDigit()` per 49 CFR 565.15(c); **never a reason to refuse** (ruling 4); `modelYears(): list<int>` always returns the candidates |
-| Wmi | region and country tables | **not built** (ruling 6): ISO 3780 text and SAE J1044 unreachable; `Wmi` keeps its 3-character format and raw accessors |
+| Wmi | region and country tables | `region(): ?WmiRegion` per ISO 3780:2009 Annex A Table A.1 (preview; ruling 14.2), null for reserved first characters; **country not built** (ruling 14.2: ISO copyright on the cell table, SAE reallocates cells) |
 | ContainerNumber | structure | enforced: BIC |
 | ContainerNumber | check digit | **format only** (ruling 3): the ISO 6346 algorithm text is not reachable; matching BIC's example `BICU 123456 5` is not a quote |
 | ImoNumber | `IMO` + 7 digits | enforced (structure): IMO A.1215(34) |
@@ -38,7 +38,7 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | Mmsi | structure by leading digits | enforced: ITU-R M.585-10 |
 | Mmsi | MID to country | **not built** (ruling 6): ITU copyright, permission needed; `mid()` gives the digits only |
 | S10ItemIdentifier | check (weights 8 6 4 2 3 5 9 7) | enforced: UPU S10-12 |
-| AirWaybillNumber | serial mod 7 | enforced on a regulator's publication (Australian Border Force); IATA Res. 600a **unreachable** |
+| AirWaybillNumber | serial mod 7 | enforced: IATA Resolution 600a (reproduced in IATA's Cargo Agent's Handbook, Res. 807 Ed. 48) and the Australian Border Force; since 1.2 the optional space between the 4th and 5th serial digits is accepted (ruling 14.4) |
 | UicVehicleNumber | Luhn on 11 digits | enforced: Commission Decision 2007/756/EC, Appendix 6 part 3 |
 | UnLocode | 2 letters + 3 characters | format only: UNECE Rec. 16 |
 | IataAirportCode, IcaoAirportCode | 3 and 4 letters | format only; `IcaoAirportCode::region()` **not built** (ruling 6): Doc 7910 nationality letters unreachable (the document is sold) |
@@ -46,15 +46,15 @@ preview of a paid standard), **archive** (Internet Archive copy of an official p
 | DataIdentifierString | format 06 envelope | enforced: ISO/IEC 15434:2005 preview; DI is `\d{0,3}[A-Z]` with a null description (ruling 7): ANSI MH10.8.2-2021 clause 4; **DI table not embeddable** |
 | Imei | 14 digits, Luhn check | enforced: 3GPP TS 23.003 V17.7.0 |
 | Imeisv | 14 + 2 digits | enforced: 3GPP TS 23.003 |
-| Iccid | `89` prefix, Luhn | `89` and Luhn as the ITU circular states; at most 20 digits per ETSI TS 102 221; E.118 text not reached: Task 4 re-checked: still not reached; 6 to 20 digits accepted, the minimum derived from the circular's structure (ruling 11) |
+| Iccid | `89` prefix, Luhn | `89`, Luhn and IIN at most 7 digits per ITU-T E.118 (09/2025, reached 2026-11-24); at most 20 digits per ETSI TS 102 221; 6 to 20 digits accepted, the minimum derived (ruling 11); `hasE118Length()` reports E.118's 19 digits, never refuses (ruling 14.5) |
 | Imsi | up to 15 digits | enforced: 3GPP TS 23.003 |
 | Eid | 32 digits, MOD 97-10 check pair | enforced: GSMA SGP.29 v1.1; **no `89` prefix rule** (ruling 1) |
 | CasRegistryNumber | check (weights 1 up from the right, mod 10) | enforced: CAS page (formula is an image) |
 | EcNumber | check (weights 1 to 6, mod 11) | enforced: ECHA |
 | UnNumber | `UN` + 4 digits | format only (no check exists) |
 | HsCode, TariffCode | 6, 8, 10 digits | format only |
-| EnergyIdentificationCode | check character | enforced, validation only (ruling 5): ENTSO-E EIC Data Exchange IG v1.2; `objectType(): ?EicObjectType` from the ENTSO-E Short Guide letters (reached in Task 5, ruling 9) |
-| Mpan | 13 or 21 digits | format only (ruling 9): neither the check weights nor the layout of either form was reached (Task 5 re-checked); nothing is decoded |
+| EnergyIdentificationCode | check character | enforced, validation only (ruling 5): ENTSO-E EIC Data Exchange IG v1.2; `objectType(): ?EicObjectType` from the ENTSO-E Short Guide letters (reached in Task 5, ruling 9), the seven letters also in the EIC Reference Manual v5.2 (caveat: ruling 14.7) |
+| Mpan | 13 or 21 digits | 13 or 21 digits; the core (distributor 2, unique reference 10, check digit) per Elexon BSC guidance and Ofgem R0083: `core()`, `distributorId()`, `uniqueReference()` since 1.2 (ruling 14.3); **check digit format only** (weights not reached); top line not decoded (field widths not quoted) |
 
 ## Controller rulings (2026-11-21 UTC)
 
@@ -72,7 +72,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
    the candidates (Table VII), never narrowed by position 7.
 5. **Eic.** Validation only: ENTSO-E allows the algorithm only "for the purpose of checking the validity of an allocated EIC code". `EicCheckDigit` has a
    public `isValid()` and no method that computes a check character.
-6. **Not built:** `Wmi::region()` and `country()` (no official table), `Mmsi::country()` (ITU copyright), `Isbn::formatted()` (RangeMessage terms),
+6. **Not built:** `Wmi::region()` (built in 1.2, ruling 14.2) and `country()` (no official table), `Mmsi::country()` (ITU copyright), `Isbn::formatted()` (RangeMessage terms),
    `IcaoAirportCode::region()` (Doc 7910 not reached). `Wmi` keeps its 3-character format and raw accessors.
 7. **Data identifiers.** `\d{0,3}[A-Z]`, null description (MH10.8.2 clause 4 says "preceded by one, two, or three digits" while Table 1 lists bare `S`, `J`, `P`).
 8. **vo-identifiers-doctrine** covered MSI is 66.67 % on the empty registrar; fixed in Task 6; nothing is pushed before the repositories exist.
@@ -84,9 +84,26 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 12. This file and the README "format only" list record each ruling with its reason.
 13. **1.0 rulings (2026-11-23 UTC).** `Doi` cuts a resolver URL at a raw `?` or `#` and accepts the hosts the Handbook names, `doi.org` and
     `dx.doi.org` (DOI section); `Issn` refuses seven digits and `Issn::fromParts()` completes them on request (ISSN section); `Ark` keeps
-    inflections, no quote (ARK section); `Iso15459Identifier` keeps `[A-Z0-9]`, the DoD IUID texts were not reached (Iso15459Identifier section);
+    inflections, no quote (ARK section); `Iso15459Identifier` keeps `[A-Z0-9]` (Iso15459Identifier section; corrected by ruling 14.7: the 1.0 review then reached the DoD UID Guide v2.5 and the class accepts `-` and `/` after the first character, see "Character set");
     `EnergyIdentificationCode` keeps `-` allowed in every position but the last (deliberate lenience, frozen for 1.x); a check that gets an
     official source after 1.0 (`ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported by a `hasValid…(): bool` until 2.0.
+14. **1.2 rulings (2026-11-24 UTC).** No new refusal anywhere (constructor, `tryFrom()`, `isValid()`, factories); `equals()`, canonical forms and
+    `MAX_LENGTH` unchanged.
+    1. `Iswc`: ISO/TC 46/SC 9 N 268 (the CISAC project leader's Annex B text, a committee document; the 2022 Annex B itself was not reached) is the
+       source of the report-only `hasValidCheckDigit()` (helper `IswcCheckDigit`); its worked example `T-034.524.680-1` is the test vector.
+    2. `Wmi::region(): ?WmiRegion` from ISO 3780:2009 Annex A Table A.1 (row groups; null for the reserved `D`-`H`, `7`, `0`). No `country()`: the
+       country cells are ISO copyright, date from 2009 and are reallocated by SAE since.
+    3. `Mpan::core()`, `distributorId()` (2 digits), `uniqueReference()` (10 digits) for both forms; the core is the last 13 digits. No top-line
+       accessor: Elexon and Ofgem name the fields (profile class, MTC, LLFC) but give no widths (the `00` profile class is one value, not a width rule;
+       21 = 8 + 13 is from search snippets only). The check digit stays format only. 22 digits (an R0083 Supply Number with a 4-digit SSC Id) are not
+       accepted: the length is inferred, not quoted.
+    4. `AirWaybillNumber`: IATA Resolution 600a reached; the optional space between the 4th and 5th serial digits is accepted and dropped (canonical
+       form unchanged, 11 digits). The factory stays unambiguous for it: no other transport candidate accepts three digits, an optional hyphen and
+       two groups of four digits (tested).
+    5. `Iccid::hasE118Length()` reports E.118 (09/2025)'s 19 digits; nothing refused (ETSI allows 20, and "Previous assignments ... are not affected").
+    6. `Isan::isPrivateVersion()`: ISO 15706-2:2023 4.6, read in the publisher's preview (not a snippet). Clause 4.4 (a `0000-0000` version equals no
+       version) is **not** applied in 1.x, as it changes `equals()`: a 2.0 candidate. The support.isan.org vector (snippet only) is not used.
+    7. Docs: EIC Reference Manual v5.2 caveat on `objectType()` (EIC section); ruling 13's DoD IUID wording corrected.
 
 ## ISBN, ISSN, ISMN, ISRC, ISWC, ISAN, ISNI, ORCID, DOI, ROR, ARK
 
@@ -174,6 +191,14 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   valid check digit "as per Annex B of ISO 15707" and print no formula.
 - Format only (ruling 3). Not confirmed from an official text: `S = 1 + sum(i * d_i)` for i = 1..9, `C = (10 - S mod 10) mod 10` (`T` counted as 1). For
   `T-034.524.680`: 1 + 178 = 179, C = 1, equal to the standard's own example, which is not a quote of Annex B.
+- 1.2 (ruling 14.1, read 2026-11-24 UTC). ISO/TC 46/SC 9 N 268, 1999-05-11 (ISO/TC 46/SC 9/WG 2 N 11), "Draft Responses to Comments on ISO Committee
+  Draft 15707, International Standard Work Code (ISWC)", by the Project Leader (CISAC), distributed by the SC 9 Secretariat, NISO copy
+  https://groups.niso.org/higherlogic/ws/public/download/2544/sc9n268.pdf. Response to comment 32 (Annex B): "Calculation of the value of the check
+  digit / di : one of the nine digits of the work identifier (i=1 to 9). wi : weight of digit di. dc : check digit." "sumprod = 1 + Σ(i=1..9) di wi"
+  "rem = sumprod - 10 x Int(sumprod/10)" "If rem = 0 then dc = 0 else dc = 10 – rem". Worked example: "ISWC T 0 3 4 5 2 4 6 8 0 1 / Weight 1 1 2 3 4 5 6 7
+  8 9 1", "sumprod = 179", "rem = 179 – 10 x 17 = 9", "dc = 10 – rem = 1", "T-034.524.680-1 is a valid ISWC". Response to comment 13: "We propose not to
+  change the algorithm." This is a CD-stage committee text, not the 2022 Annex B (informative per the DIN/iteh TOC), so the check is only reported by
+  `Iswc::hasValidCheckDigit()`; a wrong check digit is still accepted.
 
 ### ISAN (ISO 15706)
 
@@ -194,6 +219,15 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   example: `ISAN B159-D8FA-0124-0000-K` (K = 20, 37 minus 17). The second check "is similar as for the first" (ruling 10: round trips only).
   No official example with a version segment was reached; the helper is tested with the official root example and, for the
   second character, by round trips (a third-party vector `1881-66c7-3420-0000-3-9f3a-0245-q` exists and is not used).
+- 1.2 (ruling 14.6, read 2026-11-24 UTC). ISO 15706-2:2023 preview (iteh),
+  https://cdn.standards.iteh.ai/samples/83124/272e013e46454d6ea497aedb2456770d/ISO-15706-2-2023.pdf, 4.3: "“Y” represents the check digit for that
+  V-ISAN. It is computed over the positions labelled “R”, “E” and “V”. The position labelled “X” is not included in the computation of “Y”." (confirms
+  ruling 10's coverage). 4.4: "To avoid confusion, a V-ISAN version segment of 0 (i.e. 0000-0000) shall be treated as an ISAN without a version
+  segment." 4.5: "V-ISAN version segment range 1 (0000 0001 in hexadecimal) to 4 026 531 839 (EFFF FFFF in hexadecimal) are public numbers". 4.6:
+  "V-ISAN version segment range 4 026 531 840 (F000 0000 in hexadecimal) to 4 294 967 295 (FFFF FFFF in hexadecimal) are reserved for private numbers and
+  shall not be issued from within the V-ISAN register. This corresponds to version segments where the first four bits are 1111 (i.e., hexadecimal value
+  F)." So `isPrivateVersion()` is true for a version starting with `F`. 4.4 and the end of 4.6 ("treated as an ISAN without a version segment") would
+  change `equals()`, which is frozen for 1.x: 2.0 candidate. Annex B (the V-ISAN check) is not in the preview; no official vector with a version was read.
 
 ### ISNI (ISO 27729) and ORCID
 
@@ -298,7 +332,20 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   makers uses positions 1-3 plus 12-14). NSAI (Irish WMI issuer, ISO 3780): "A WMI is the first 3 characters of a vehicle Identification
   Number".
 - ISO 3779 and ISO 3780 texts: **unreachable** (2009 editions paid; the 1983 iteh previews are scans without a text layer). The country and
-  region allocation of the first two WMI characters is therefore not quoted from any official text: see ruling 8.
+  region allocation of the first two WMI characters is therefore not quoted from any official text: see ruling 8. Superseded for the region by
+  the 2009 French preview (next item).
+- 1.2 (ruling 14.2, read 2026-11-24 UTC). ISO 3780:2009(F) publisher preview,
+  https://cdn.standards.iteh.ai/samples/45844/6ed6570f8f37401fa4598643cdaae8ac/ISO-3780-2009.pdf (edition confirmed in 2023). 5.1: "Le premier caractère
+  du code WMI doit être une lettre ou un chiffre désignant une zone géographique. ... L'attribution globale du premier caractère est spécifiée dans
+  l'Annexe A." 5.2: "Le deuxième caractère du code WMI doit être une lettre ou un chiffre désignant un pays à l'intérieur d'une zone géographique
+  spécifique". 5.4.2: "L'organisme national doit utiliser le chiffre «9» comme troisième caractère pour identifier un constructeur produisant moins de
+  500 véhicules par an. Dans ce cas, les 3e, 4e et 5e caractères de l'indicateur (VIS) doivent être attribués par l'organisme national" (the ISO text
+  for `isSmallManufacturer()`). Annex A (normative): "L'agence internationale responsable de la maintenance des codes WMI ... est la SAE"; "Le Tableau
+  A.1 spécifie les premier et deuxième caractères de la répartition globale des codes WMI." Table A.1 "Distribution globale des codes WMI", rows by
+  zone géographique: `A B C` "Afrique"; `D E F G H` "Codes en réserve"; `J K L M N P R` "Asie"; `S T U V W X Y Z` "Europe"; `1 2 3 4 5` "Amérique du
+  Nord"; `6` "Oceanie"; `7` "Codes en réserve"; `8 9` "Amérique du Sud"; `0` "Codes en réserve". `Wmi::region()` maps exactly these rows to
+  `WmiRegion` and returns null for the reserved ones (a reserved first character is still accepted). The second-character country cells
+  ("© ISO 2009 – Tous droits réservés", maintained and reallocated by SAE since) are not embedded: no `country()`.
 - Pre-1981 VINs and non-17-character numbers are outside ISO 3779.
 
 ### ContainerNumber (ISO 6346, BIC)
@@ -355,7 +402,19 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   components: the Airline Code Number which is the issuing carrier's three-digit IATA airline code; a seven digit serial number; a check digit. The check
   digit is based on an unweighted modulus 7 calculation. The seven-digit serial number is simply divided by 7 and the resulting remainder is the check
   digit." Example serial 1234567: remainder 5. IATA's PAWB functional specification (iata.org) says "a carrier prefix, a hyphen followed by 7 number serial number
-  and a check digit". IATA Resolution 600a: **unreachable** (members only).
+  and a check digit". IATA Resolution 600a: **unreachable** (members only) until 1.2.
+- 1.2 (ruling 14.4, read 2026-11-24 UTC). IATA "Cargo Agent's Handbook, Resolution 807 - China, Edition 48, Effective 1 October 2025", which reproduces
+  Resolution 600a, https://www.iata.org/contentassets/e9cb5a72b88f4f68a5cfc572a50b60c9/cah807-en-final.pdf. Attachment 'A' 5.1.2: "the air waybill
+  number shall consist of the issuing carrier's three-digit IATA airline code number and a serial number of eight digits including a check digit placed
+  in the extreme right hand position"; 5.1.3: "the check digit shall be determined by using the unweighted Modulus 7 system"; 5.1.5: "a separating
+  hyphen placed between the airline code number and the serial number shall be used for the number shown in the upper right corner and in the lower
+  right corner"; 5.2.1 (carrier's option): "a space may be inserted in the serial number of the airline air waybill between the fourth and fifth
+  digits". Attachment 'B' 2.1.3.3: "A space may be inserted in the serial number between the fourth and fifth digits." Appendix 'D': "The check digit
+  shall be determined by using the unweighted Modulus 7 system, which divides the first seven digits of the serial number by seven and uses the
+  remainder for verification and as the eighth digit." "Assume the first seven digits of the serial number are ‘1234567’" ... "The complete serial
+  number shall read as ‘12345675’." Resolution 606 bar code examples: "air waybill 777-12345675", "air waybill 777-76543213", "air waybill
+  777-32176546" (test vectors). `AirWaybillNumber` accepts one optional space between the 4th and 5th serial digits (`020-1234 5675`) and stores the
+  11 digits; a space anywhere else is still refused. `MAX_LENGTH` (stored form) stays 11.
 
 ### UicVehicleNumber
 
@@ -401,7 +460,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 - Mmsi: only the leading-digit rules quoted above classify; the handheld-VHF format is not quoted precisely enough (the note says "recommends 3") and `979` (AMRD Group B) has no type of its own, so both are `Unclassified`.
 - Iso15459Identifier: `[A-Z0-9]{3,}` (1.0 adds `-` and `/`, see "Character set" below); carried under DI `25S` or `J` only, the two DIs quoted above. The an..35 length of the quoted `J` definition is the only cap, applied to `J` fields only; `25S` has no quoted length. `issuingAgencyCode()` and `issuingAgencyName()` read the code from the start by the AIM register (version 2026-06-16, section 2, code to agency name; no terms of use are printed in it, contact details are not copied). The register text does not state that codes are prefix-free; in this edition they are (0-9, `D`, `J` and two- and three-letter codes, none the beginning of another; a unit test asserts it), so the longest match is the only match. A value starting with no entry decodes to null and is accepted.
 - Mmsi: group, coast, AIS aid to navigation, SAR aircraft and craft-associated forms are classified only when the MID digit after the fixed prefix is 2 to 7 (the MID table runs 201 to 775); otherwise `Unclassified`. No separators are stripped: M.585 prints nine contiguous digits.
-- AirWaybillNumber: only the hyphen after the prefix is accepted, as ABF and IATA print it (`020-12345675`); spaces are not stripped.
+- AirWaybillNumber: only the hyphen after the prefix is accepted, as ABF and IATA print it (`020-12345675`); spaces are not stripped. Since 1.2 also the space between the 4th and 5th serial digits (ruling 14.4).
 - DataIdentifierString: one format-06 envelope only. ISO/IEC 15434 Table 1 and 4.1 (preview) give the header, GS after the format header, RS format trailer and EOT message trailer; the preview ends before the 4.3.7 data rules, so a field is a DI followed by UTF-8 data without RS, GS, EOT (MH10.8.2 clause 5).
 - Wmi is a factory candidate and collides with `IataAirportCode` on three letters without I, O, Q.
 - Character set (1.0 ruling N6, review CR-001, 2026-11-23 UTC). MH10.8.2 clause 4: "The allowable alphanumeric (an) character set shall be A-Z and
@@ -443,7 +502,16 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   7. The MII "89" is assigned by ISO/IEC to ITU-T for telecommunication purposes in accordance with ISO/IEC 7812-1."; "the parity check digit computed according to the Luhn formula (see ISO/IEC 7812-1,
   Annex B)". ITU IIN page: "Together with MII and CC, it shall have a maximum of 7 digits".
 - ETSI TS 102 221 V17.0.0 clause 13.2 EF_ICCID: "File size: 10 bytes"; "Contents: according to Recommendation ITU-T E.118"; "Coding: BCD, left justified and padded with 'F'": so at most 20 digits.
-- The E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
+- 1.2 (ruling 14.5, read 2026-11-24 UTC): ITU-T E.118 (09/2025), https://www.itu.int/rec/T-REC-E.118-202509-I/en (free PDF). Clause 1: "In the case
+  of a subscriber identity module (SIM) and embedded SIM (eSIM), a PAN is also known as an integrated circuit card identifier (ICCID) number";
+  "Previous assignments of E.118 numbering resources are not affected by the amendments made to this Recommendation." Clause 6: "The PAN shall be 19
+  digits long."; INoA "length is a variable number of digits with a maximum of 7"; "Major industry identifier (MII) "89" is assigned by ISO/IEC to ITU-T
+  for telecommunication purposes in accordance with [ISO/IEC 7812-1]"; "Country code (CC) – variable from 1 to 3 digits in accordance with [ITU-T
+  E.164]"; IIN "Together with MII and CC, it shall have a maximum of 7 digits"; "Parity check digit computed according to the Luhn formula (see Annex B
+  of [ISO/IEC 7812−1])"; "Administrations should foresee only the generation of PANs with a length of 19 digits." E.118 (05/2006) 4.1: "The maximum
+  length of the visible card number (primary account number) shall be 19 characters". Neither edition gives a minimum. Since 19 is stricter than the
+  1.x range and earlier assignments and ETSI's 20 digits remain valid, nothing is refused: `Iccid::hasE118Length()` reports exactly 19 digits.
+- Before 1.2: the E.118 Recommendation text (09/2025) itself was **not reached** (PDF 404, summary only): the minimum length, the 19-digit PAN maximum and whether 18-digit numbers without a check digit exist are
   not confirmed. Ruling 11: `89` prefix and Luhn as the circular states; at most 20 digits (ETSI); Task 4 re-checked E.118 (itu.int rec page and PDF, 2026-11-21 UTC): the text is still not reachable. Implemented: `89`, Luhn, 6 to 20 digits. 20 is from ETSI (BCD "padded with 'F'", so shorter numbers exist). Neither source gives a minimum; 6 is **derived, not quoted**, from the circular's structure: MII `89`, country code, issuer, individual account (at least one digit each) and the check digit. The first 7 digits are returned raw as `issuerIdentifier()` (the IIN maximum). Consequence: short `89`-prefixed numbers also fit `Imei`, `Imsi` and `Imeisv`, and the factory reports them ambiguous.
 
 ### Separators (review CR-014, 2026-11-21 UTC)
@@ -517,6 +585,13 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
   Structure (ENTSOG EIC manual page https://entsog.eu/eic-codes/manual-of-procedures, through search): 2-character local issuing office, 1 object-type character, 12 characters (A-Z, 0-9, "-"), check character.
   **Terms:** "The algorithm deriving from this document may only be used for the purpose of checking the validity of an allocated EIC code, unless used by an authorised LIO when allocating EIC codes. Any
   other use of the ENTSO-E algorithm is expressly prohibited." (ruling 5). Object-type letters, reached in Task 5 (ruling 9): ENTSO-E, EIC Short Guide and FAQ V3, April 2016 (https://eepublicdownloads.entsoe.eu/clean-documents/EDI/Library/EIC_Short_Guide_and_FAQ_V3_Approved%20April%202016.pdf): "Market Participants (Parties - object type "X")"; "Areas - object type "Y""; "Measuring Points - object type "Z", Energy Metering points"; "Resource objects - object type "W""; "Tie-lines - object type "T""; "Location - object type "V""; "Substations - object type "A"". Structure: "A 2-character number identifying the Issuing Office assigned by ENTSO-E. One Character identifying the object type ... 12 digits, uppercase characters or minus signs allocated by the issuing office. 1 check character"; "Valid characters of an EIC code are A-Z, 0-9 and "-"". `EicObjectType` has those seven cases; the Reference Manual itself was not reached, so a well-formed code with another letter is accepted and `objectType()` is null. Lenient on purpose: the pattern `[0-9A-Z-]{15}[0-9A-Z]` also lets letters and hyphens into the issuing office (the Short Guide calls it a "2-character number") and a hyphen into the object-type position; a code the check character validates is never refused. Lowercase input is uppercased.
+- 1.2 (ruling 14.7, read through phase A 2026-11-24 UTC). ENTSO-E, "The Energy Identification Coding Scheme (EIC) Reference Manual Version 5.2 – Final",
+  2017-06-01, ENTSOG copy https://www.entsog.eu/sites/default/files/2018-09/EIC_Reference_Manual.pdf: 4.2 names the same seven object types
+  ("EIC object type X (Party)", "Y (Area)", "Z (Measurement point)", "W (Resource object)", "T (Tie-line)", "V (Location)", "EIC object Type A
+  (Substations)"); 5.3: "The 2-characters identifying the LIO, as assigned by the CIO." (supports the lenient issuing-office pattern); footnote 4: codes
+  "issued before the version 5.0 of the EIC reference manual ... shall remain valid until phased out" (supports accepting another letter). **Caveat:**
+  4.1: "The EIC code is to be used as a complete string without trying to extract information from its structure." `objectType()` and
+  `issuingOffice()` (1.0 API, kept) extract exactly that; treat them as hints, never as a routing or validation key.
 
 ### Mpan
 
@@ -525,6 +600,20 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
   (primes 3 5 7 13 17 19 23 29 31 37 41 43, sum mod 11 mod 10) appear in Wikipedia and its mirrors only; the MRA Data Transfer Catalogue and DCUSA text were **not reached**. **Outcome: format only** (13 digits, 21 with the top
   line); no helper built (ruling 9). The 21-digit layout (profile class 2, MTC 3, LLFC 3 on the top line) is the plan's and was not confirmed from a reached text.
 - Task 5 re-check (2026-11-21 UTC): elexon.co.uk (glossary, MSID API guideline) answers HTTP 403, mrasco.com, ofgem.gov.uk and the DCUSA site are blocked or carry no text; the Ofgem DWG glossary (Elexon) has no MPAN entry with a layout. Search snippets from Elexon say a full MPAN is 21 digits, the first two of which are the profile class, and that an MPAN "doesn't conform to modulus 11" is a failure reason, but no weights or layout were reached. Outcome (ruling 9, fix round 1): `Mpan` takes 13 or 21 digits, digits only (no separator is quoted), and decodes neither form: no `core()`, `distributorId()`, `profileClass()`. The check digit is not enforced. The 21-digit basis is Elexon search snippets, not a reached text. No source example of an MPAN is printed in the reached SSEN PDF text, so the tests use made-up digits.
+- 1.2 (ruling 14.3, read 2026-11-24 UTC). Elexon, BSC Guidance Note "MSID and MPAN Guidance" V4.0, effective 25/07/2019,
+  https://bscdocs.elexon.co.uk/guidance-notes/msid-mpan-guidance (www.elexon.co.uk still 403): "A full MPAN is composed of the following information:"
+  1 "Profile Type" ("Non Half Hourly customers only, the Half Hourly profile class is represented as 00"), 2 "Meter Timeswitch Code (MTC)", 3 "Line Loss
+  Factor Class (LLFC)", 4 "Distribution Identifier", 5 "Unique Reference Number", 6 "Check Digit" ("A number calculated from the Distribution Identifier and
+  Unique Reference Number to provide a check digit that other Systems can use to validate the above identifier and reference numbers"). "The combination of
+  items 4, 5 and 6 make up a 13-digit identifier referred to as the MPAN Core". "The BSC defines a SVA Metering System Number as a two digit number to
+  identify the Distribution System, a ten digit Unique Reference Number provided by the Distributor and a check digit. This is therefore the same
+  composition as the MPAN Core." Ofgem, decision on REC Change Proposal R0083 (2023-11),
+  https://www.ofgem.gov.uk/sites/default/files/2023-11/Decision%20to%20approve%20REC%20Change%20Proposal%20R0083%20Changes%20to%20Supply%20Number%20Format%20for%20MHHS%20and%20to%20reject%20R0083A.pdf:
+  "The current format of the Supply Number includes: a top line, consisting of the Profile Class Id, Meter Timeswitch Code (MTC) and Line Loss Factor Class
+  (LLFC) Id; and a bottom line, which sets out the Meter Point Administration Number (MPAN), comprising the Distributor Id, a Unique Reference number and a
+  Check Digit." So the core is the trailing 13 digits of the 21-digit form: `core()`, `distributorId()` (2), `uniqueReference()` (10). No MTC or LLFC
+  width is quoted, so the top line is not decoded; under R0083 the SSC Id ("Populate with '0000'") replaces the MTC, so a 22-digit Supply Number may exist,
+  but its length is inferred and stays refused. Check weights (REC Energy Market Data Specification, DTC J0003) still not reached: format only.
 
 ## Table terms of use summary
 
@@ -553,9 +642,10 @@ Same style as vo-finance `PaymentCardNumber::masked()` (leading digits, `*`, the
 | `RorCheckDigits` | ROR identifier page, decoding as in the ROR section | Ror |
 | `VinCheckDigit` | 49 CFR 565.15(c) | Vin |
 | `S10CheckDigit` | UPU S10-12 5.4 | S10ItemIdentifier |
-| `AirWaybillCheckDigit` | Australian Border Force | AirWaybillNumber |
+| `AirWaybillCheckDigit` | IATA Resolution 600a Appendix 'D'; Australian Border Force | AirWaybillNumber |
+| `IswcCheckDigit` | ISO/TC 46/SC 9 N 268 (Annex B project text; report-only) | Iswc::hasValidCheckDigit() |
 | `CasCheckDigit` | CAS | CasRegistryNumber |
 | `EcNumberCheckDigit` | ECHA | EcNumber |
 | `EicCheckDigit` (`isValid()` only, ruling 5) | ENTSO-E | EnergyIdentificationCode |
 
-Not built (no official source, rulings 2, 3, 6, 9): IMO check, ISWC check, container check, MPAN check, Wmi tables. ISBN-10 and ISSN share `Mod11CheckDigit` (one algorithm, two lengths).
+Not built (no official source, rulings 2, 3, 6, 9, 14): IMO check, container check, MPAN check, the Wmi country table. The ISWC check exists since 1.2 but only reports (ruling 14.1). ISBN-10 and ISSN share `Mod11CheckDigit` (one algorithm, two lengths).

@@ -25,6 +25,9 @@ final class AirWaybillNumberTest extends TestCase
     {
         yield 'printed' => ['020-12345675'];
         yield 'compact' => ['02012345675'];
+        // IATA Resolution 600a, Attachment 'A' 5.2.1: "a space may be inserted in the serial number ... between the fourth and fifth digits".
+        yield 'printed with the serial space' => ['020-1234 5675'];
+        yield 'compact with the serial space' => ['0201234 5675'];
     }
 
     #[DataProvider('valid')]
@@ -37,6 +40,24 @@ final class AirWaybillNumberTest extends TestCase
         self::assertSame('1234567', $awb->serialNumber());
         self::assertSame('5', $awb->checkDigit());
         self::assertSame('020-12345675', $awb->formatted());
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function iataExamples(): iterable
+    {
+        // IATA Resolution 600a, Attachment 'B' Appendix 'D': "The complete serial number shall read as '12345675'."
+        yield 'Appendix D serial' => ['777-12345675', '77712345675'];
+        // IATA Resolution 606 bar code examples in the same handbook: "air waybill 777-76543213", "air waybill 777-32176546".
+        yield 'Resolution 606 example b' => ['777-76543213', '77776543213'];
+        yield 'Resolution 606 example c' => ['777-32176546', '77732176546'];
+    }
+
+    #[DataProvider('iataExamples')]
+    public function testAcceptsTheIataExamples(string $input, string $expected): void
+    {
+        self::assertSame($expected, new AirWaybillNumber($input)->value);
     }
 
     public function testAWrongCheckDigitIsRefused(): void
@@ -57,6 +78,11 @@ final class AirWaybillNumberTest extends TestCase
         yield 'spaces' => ['020 12345675'];
         yield 'hyphen before the check digit' => ['020-1234567-5'];
         yield 'two hyphens' => ['020--12345675'];
+        yield 'space elsewhere in the serial' => ['020-123 45675'];
+        yield 'two serial spaces' => ['020-1234  5675'];
+        yield 'space and hyphen after the prefix' => ['020- 1234 5675'];
+        yield 'hyphen in the serial' => ['020-1234-5675'];
+        yield 'trailing space' => ['020-12345675 '];
         yield 'extra leading character' => ['X020-12345675'];
         yield 'ten digits' => ['020-1234567'];
         yield 'twelve digits' => ['020-123456755'];

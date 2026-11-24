@@ -12,9 +12,10 @@ use Override;
 
 /**
  * Air waybill number: the carrier's three-digit IATA prefix, a seven-digit serial number and a check digit, the serial
- * number modulo 7. The hyphen after the prefix, as the sources print it, is optional and dropped; the stored form is the eleven digits. The rule rests on the
- * Australian Border Force's published algorithm; IATA Resolution 600a was not reachable.
+ * number modulo 7 (IATA Resolution 600a). The hyphen after the prefix and a space between the fourth and fifth serial
+ * digits, as IATA prints them, are optional and dropped; the stored form is the eleven digits.
  *
+ * @see https://www.iata.org/contentassets/e9cb5a72b88f4f68a5cfc572a50b60c9/cah807-en-final.pdf IATA Cargo Agent's Handbook, Resolution 807, Edition 48 (Resolution 600a)
  * @see https://www.abf.gov.au/sdg-subsite/Pages/Check-Digit-Algorithms/Air-Waybill-Number-Validation.aspx Australian Border Force, Air Waybill Number Validation
  * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "AirWaybillNumber"
  */
@@ -51,11 +52,11 @@ final class AirWaybillNumber extends AbstractStringValueObject
     #[Override]
     protected function parse(string $value): string
     {
-        if (\preg_match('/^([0-9]{3})-?([0-9]{8})$/D', $value, $match) !== 1) {
+        if (\preg_match('/^([0-9]{3})-?([0-9]{4}) ?([0-9]{4})$/D', $value, $match) !== 1) {
             throw TransportRules::invalidFormat(self::TYPE);
         }
 
-        $value = $match[1] . $match[2];
+        $value = $match[1] . $match[2] . $match[3];
 
         if (!AirWaybillCheckDigit::isValid(\substr($value, 3))) {
             throw TransportRules::fail(self::TYPE, Reason::WRONG_CHECK_DIGIT);

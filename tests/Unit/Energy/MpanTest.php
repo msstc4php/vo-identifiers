@@ -23,6 +23,27 @@ final class MpanTest extends TestCase
     }
 
     /**
+     * Made-up digits: no reached source prints an MPAN.
+     *
+     * @return iterable<string, array{string}>
+     */
+    public static function forms(): iterable
+    {
+        yield 'core' => ['1234567890123'];
+        yield 'full' => ['012345671234567890123'];
+    }
+
+    #[DataProvider('forms')]
+    public function testDecodesTheCore(string $value): void
+    {
+        $mpan = new Mpan($value);
+
+        self::assertSame('1234567890123', $mpan->core());
+        self::assertSame('12', $mpan->distributorId());
+        self::assertSame('3456789012', $mpan->uniqueReference());
+    }
+
+    /**
      * @return iterable<string, array{string}>
      */
     public static function invalid(): iterable
@@ -30,6 +51,7 @@ final class MpanTest extends TestCase
         yield 'twelve digits' => ['123456789012'];
         yield 'fourteen digits' => ['12345678901234'];
         yield 'twenty digits' => ['12345678901234567890'];
+        yield 'twenty-two digits' => ['0123456781234567890123'];
         yield 'letters' => ['12345678901A3'];
         yield 'newline' => ["1234567890123\n"];
         yield 'spaces' => ['12 3456 7890 123'];

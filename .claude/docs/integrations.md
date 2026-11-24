@@ -15,3 +15,7 @@
   reachable with `curl` (allowed domain) and is the way to read pages that answer 403 to WebFetch (ORCID, ECHA, ABF, the old ISBN manual).
 - Embedded table: AIM register of issuing agency codes for ISO/IEC 15459, edition 2026-06-16 (public PDF, no terms of use in it); decode-only.
   Tables not embedded and why: README "Registry and table updates" and `docs/sources/IDENTIFIERS.md` ("Table terms of use summary").
+- 1.2 sources (2026-11-24 UTC), all fetched with `curl` and an `allowed_domains` entry, PDFs read with `pdftotext -layout`: iteh previews on
+  `cdn.standards.iteh.ai` (ISO 3780:2009 FR with Annex A, ISO 15706-2:2023 EN with clause 4), ITU-T E.118 (09/2025) on `www.itu.int/rec/dologin_pub.asp`,
+  IATA Cargo Agent's Handbook (Res. 600a, 606) on `www.iata.org/contentassets/...`, Elexon guidance on `bscdocs.elexon.co.uk` (the HTML embeds the
+  text as JSON-escaped blocks), ISO/TC 46/SC 9 N 268 on `groups.niso.org`.

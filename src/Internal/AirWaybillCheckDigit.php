@@ -12,6 +12,7 @@ use LogicException;
  *
  * @internal
  *
+ * @see https://www.iata.org/contentassets/e9cb5a72b88f4f68a5cfc572a50b60c9/cah807-en-final.pdf IATA Resolution 600a, Attachment 'B', Appendix 'D' (in the Cargo Agent's Handbook, Resolution 807)
  * @see https://www.abf.gov.au/sdg-subsite/Pages/Check-Digit-Algorithms/Air-Waybill-Number-Validation.aspx Australian Border Force, Integrated Cargo System, "Air Waybill Number Validation" v1.1
  */
 final class AirWaybillCheckDigit

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MSSTC4PHP\ValueObject\Identifiers\Tests\Unit\Publication;
 
 use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierException;
+use MSSTC4PHP\ValueObject\Identifiers\Internal\IswcCheckDigit;
 use MSSTC4PHP\ValueObject\Identifiers\Internal\PublicationRules;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Iswc;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Iswc::class)]
 #[UsesClass(PublicationRules::class)]
+#[UsesClass(IswcCheckDigit::class)]
 final class IswcTest extends TestCase
 {
     /**
@@ -68,6 +70,13 @@ final class IswcTest extends TestCase
     public function testCheckDigitIsNotEnforced(): void
     {
         self::assertSame('T0345246805', (new Iswc('T-034.524.680-5'))->value);
+    }
+
+    public function testReportsTheCheckDigit(): void
+    {
+        // ISO/TC 46/SC 9 N 268, Annex B worked example.
+        self::assertTrue(new Iswc('T-034.524.680-1')->hasValidCheckDigit());
+        self::assertFalse(new Iswc('T-034.524.680-5')->hasValidCheckDigit());
     }
 
     public function testFormatted(): void

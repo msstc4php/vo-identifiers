@@ -10,10 +10,12 @@ use Override;
 
 /**
  * World Manufacturer Identifier (ISO 3780): the first three characters of a VIN, digits and capital letters without
- * `I`, `O` and `Q`. The country and region allocation and the manufacturer names are not decoded: no official table was
- * reachable and the manufacturer list is licensed.
+ * `I`, `O` and `Q`. {@see region()} decodes the first character by ISO 3780:2009 Table A.1; the country (the second
+ * character) is not decoded, because SAE reallocates the country cells and the table is ISO copyright, and the
+ * manufacturer names are licensed.
  *
  * @see https://www.law.cornell.edu/cfr/text/49/565.15 49 CFR 565.15(a), (c)
+ * @see https://cdn.standards.iteh.ai/samples/45844/6ed6570f8f37401fa4598643cdaae8ac/ISO-3780-2009.pdf ISO 3780:2009 preview, 5.4.2 and Annex A
  * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "VIN (ISO 3779) and WMI (ISO 3780)"
  */
 final class Wmi extends AbstractStringValueObject
@@ -29,6 +31,22 @@ final class Wmi extends AbstractStringValueObject
     public function allocation(): string
     {
         return \substr($this->value, 0, 2);
+    }
+
+    /**
+     * Null for a first character that Table A.1 marks as reserved (`D` to `H`, `7`, `0`); such a WMI is still accepted.
+     */
+    public function region(): ?WmiRegion
+    {
+        return match ($this->value[0]) {
+            'A', 'B', 'C' => WmiRegion::Africa,
+            'J', 'K', 'L', 'M', 'N', 'P', 'R' => WmiRegion::Asia,
+            'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' => WmiRegion::Europe,
+            '1', '2', '3', '4', '5' => WmiRegion::NorthAmerica,
+            '6' => WmiRegion::Oceania,
+            '8', '9' => WmiRegion::SouthAmerica,
+            default => null,
+        };
     }
 
     public function manufacturer(): string

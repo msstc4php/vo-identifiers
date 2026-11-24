@@ -64,6 +64,8 @@ final class TransportIdentifierFactoryTest extends TestCase
         yield 'MMSI' => ['366123456', Mmsi::class];
         yield 'S10' => ['RA473124829CH', S10ItemIdentifier::class];
         yield 'air waybill' => ['020-12345675', AirWaybillNumber::class];
+        yield 'air waybill with the serial space' => ['020-1234 5675', AirWaybillNumber::class];
+        yield 'compact air waybill with the serial space' => ['0201234 5675', AirWaybillNumber::class];
         yield 'UIC vehicle number' => ['31 51 3320 198-0', UicVehicleNumber::class];
         yield 'UN/LOCODE' => ['DEHAM', UnLocode::class];
         yield 'ICAO' => ['EDDF', IcaoAirportCode::class];

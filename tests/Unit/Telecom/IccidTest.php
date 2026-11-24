@@ -40,6 +40,24 @@ final class IccidTest extends TestCase
     }
 
     /**
+     * @return iterable<string, array{string, bool}>
+     */
+    public static function e118Lengths(): iterable
+    {
+        // ITU-T E.118 (09/2025), clause 6: "The PAN shall be 19 digits long."
+        yield '6 digits' => ['893339', false];
+        yield '18 digits' => ['894444444444444442', false];
+        yield '19 digits' => ['8944444444444444447', true];
+        yield '20 digits' => ['89444444444444444440', false];
+    }
+
+    #[DataProvider('e118Lengths')]
+    public function testReportsTheE118Length(string $value, bool $expected): void
+    {
+        self::assertSame($expected, new Iccid($value)->hasE118Length());
+    }
+
+    /**
      * @return iterable<string, array{string, string}>
      */
     public static function invalid(): iterable

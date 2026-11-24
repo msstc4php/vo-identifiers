@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.0] - unreleased
+
+Nothing that 1.1 accepted is refused; `equals()`, the canonical forms and `MAX_LENGTH` are unchanged.
+
+### Added
+
+- `Publication\Iswc::hasValidCheckDigit()`: reports the ISO 15707 Annex B check digit as given in the project leader's text,
+  ISO/TC 46/SC 9 N 268 (a committee document); report-only, a wrong check digit is still accepted.
+- `Transport\Wmi::region(): ?WmiRegion` and the enum `Transport\WmiRegion` (`Africa`, `Asia`, `Europe`, `NorthAmerica`,
+  `Oceania`, `SouthAmerica`) from ISO 3780:2009 Annex A, Table A.1; null for the reserved first characters `D` to `H`, `7`
+  and `0`. No country decoding.
+- `Energy\Mpan::core()`, `distributorId()` and `uniqueReference()` (Elexon BSC guidance, Ofgem R0083) for the 13- and the
+  21-digit form; the check digit is still not verified and the top line is not decoded.
+- `Telecom\Iccid::hasE118Length()`: true for the 19 digits of ITU-T E.118 (09/2025); report-only.
+- `Publication\Isan::isPrivateVersion()`: true for a version segment `F0000000` to `FFFFFFFF` (ISO 15706-2:2023, 4.6).
+
+### Changed
+
+- `Transport\AirWaybillNumber` accepts one space between the fourth and fifth serial digits (`020-1234 5675`, IATA
+  Resolution 600a) and stores the eleven digits as before; `TransportIdentifierFactory` resolves such a value to it alone.
+- Source notes: IATA Resolution 600a, ITU-T E.118 (09/2025), ISO 3780:2009 Annex A, ISO 15706-2:2023 and the EIC Reference
+  Manual v5.2 are now quoted (`docs/sources/IDENTIFIERS.md`, ruling 14).
+
 ## [1.1.0] - 2026-11-24
 
 ### Added

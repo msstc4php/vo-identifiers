@@ -28,20 +28,21 @@ Covered by 1.x:
 - public classes, methods and parameter names (named arguments), return types;
 - JSON and string forms, the `__serialize()` payload key (`value`) and the canonical stored strings (see "Canonical
   forms");
-- enum backed values and case names (`MmsiStationType`, `EicObjectType`);
+- enum backed values and case names (`MmsiStationType`, `EicObjectType`, `WmiRegion`);
 - `MAX_LENGTH` values (the Doctrine column lengths of the bridge);
 - exception classes and their parents.
 
 Rules:
 
 - A minor release never refuses a value that an earlier 1.x release accepted. A check that gets an official source later
-  (the format-only `ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported, by a `hasValid…(): bool` method;
+  (the format-only `ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported, by a `hasValid…(): bool` method
+  (`Iswc::hasValidCheckDigit()` since 1.2), and so is a stricter length (`Iccid::hasE118Length()`);
   refusing waits for 2.0. A minor may accept more (relax a rule), but only within `MAX_LENGTH`.
 - The candidate sets of `PublicationIdentifierFactory`, `TransportIdentifierFactory` and `TelecomIdentifierFactory` are
   frozen per major: a new class is usable directly in a minor and joins a factory in the next major, so a value that
   resolves to one class keeps resolving to it.
-- Enum cases may be added in a minor, so a `match` over them needs a default arm (`MmsiStationType::Unclassified` and a
-  null `objectType()` already exist for that reason). Backed values never change.
+- Enum cases may be added in a minor, so a `match` over them needs a default arm (`MmsiStationType::Unclassified`, a
+  null `objectType()` and a null `Wmi::region()` already exist for that reason). Backed values never change.
 - A new edition of the embedded AIM register ships in a minor and never makes an accepted value refused: it changes only
   what `issuingAgencyCode()` and `issuingAgencyName()` return, and an entry removed upstream stays as legacy.
 - Deliberate lenience is frozen too: `EnergyIdentificationCode` takes `-` in every position but the last, `HsCode` and
@@ -85,8 +86,8 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Issn` | ISSN Manual Dec 2024; issn.org EAN-13 page | ISO 3297, mod 11 enforced, stored `NNNN-NNNC`; seven digits are refused, `fromParts($sevenDigits)` adds the check character; `toGtin($variant = '00')` gives the 977 GTIN (`InvalidArgumentException` for a bad variant) |
 | `Publication\Ismn` | ISMN Users' Manual 2016 | ISO 10957, EAN check enforced, the old `M` form is converted to `979-0...`; `toGtin()` |
 | `Publication\Isrc` | IFPI ISRC structure page | ISO 3901, 12 characters, no check digit; `countryCode()` (ISO 3901's term; not checked against ISO 3166), `registrant()`, `year()`, `designation()`, `formatted()` |
-| `Publication\Iswc` | ISO 15707:2022 preview | ISO 15707, `T` and 10 digits, format only; `formatted()` |
-| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `formatted()` |
+| `Publication\Iswc` | ISO 15707:2022 preview; ISO/TC 46/SC 9 N 268 (check digit) | ISO 15707, `T` and 10 digits, check digit not enforced; `hasValidCheckDigit()` reports it (committee text of Annex B); `formatted()` |
+| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `isPrivateVersion()` (ISO 15706-2:2023 4.6, version `F0000000` to `FFFFFFFF`), `formatted()` |
 | `Publication\Isni` | ISO 27729:2012 preview | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISO 27729:2012 preview; ORCID identifier page | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
 | `Publication\Doi` | DOI Handbook (ISO 26324); DOI Handbook 2025, 4.4.4, 4.7 and 6.3.1 for the resolver URL; RFC 3986 | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` (one space may follow) or a resolver URL on `doi.org`, `dx.doi.org` (deprecated by the Handbook, still resolving) or their `www.` forms (query and fragment dropped, the rest percent-decoded, so `%3F` is a `?` of the DOI; when the part before a raw `?` or `#` is no DOI, the whole rest is decoded, as in 0.x), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
@@ -94,12 +95,12 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Ark` | draft-kunze-ark-40 | draft-kunze-ark-40, format only; `equals()` ignores hyphens; `?` and `??` inflections stay in the Name (no quote says otherwise); `naan()`, `name()` |
 | `Publication\PublicationIdentifierFactory` | - | `tryFromString()` is null where `fromString()` throws a value refusal (no type fits, or several do); `fromString()` builds the one type that accepts the value; several (a bare ISNI/ORCID value, which is also a check-less ISAN) throw `AmbiguousValueException`; none throws `InvalidPublicationIdentifierException` |
 | `Transport\Vin` | ISO 3779 preview; 49 CFR 565.15(c) | ISO 3779, 17 characters without `I`, `O`, `Q`, uppercased; position 9 never refuses, `hasValidCheckDigit()` follows 49 CFR 565.15(c); `wmi()`, `vds()`, `vis()`, `modelYears(): list<int>` (the candidates 30 years apart, empty for `0`, `U`, `Z`) |
-| `Transport\Wmi` | ISO 3780 preview (format only) | ISO 3780, 3 characters; raw `allocation()`, `manufacturer()`, `isSmallManufacturer()` (a `9` in position 3); no region or country decoding |
+| `Transport\Wmi`, `WmiRegion` | ISO 3780:2009 preview (5.4.2, Annex A Table A.1) | ISO 3780, 3 characters; `region(): ?WmiRegion` from the first character (null for the reserved `D`-`H`, `7`, `0`); raw `allocation()`, `manufacturer()`, `isSmallManufacturer()` (a `9` in position 3); no country decoding |
 | `Transport\ContainerNumber` | BIC (bic-code.org) | ISO 6346 / BIC, owner code, category `U`/`J`/`Z`, 6 digits, check digit (not verified); spaces accepted, stored compact; `formatted()` |
 | `Transport\ImoNumber` | IMO Assembly resolution A.1215(34); IMO FAQ | `IMO` + 7 digits (the prefix is optional on input), check digit not verified; `number()`, `formatted()` |
 | `Transport\Mmsi`, `MmsiStationType` | ITU-R M.585 | ITU-R M.585, 9 digits; `type()` from the leading digits and the MID digit rule (ship, group ship, coast station, SAR aircraft, AIS aid to navigation, craft associated, distress device, unclassified), `mid()` digits only |
 | `Transport\S10ItemIdentifier` | UPU S10-12 | UPU S10, check digit enforced, the reserved service indicators `J K S T W` refused; `serviceIndicator()`, `serialNumber()`, `countryCode()`, `country(): ?CountryCode` |
-| `Transport\AirWaybillNumber` | Australian Border Force algorithm; IATA PAWB specification (format) | 3-digit prefix, 7-digit serial, serial mod 7 enforced; the hyphen after the prefix is optional, stored 11 digits, `formatted()` gives `020-12345675` |
+| `Transport\AirWaybillNumber` | IATA Resolution 600a (IATA Cargo Agent's Handbook); Australian Border Force | 3-digit prefix, 7-digit serial, serial mod 7 enforced; the hyphen after the prefix and a space between the 4th and 5th serial digits are optional, stored 11 digits, `formatted()` gives `020-12345675` |
 | `Transport\UicVehicleNumber` | Commission Decision 2007/756/EC, Appendix 6 part 3 | 12 digits, Luhn enforced; printed (`31 51 3320 198-0`) or compact, stored compact; `vehicleType()` and `uicCountryCode()` are raw digits (the UIC numeric code, not ISO 3166) |
 | `Transport\UnLocode` | UNECE Recommendation 16 | UNECE Rec. 16, 2 letters + 3 of letters and 2-9, format only; `country(): ?CountryCode` |
 | `Transport\IataAirportCode`, `IcaoAirportCode` | none (format only) | 3 and 4 letters, format only |
@@ -108,7 +109,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Transport\TransportIdentifierFactory` | - | `tryFromString()` is null where `fromString()` throws a value refusal (no type fits, or several do); `fromString()` builds the one type that accepts the value; three letters that are both a WMI and an IATA code throw `AmbiguousValueException`, and any seven digits are an `ImoNumber`; none throws `InvalidTransportIdentifierException` |
 | `Telecom\Imei` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 14 digits, or 15 with a Luhn check digit; spaces and hyphens dropped; `equals()` compares the first 14 digits, so both forms of one IMEI are equal; `tac()`, `serialNumber()`, `checkDigit()`, `withCheckDigit()`; `masked()` |
 | `Telecom\Imeisv` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 16 digits, no check digit; `softwareVersion()`, `toImei()`; `masked()` |
-| `Telecom\Iccid` | ITU-T Circular TSB 136; ETSI TS 102 221 | ITU-T Circular 136 and ETSI TS 102 221: `89` prefix, Luhn, 6 to 20 digits (the minimum is derived, not quoted); `issuerIdentifier()` raw; `masked()` |
+| `Telecom\Iccid` | ITU-T E.118 (09/2025); ITU-T Circular TSB 136; ETSI TS 102 221 | `89` prefix, Luhn, 6 to 20 digits (the minimum is derived, not quoted); `hasE118Length()` reports E.118's 19 digits; `issuerIdentifier()` raw; `masked()` |
 | `Telecom\Imsi` | 3GPP TS 23.003 V17.7.0 | 3GPP TS 23.003: 6 to 15 digits; `mcc()`, `mnc(int)`, `msin(int)` (the caller gives the MNC length); `masked()` |
 | `Telecom\Eid` | GSMA SGP.29 v1.1 | GSMA SGP.29: 32 digits with the MOD 97-10 pair, no prefix rule; `masked()` |
 | `Telecom\TelecomIdentifierFactory` | - | `tryFromString()` is null where `fromString()` throws a value refusal (no type fits, or several do); `fromString()` builds the one type that accepts the value; a value that fits several types (bare 14 or 15 digits are always an IMEI and an IMSI, only an IMEI typed with spaces or hyphens resolves; an `89`-prefixed number that is also an ICCID, IMEISV or IMSI) throws `AmbiguousValueException`; the return type is the union of the five classes; none throws `InvalidTelecomIdentifierException` |
@@ -118,7 +119,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Trade\HsCode` | WCO HS FAQ and Convention | WCO HS FAQ and Convention, 6 digits, unbroken or as printed by the WCO (`0103.10`) or the EU (`1806 10`); `chapter()`, `heading()`, `subheading()`; format only |
 | `Trade\TariffCode` | EU Commission CN page; Regulation 2658/87 Art. 3; USITC HTS guide | an 8- or 10-digit national extension of an HS code, scheme unknown (EU CN 8 digits, TARIC 10, US HTS 8 or 10 are the quoted ones; the same digits in two nomenclatures are equal; other lengths are not quoted and are refused); unbroken, spaced as the EU prints (`1806 10 15`) or dotted as the USITC prints (`9801.00.10.10`); `hsSubheading(): HsCode`; format only |
 | `Energy\EnergyIdentificationCode`, `EicObjectType` | ENTSO-E EIC Data Exchange IG v1.2; EIC Short Guide V3 | ENTSO-E EIC, 16 characters, check character validated; `issuingOffice()`, `objectType(): ?EicObjectType` (null for a letter outside the Short Guide's seven), `objectTypeCode()`, `checkCharacter()` |
-| `Energy\Mpan` | none reached (format only) | GB MPAN, 13 digits or 21, digits only, format only; neither form is decoded (no layout reached) |
+| `Energy\Mpan` | Elexon BSC guidance "MSID and MPAN Guidance"; Ofgem R0083 decision | GB MPAN, 13 digits or 21, digits only, check digit not verified; `core()` (the last 13 digits), `distributorId()`, `uniqueReference()`; the top line is not decoded |
 
 ## Equality across forms
 
@@ -134,7 +135,8 @@ ignores hyphens, with the same caveat.
 
 Each class strips only the separators its source prints (the quote is in `docs/sources/IDENTIFIERS.md`): `Imei` and `Imeisv`
 drop spaces and hyphens; `Imsi`, `Iccid`, `Eid` and `Mpan` accept digits only, because no reached source prints them
-grouped; `Mmsi` and `UnNumber` take no spaces, `AirWaybillNumber` only the hyphen after the prefix.
+grouped; `Mmsi` and `UnNumber` take no spaces, `AirWaybillNumber` only the hyphen after the prefix and a space between the 4th and 5th serial
+digits (IATA Resolution 600a).
 
 ## Registry and table updates
 
@@ -152,20 +154,19 @@ A rule is enforced only when an official source is quoted for it; otherwise the 
 
 - `ImoNumber`: `IMO` plus seven digits. No IMO text (A.1215(34), the FAQ) gives the check-digit weights; there is no company class.
 - `ContainerNumber`: the check digit of ISO 6346 is not enforced; the standard is paid and BIC prints no algorithm (matching an example is not a quote).
-- `Iswc`: the check digit is not enforced; ISO 15707 Annex B is not reachable.
+- `Iswc`: the check digit is not enforced; ISO 15707 Annex B is not reachable. `hasValidCheckDigit()` reports it by the project leader's Annex B text in an ISO/TC 46/SC 9 committee document.
 - `Vin`: position 9 is never a reason to refuse; `hasValidCheckDigit()` follows 49 CFR 565.15(c), which binds vehicles by the market they are sold in, not by anything in the VIN.
-- `Mpan`: 13 or 21 digits, neither decoded and the check digit not enforced: the layout and the check weights appear only in Wikipedia and its mirrors, and the Elexon, MRA, Ofgem and DCUSA pages were not reachable (Elexon answers 403). Digits only; no separator is quoted.
-- `Iccid`: `89` and Luhn as the ITU circular states; at most 20 digits (ETSI TS 102 221). Neither source gives a minimum: 6 digits is derived from the structure (`89`, country code, issuer, account of at least one digit each, check digit), not quoted. E.118 itself was not reached.
+- `Mpan`: 13 or 21 digits, the check digit not enforced: the check weights appear only in Wikipedia and its mirrors. The core layout is quoted from Elexon and Ofgem (`core()`, `distributorId()`, `uniqueReference()`); the widths of the top-line fields are not, so the top line is not decoded. Digits only; no separator is quoted.
+- `Iccid`: `89` and Luhn per ITU-T E.118; at most 20 digits (ETSI TS 102 221). No source gives a minimum: 6 digits is derived from the structure (`89`, country code, issuer, account of at least one digit each, check digit), not quoted. E.118 (09/2025) prescribes 19 digits but leaves previous assignments unaffected, so other lengths are only reported by `hasE118Length()`.
 - `HsCode`, `TariffCode`: no nomenclature is embedded (WCO licence); EU CN has 8 digits and TARIC 10 (Regulation 2658/87 Article 3).
 - `Ark`, `UnLocode`, `IataAirportCode`, `IcaoAirportCode`, `UnNumber`, `HsCode`, `TariffCode`: no check exists or no list may be embedded.
-- `AirWaybillNumber`: the rule rests on the Australian Border Force's published algorithm; IATA Resolution 600a was not reached.
 - Data identifiers (`DataIdentifierString`): `\d{0,3}[A-Z]` with no description, because the MH10.8.2 table is copyrighted.
 - `Eid`: 32 digits with the MOD 97-10 pair and no prefix rule (SGP.29 forbids `89` for its own EIDs, E.118-based ones start with it).
 - `EnergyIdentificationCode`: validation only; ENTSO-E allows its algorithm for no other use.
 
 ## Not built
 
-- `Wmi::region()` and `country()`: no official table (ISO 3780, SAE J1044 are not reachable).
+- `Wmi::country()`: the ISO 3780 Table A.1 country cells are ISO copyright and SAE reallocates them; `region()` is built.
 - `Mmsi::country()`: the ITU MID table is under ITU copyright; `mid()` gives the digits only.
 - `Isbn::formatted()`: the International ISBN Agency's terms forbid republishing the RangeMessage.
 - `IcaoAirportCode::region()`: the nationality letters are in the sold Doc 7910.
