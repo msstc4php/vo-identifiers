@@ -41,7 +41,8 @@ final class Iswc extends AbstractStringValueObject
     }
 
     /**
-     * Report-only: a value with a wrong check digit is still accepted (1.x never refuses what 1.0 accepted).
+     * Report-only: a value with a wrong check digit is still accepted (a minor never refuses what an earlier release
+     * accepted).
      */
     public function hasValidCheckDigit(): bool
     {

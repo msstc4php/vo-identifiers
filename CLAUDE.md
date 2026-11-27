@@ -11,7 +11,7 @@ EID) and chemistry, trade and energy identifiers (CAS, EC, UN number, HS, EIC, M
 `MSSTC4PHP\ValueObject\Identifiers\`. Framework-agnostic; Doctrine storage is the separate `vo-identifiers-doctrine` bridge.
 Requirements and the plan live in `../vo-base/docs/` (plan `2026-11-21-001-feat-identifiers-wave-plan.md`); the source notes, the
 authority for every rule, are in `docs/sources/IDENTIFIERS.md`. Depends on `msstc4php/vo-base ^1.4` and `msstc4php/vo-gs1 ^1.0` (the GTIN form of
-ISBN, ISMN and ISSN). Stable since 1.0.0: the README "Backward compatibility" section is binding.
+ISBN, ISMN and ISSN). Stable since 1.0.0; 2.0.0 (unreleased on main) is the current major: the README "Backward compatibility" section is binding for 2.x.
 
 ## Common commands
 
@@ -41,9 +41,9 @@ copyright-restricted tables are not embedded (the table terms are in `docs/sourc
 
 ## Gotchas
 
-- `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) compare across forms; the stored string keeps the form given, so a
+- `Imei::equals()` (14/15 digits), `Isbn::equals()` (ISBN-10/13) and `Isan::equals()` (check characters; since 2.0 a `0000-0000` version equals none) compare across forms; the stored string keeps the form given, so a
   string-keyed index or UNIQUE column sees two values.
-- 1.x: never refuse a value an earlier 1.x accepted (a newly sourced check is a `hasValid…(): bool`), never change a
+- 2.x (same rules as 1.x): never refuse a value an earlier 2.x accepted (a newly sourced check is a `hasValid…(): bool`), never change a
   canonical form, `MAX_LENGTH` or a factory's candidate set; new reasons go into `Internal\Reason`.
 - Every string value object is validated again on unserialize by vo-base `^1.3` (`parse()` runs again); a composite
   one defines `__serialize()`/`__unserialize()` itself, as `Transport\DataIdentifierField` does. A new class must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.

@@ -3,7 +3,7 @@
 `src/` has one directory per family, all built: `Publication\`, `Transport\`, `Telecom\`, `Substance\`, `Trade\`, `Energy\`,
 `Exception\` (one `final` `Invalid*IdentifierException` per family) and `Internal\`. A family with several candidate types has a factory
 (`PublicationIdentifierFactory`, `TransportIdentifierFactory`, `TelecomIdentifierFactory`, static, private constructor) that throws
-`AmbiguousValueException` when more than one type accepts the value; the candidate sets are frozen for 1.x (a new class joins in 2.0); `Iso15459Identifier`, the chemistry, trade and energy classes have none.
+`AmbiguousValueException` when more than one type accepts the value; the candidate sets are frozen per major (2.0 kept the 1.x sets: no class was added after 1.0; a new class joins in the next major); `Iso15459Identifier`, the chemistry, trade and energy classes have none.
 
 `src/Internal/` holds `@internal final` helpers:
 - check-digit helpers, one per distinct algorithm (two sources that share an algorithm share a helper): `Luhn`, `Ean13CheckDigit`,

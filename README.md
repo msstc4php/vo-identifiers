@@ -10,20 +10,20 @@ format only.
 
 ## Status
 
-Stable since 1.0.0: from here on a breaking change needs 2.0 (see "Backward compatibility"). The package covers the
-publication and media, transport and logistics, telecom, chemistry, trade and energy identifiers and the check-digit
-helpers they use. Exceptions are one final class per family
-(`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`, each extending vo-base
-`InvalidValueObjectException`); no message carries the input or any part of it, not even its length. A message is
-`<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong check
-character`, `has a reserved service indicator` (`S10ItemIdentifier`) and `is not carried by data identifier 25S or J`
-(`Iso15459Identifier::fromField()`). Every class with a bounded length has a public `MAX_LENGTH` constant (characters of
-the longest stored form; the Doctrine columns are sized from it). The three factories return a native union of their
+Stable since 1.0.0; 2.0.0 is the current major, and a breaking change needs 3.0 (see "Backward compatibility"; upgrading
+from 1.x: CHANGELOG "Upgrading from 1.x"). The package covers the publication and media, transport and logistics,
+telecom, chemistry, trade and energy identifiers and the check-digit helpers they use. Exceptions are one final class
+per family (`Exception\Invalid{Publication,Transport,Telecom,Substance,Trade,Energy}IdentifierException`, each extending
+vo-base `InvalidValueObjectException`); no message carries the input or any part of it, not even its length. A message
+is `<type> <reason>.` with one wording per failure: `has an invalid format`, `has a wrong check digit`, `has a wrong
+check character`, `has a reserved service indicator` (`S10ItemIdentifier`) and `is not carried by data identifier 25S or
+J` (`Iso15459Identifier::fromField()`). Every class with a bounded length has a public `MAX_LENGTH` constant (characters
+of the longest stored form; the Doctrine columns are sized from it). The three factories return a native union of their
 candidate classes. CI runs PHP 8.4 and 8.5.
 
 ## Backward compatibility
 
-Covered by 1.x:
+Covered by 2.x (the same promise as 1.x):
 
 - public classes, methods and parameter names (named arguments), return types;
 - JSON and string forms, the `__serialize()` payload key (`value`) and the canonical stored strings (see "Canonical
@@ -34,10 +34,10 @@ Covered by 1.x:
 
 Rules:
 
-- A minor release never refuses a value that an earlier 1.x release accepted. A check that gets an official source later
+- A minor release never refuses a value that an earlier 2.x release accepted. A check that gets an official source later
   (the format-only `ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported, by a `hasValid…(): bool` method
   (`Iswc::hasValidCheckDigit()` since 1.2), and so is a stricter length (`Iccid::hasE118Length()`);
-  refusing waits for 2.0. A minor may accept more (relax a rule), but only within `MAX_LENGTH`.
+  refusing waits for a major. A minor may accept more (relax a rule), but only within `MAX_LENGTH`.
 - The candidate sets of `PublicationIdentifierFactory`, `TransportIdentifierFactory` and `TelecomIdentifierFactory` are
   frozen per major: a new class is usable directly in a minor and joins a factory in the next major, so a value that
   resolves to one class keeps resolving to it.
@@ -48,15 +48,14 @@ Rules:
 - Deliberate lenience is frozen too: `EnergyIdentificationCode` takes `-` in every position but the last, `HsCode` and
   `TariffCode` take the quoted print forms, `Doi` takes `doi: ` with one space and resolver URLs on `doi.org`,
   `dx.doi.org`, `www.doi.org` and `www.dx.doi.org`, and `Iso15459Identifier` takes `-` and `/` after its first character.
-- `Transport\MmsiType`, the 0.x name of `MmsiStationType`, stays a deprecated alias until 2.0, so `enumType: MmsiType::class`
-  mappings and enum cases serialized by 0.x keep loading; new serializations write `MmsiStationType`.
 
 Not covered: exception message wording; everything in `Internal\` or marked `@internal`; the `masked()` format, which may
 hide more in a minor, never less.
 
 ## Canonical forms
 
-The stored string (`__toString()`, JSON, the serialized `value`, the Doctrine column) is frozen for 1.x:
+The stored string (`__toString()`, JSON, the serialized `value`, the Doctrine column) is frozen for 2.x (and unchanged
+from 1.x):
 
 | Form | Classes |
 |---|---|
@@ -87,7 +86,7 @@ forged or stale payload throws the class's own exception, a payload without a st
 | `Publication\Ismn` | ISMN Users' Manual 2016 | ISO 10957, EAN check enforced, the old `M` form is converted to `979-0...`; `toGtin()` |
 | `Publication\Isrc` | IFPI ISRC structure page | ISO 3901, 12 characters, no check digit; `countryCode()` (ISO 3901's term; not checked against ISO 3166), `registrant()`, `year()`, `designation()`, `formatted()` |
 | `Publication\Iswc` | ISO 15707:2022 preview; ISO/TC 46/SC 9 N 268 (check digit) | ISO 15707, `T` and 10 digits, check digit not enforced; `hasValidCheckDigit()` reports it (committee text of Annex B); `formatted()` |
-| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`; `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `isPrivateVersion()` (ISO 15706-2:2023 4.6, version `F0000000` to `FFFFFFFF`), `formatted()` |
+| `Publication\Isan` | ISAN International Agency, check characters calculation v2.0 | ISO 15706, check characters optional (16, 17, 24 or 26 characters), enforced when present, ignored by `equals()`, which treats a version `0000-0000` as none (ISO 15706-2:2023 4.4); `root()`, `episode()`, `version()`, `hasCheckCharacters()`, `isPrivateVersion()` (ISO 15706-2:2023 4.6, version `F0000000` to `FFFFFFFF`), `formatted()` |
 | `Publication\Isni` | ISO 27729:2012 preview | ISO 27729, MOD 11-2 enforced; `formatted()` |
 | `Publication\Orcid` | ISO 27729:2012 preview; ORCID identifier page | ISNI-compatible; bare, hyphenated or as `https://orcid.org/...`, stored hyphenated; `uri()`, `toIsni()` |
 | `Publication\Doi` | DOI Handbook (ISO 26324); DOI Handbook 2025, 4.4.4, 4.7 and 6.3.1 for the resolver URL; RFC 3986 | ISO 26324; any numeric directory indicator, registrant always required; bare, `doi:` (one space may follow) or a resolver URL on `doi.org`, `dx.doi.org` (deprecated by the Handbook, still resolving) or their `www.` forms (query and fragment dropped, the rest percent-decoded, so `%3F` is a `?` of the DOI; when the part before a raw `?` or `#` is no DOI, the whole rest is decoded, as in 0.x), stored bare as given, no length cap; `equals()` folds ASCII case; `prefix()`, `suffix()` |
@@ -123,13 +122,15 @@ forged or stale payload throws the class's own exception, a payload without a st
 
 ## Equality across forms
 
-`Imei::equals()` compares the first 14 digits, so the 14-digit and the 15-digit form of one IMEI are equal. `Isbn::equals()`
-compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. `Isan::equals()` compares root, episode and version, so
-the forms with and without check characters are equal; a 16-character ISAN (no version) and a 24-character one with
-version `0000-0000` are not equal, as one has no version. The stored string keeps the form that was given, so a
-string-keyed index or a UNIQUE column sees two values for what `equals()` calls one. Normalise first (`Imei::withCheckDigit()`
-or the 14 digits, `Isbn::toIsbn13()`) when a store has to deduplicate. `Doi::equals()` folds ASCII case and `Ark::equals()`
-ignores hyphens, with the same caveat.
+`Imei::equals()` compares the first 14 digits, so the 14-digit and the 15-digit form of one IMEI are equal.
+`Isbn::equals()` compares the ISBN-13 forms, so an ISBN-10 equals its ISBN-13. `Isan::equals()` compares root, episode
+and version, so the forms with and without check characters are equal; since 2.0 a version `0000-0000` "shall be treated
+as an ISAN without a version segment" (ISO 15706-2:2023, 4.4), so `B159D8FA01240000K` equals
+`B159D8FA01240000K00000000E` and `B159D8FA0124000000000000`, while each keeps its own stored form and length. The stored
+string keeps the form that was given, so a string-keyed index or a UNIQUE column sees two values for what `equals()`
+calls one. Normalise first (`Imei::withCheckDigit()` or the 14 digits, `Isbn::toIsbn13()`, an ISAN cut to its first 16
+or 17 characters when `version()` is `00000000`) when a store has to deduplicate, or query every form (`WHERE isan IN
+(…)`). `Doi::equals()` folds ASCII case and `Ark::equals()` ignores hyphens, with the same caveat.
 
 ## Separators
 
@@ -183,7 +184,7 @@ Register the GitHub repositories:
         { "type": "vcs", "url": "https://github.com/msstc4php/vo-identifiers" }
     ],
     "require": {
-        "msstc4php/vo-identifiers": "^1.0"
+        "msstc4php/vo-identifiers": "^2.0"
     }
 }
 ```

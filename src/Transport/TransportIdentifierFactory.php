@@ -15,8 +15,8 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTransportIdentifierExcept
  * identifier is not a candidate: it has no syntax of its own, only the data identifier that carries it. Any seven
  * digits are an IMO number (the `IMO` prefix is optional).
  *
- * The candidate classes are frozen for 1.x: a new identifier class joins a factory only in the next major, so a value
- * that resolves to one class keeps resolving to it.
+ * The candidate classes are frozen per major (2.x keeps the 1.x set): a new identifier class joins a factory only in
+ * the next major, so a value that resolves to one class keeps resolving to it.
  */
 final class TransportIdentifierFactory
 {

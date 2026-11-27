@@ -1,5 +1,48 @@
 # Changelog
 
+## [2.0.0] - unreleased
+
+A major release with two breaking changes; everything else (classes, methods, canonical stored forms, `MAX_LENGTH`,
+enum backed values, exception classes) is as in 1.2.0, and nothing that 1.2 accepted is refused. The README "Backward
+compatibility" promise now covers 2.x.
+
+### Changed (BC)
+
+- `Publication\Isan::equals()`: a version segment `0000-0000` equals no version ("To avoid confusion, a V-ISAN version
+  segment of 0 (i.e. 0000-0000) shall be treated as an ISAN without a version segment.", ISO 15706-2:2023, 4.4). So
+  `B159D8FA01240000`, `B159D8FA01240000K`, `B159D8FA0124000000000000` and `B159D8FA01240000K00000000E` are now equal
+  (1.x: the two with a version were not equal to the two without). The check characters are still ignored, and a check
+  character that is present must still be right. The stored form, `__toString()`, JSON, `version()` (`00000000`),
+  `hasVersion()`, `formatted()` and `MAX_LENGTH` (26) keep the form given.
+
+### Removed
+
+- `Transport\MmsiType`, the 0.x name of `Transport\MmsiStationType` (deprecated alias since 1.0.0), with the
+  `autoload.files` entry that declared it.
+
+### Upgrading from 1.x
+
+- `Transport\MmsiType` → `Transport\MmsiStationType` in `use` statements, type hints, `instanceof`, Doctrine and ODM
+  `enumType: MmsiType::class` mappings and framework attributes (Symfony `#[Assert\Choice(callback: [MmsiType::class,
+  'cases'])]`); the cases and backed values are the same, so stored rows need nothing. Any remaining use of the old
+  name is now an unknown class (`Error` at runtime, an error in static analysis): search for `MmsiType` outside
+  `vo-identifiers-doctrine`, whose `MmsiType` is the Doctrine type of `Mmsi` and is unaffected.
+- Enum cases serialized under 0.x by PHP `serialize()` (`E:57:"MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiType:Ship";`
+  in caches, Messenger messages, sessions, serialized columns) no longer resolve: `unserialize()` emits a warning and
+  returns `false`. 1.x already wrote the new name, so only payloads written by 0.x and never rewritten are affected.
+  Before upgrading, read them back under 1.x and serialize them again, or rewrite the class name in the payload: the
+  name grows by 7 bytes, so the `E:<length>:` prefix grows by 7 too (`E:57:"…\MmsiType:Ship"` →
+  `E:64:"…\MmsiStationType:Ship"`); for a payload nested in another serialized string, the outer lengths change as
+  well, so re-serializing is the safer route. Caches can be cleared instead.
+- `Isan::equals()`: code that relied on a `0000-0000` version and no version being different (deduplication,
+  `in_array(…, true)` over `equals()`, change detection) now sees one ISAN. Stored rows are unchanged, so a UNIQUE
+  column or a string-keyed lookup can hold or miss the other form, as with ISBN-10/13 and the two IMEI forms: query
+  every form (`WHERE isan IN ('B159D8FA01240000K', 'B159D8FA01240000K00000000E')`), or normalise before storing (cut
+  a value whose `version()` is `00000000` to its first 16 or, with check characters, 17 characters).
+- Composer: `"msstc4php/vo-identifiers": "^2.0"` (or `"^1.0 || ^2.0"` for code that uses neither of the above). The
+  Doctrine bridge needs a release that allows `^2.0`; its column types and lengths are unchanged.
+- Static BC checkers (Roave) report the removed `MmsiType` against 1.2.0; that is the expected break.
+
 ## [1.2.0] - 2026-11-24
 
 Nothing that 1.1 accepted is refused; `equals()`, the canonical forms and `MAX_LENGTH` are unchanged.

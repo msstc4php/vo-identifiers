@@ -86,7 +86,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
     `dx.doi.org` (DOI section); `Issn` refuses seven digits and `Issn::fromParts()` completes them on request (ISSN section); `Ark` keeps
     inflections, no quote (ARK section); `Iso15459Identifier` keeps `[A-Z0-9]` (Iso15459Identifier section; corrected by ruling 14.7: the 1.0 review then reached the DoD UID Guide v2.5 and the class accepts `-` and `/` after the first character, see "Character set");
     `EnergyIdentificationCode` keeps `-` allowed in every position but the last (deliberate lenience, frozen for 1.x); a check that gets an
-    official source after 1.0 (`ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported by a `hasValid…(): bool` until 2.0.
+    official source after 1.0 (`ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported by a `hasValid…(): bool` (2.0 refuses none of them either).
 14. **1.2 rulings (2026-11-24 UTC).** No new refusal anywhere (constructor, `tryFrom()`, `isValid()`, factories); `equals()`, canonical forms and
     `MAX_LENGTH` unchanged.
     1. `Iswc`: ISO/TC 46/SC 9 N 268 (the CISAC project leader's Annex B text, a committee document; the 2022 Annex B itself was not reached) is the
@@ -102,8 +102,13 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
        two groups of four digits (tested).
     5. `Iccid::hasE118Length()` reports E.118 (09/2025)'s 19 digits; nothing refused (ETSI allows 20, and "Previous assignments ... are not affected").
     6. `Isan::isPrivateVersion()`: ISO 15706-2:2023 4.6, read in the publisher's preview (not a snippet). Clause 4.4 (a `0000-0000` version equals no
-       version) is **not** applied in 1.x, as it changes `equals()`: a 2.0 candidate. The support.isan.org vector (snippet only) is not used.
+       version) is **not** applied in 1.x, as it changes `equals()`: applied in 2.0 (ruling 15.1). The support.isan.org vector (snippet only) is not used.
     7. Docs: EIC Reference Manual v5.2 caveat on `objectType()` (EIC section); ruling 13's DoD IUID wording corrected.
+15. **2.0 rulings (owner, 2026-11-27 UTC).** No new refusal; canonical forms and `MAX_LENGTH` unchanged.
+    1. `Isan::equals()` applies clause 4.4 (quoted in the ISAN section): a version `0000-0000` equals no version. Only equality changes: the stored
+       form, `__toString()`, JSON, `version()` and `MAX_LENGTH` keep the form given (no data dropped), so two rows can hold one ISAN in two forms,
+       as for ISBN-10/13 and IMEI. The check characters stay ignored by `equals()` and enforced when present.
+    2. `Transport\MmsiType`, the deprecated 0.x alias of `MmsiStationType`, is removed.
 
 ## ISBN, ISSN, ISMN, ISRC, ISWC, ISAN, ISNI, ORCID, DOI, ROR, ARK
 
@@ -226,8 +231,8 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
   segment." 4.5: "V-ISAN version segment range 1 (0000 0001 in hexadecimal) to 4 026 531 839 (EFFF FFFF in hexadecimal) are public numbers". 4.6:
   "V-ISAN version segment range 4 026 531 840 (F000 0000 in hexadecimal) to 4 294 967 295 (FFFF FFFF in hexadecimal) are reserved for private numbers and
   shall not be issued from within the V-ISAN register. This corresponds to version segments where the first four bits are 1111 (i.e., hexadecimal value
-  F)." So `isPrivateVersion()` is true for a version starting with `F`. 4.4 and the end of 4.6 ("treated as an ISAN without a version segment") would
-  change `equals()`, which is frozen for 1.x: 2.0 candidate. Annex B (the V-ISAN check) is not in the preview; no official vector with a version was read.
+  F)." So `isPrivateVersion()` is true for a version starting with `F`. 4.4 ("treated as an ISAN without a version segment") changes
+  `equals()`, which was frozen for 1.x: applied in 2.0 (ruling 15.1). Annex B (the V-ISAN check) is not in the preview; no official vector with a version was read.
 
 ### ISNI (ISO 27729) and ORCID
 

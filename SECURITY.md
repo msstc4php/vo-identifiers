@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Supported: 1.x (the latest minor receives fixes).
+Supported: 2.x (the latest minor receives fixes).
 
 Runtime requirement: PHP >= 8.4.
 

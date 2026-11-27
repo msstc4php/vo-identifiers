@@ -16,12 +16,12 @@
   `__unserialize()` itself (`Transport\DataIdentifierField`) with the base's messages.
 - Controller rulings (`docs/sources/IDENTIFIERS.md`, "Controller rulings") override the plan; the README "Format only" and "Not built" lists
   repeat them with the reason. Add a ruling there before changing a rule.
-- Verb rule for 1.x: `to*` converts to another form or type (`Isbn::toIsbn13()`, `Imeisv::toImei()`, `Orcid::toIsni()`, `toGtin()`), `with*`
+- Verb rule (1.x and 2.x): `to*` converts to another form or type (`Isbn::toIsbn13()`, `Imeisv::toImei()`, `Orcid::toIsni()`, `toGtin()`), `with*`
   adds a component (`Imei::withCheckDigit()`); a static `from*` builds from parts (`Issn::fromParts()`, `DataIdentifierString::fromFields()`).
 - A caller error (a bad MNC length, a GTIN variant, no fields) is a bare `InvalidArgumentException`, documented as a programming error; an invalid
   identifier is the family exception. Type the input (`2|3`, `non-empty-list`) so the error is static where possible.
 - Class docblocks link the source notes as `https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "<section>"` (docs/ is
-  export-ignored). Enums and factories carry their 1.x evolution rule in the docblock.
+  export-ignored). Enums and factories carry their per-major evolution rule in the docblock.
 - `IdentifierContractTest::testTheMessageForAnOverLongValueHoldsNoPartOfIt` asserts that an over-long value gets the same message as `!`; a class
   whose message varies with the input fails it.
 

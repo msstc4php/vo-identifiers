@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
- * Shapes frozen by the 1.x backward-compatibility promise.
+ * Shapes frozen by the 2.x backward-compatibility promise.
  */
 #[CoversNothing]
 final class PackageShapeTest extends TestCase
@@ -72,5 +72,10 @@ final class PackageShapeTest extends TestCase
 
         self::assertNotNull($constructor);
         self::assertTrue($constructor->isPrivate());
+    }
+
+    public function testThe0xMmsiTypeAliasIsGone(): void
+    {
+        self::assertFalse(\enum_exists('MSSTC4PHP\\ValueObject\\Identifiers\\Transport\\MmsiType'));
     }
 }

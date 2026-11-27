@@ -14,8 +14,8 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidPublicationIdentifierExce
  * that does. A bare ISNI and an ORCID iD are the same form, so only an ORCID URL (or a label such as `ISNI `) decides
  * between them, and a 16-digit ISAN without check characters is also an ISNI. The factory never picks silently.
  *
- * The candidate classes are frozen for 1.x: a new identifier class joins a factory only in the next major, so a value
- * that resolves to one class keeps resolving to it.
+ * The candidate classes are frozen per major (2.x keeps the 1.x set): a new identifier class joins a factory only in
+ * the next major, so a value that resolves to one class keeps resolving to it.
  */
 final class PublicationIdentifierFactory
 {

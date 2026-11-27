@@ -15,8 +15,8 @@ use MSSTC4PHP\ValueObject\Identifiers\Exception\InvalidTelecomIdentifierExceptio
  * spaces or hyphens resolves (an IMSI takes digits only). A short number starting `89` with a valid Luhn digit can be an
  * ICCID, an IMEI and an IMSI. No heuristic picks one: when the field's kind is known, use the class itself.
  *
- * The candidate classes are frozen for 1.x: a new identifier class joins a factory only in the next major, so a value
- * that resolves to one class keeps resolving to it.
+ * The candidate classes are frozen per major (2.x keeps the 1.x set): a new identifier class joins a factory only in
+ * the next major, so a value that resolves to one class keeps resolving to it.
  */
 final class TelecomIdentifierFactory
 {
