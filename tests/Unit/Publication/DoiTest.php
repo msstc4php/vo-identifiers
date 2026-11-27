@@ -71,7 +71,7 @@ final class DoiTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheBareForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Doi($input))->value);
+        self::assertSame($expected, new Doi($input)->value);
     }
 
     /**

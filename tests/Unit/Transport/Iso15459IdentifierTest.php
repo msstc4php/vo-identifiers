@@ -22,13 +22,13 @@ final class Iso15459IdentifierTest extends TestCase
 {
     public function testUppercases(): void
     {
-        self::assertSame('LN12345678', (new Iso15459Identifier('ln12345678'))->value);
+        self::assertSame('LN12345678', new Iso15459Identifier('ln12345678')->value);
     }
 
     public function testShortestAndLongValues(): void
     {
-        self::assertSame('LN1', (new Iso15459Identifier('LN1'))->value);
-        self::assertSame('LN' . \str_repeat('1', 60), (new Iso15459Identifier('LN' . \str_repeat('1', 60)))->value);
+        self::assertSame('LN1', new Iso15459Identifier('LN1')->value);
+        self::assertSame('LN' . \str_repeat('1', 60), new Iso15459Identifier('LN' . \str_repeat('1', 60))->value);
     }
 
     public function testSerialNumberFieldHasNoLengthCap(): void
@@ -111,7 +111,7 @@ final class Iso15459IdentifierTest extends TestCase
     #[DataProvider('dodUniqueItemIdentifiers')]
     public function testKeepsDashesAndSlashes(string $value): void
     {
-        self::assertSame($value, (new Iso15459Identifier($value))->value);
+        self::assertSame($value, new Iso15459Identifier($value)->value);
         self::assertSame($value, Iso15459Identifier::fromField(new DataIdentifierField('25S', \strtolower($value)))->value);
     }
 
@@ -181,6 +181,6 @@ final class Iso15459IdentifierTest extends TestCase
         self::assertTrue(new Iso15459Identifier($atLimit)->hasValidDodUiiLength());
         self::assertTrue(new Iso15459Identifier('LN1')->hasValidDodUiiLength());
         self::assertFalse(new Iso15459Identifier($overLimit)->hasValidDodUiiLength());
-        self::assertSame($overLimit, (new Iso15459Identifier($overLimit))->value);
+        self::assertSame($overLimit, new Iso15459Identifier($overLimit)->value);
     }
 }

@@ -37,7 +37,7 @@ final class IsmnTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheThirteenDigitForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Ismn($input))->value);
+        self::assertSame($expected, new Ismn($input)->value);
     }
 
     /**

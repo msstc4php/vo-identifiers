@@ -91,7 +91,7 @@ final class DataIdentifierStringTest extends TestCase
     {
         $envelope = "[)>\x1E06\x1D1PŁódź\x1E\x04";
 
-        self::assertSame($envelope, (new DataIdentifierString($envelope))->value);
+        self::assertSame($envelope, new DataIdentifierString($envelope)->value);
     }
 
     public function testASerializedMessageHoldsOnlyItsValue(): void

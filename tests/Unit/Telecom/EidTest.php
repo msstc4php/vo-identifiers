@@ -32,7 +32,7 @@ final class EidTest extends TestCase
     #[DataProvider('valid')]
     public function testAccepts(string $value): void
     {
-        self::assertSame($value, (new Eid($value))->value);
+        self::assertSame($value, new Eid($value)->value);
     }
 
     /**

@@ -38,7 +38,7 @@ final class IssnTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheHyphenatedForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Issn($input))->value);
+        self::assertSame($expected, new Issn($input)->value);
     }
 
     /**

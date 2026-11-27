@@ -39,7 +39,7 @@ final class HsCodeTest extends TestCase
     #[DataProvider('printed')]
     public function testStripsTheSeparatorsTheSourcesPrint(string $input, string $expected): void
     {
-        self::assertSame($expected, (new HsCode($input))->value);
+        self::assertSame($expected, new HsCode($input)->value);
     }
 
     /**

@@ -39,8 +39,8 @@ final class ImoNumberTest extends TestCase
 
     public function testCheckDigitIsNotVerified(): void
     {
-        self::assertSame('IMO9074729', (new ImoNumber('IMO 9074729'))->value);
-        self::assertSame('IMO9074720', (new ImoNumber('IMO 9074720'))->value);
+        self::assertSame('IMO9074729', new ImoNumber('IMO 9074729')->value);
+        self::assertSame('IMO9074720', new ImoNumber('IMO 9074720')->value);
     }
 
     /**

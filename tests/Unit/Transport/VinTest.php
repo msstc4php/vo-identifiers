@@ -33,7 +33,7 @@ final class VinTest extends TestCase
 
     public function testUppercases(): void
     {
-        self::assertSame('1G4AH59H45G118341', (new Vin('1g4ah59h45g118341'))->value);
+        self::assertSame('1G4AH59H45G118341', new Vin('1g4ah59h45g118341')->value);
     }
 
     public function testAWrongPositionNineIsNeverRefused(): void

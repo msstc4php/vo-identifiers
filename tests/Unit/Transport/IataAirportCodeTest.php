@@ -18,7 +18,7 @@ final class IataAirportCodeTest extends TestCase
 {
     public function testUppercases(): void
     {
-        self::assertSame('SYD', (new IataAirportCode('syd'))->value);
+        self::assertSame('SYD', new IataAirportCode('syd')->value);
     }
 
     /**

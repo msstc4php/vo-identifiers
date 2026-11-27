@@ -33,8 +33,8 @@ final class ImeisvTest extends TestCase
 
     public function testAcceptsSpacesAndHyphens(): void
     {
-        self::assertSame('2605317931138301', (new Imeisv('26-053179-311383-01'))->value);
-        self::assertSame('2605317931138301', (new Imeisv('26 053179 311383 01'))->value);
+        self::assertSame('2605317931138301', new Imeisv('26-053179-311383-01')->value);
+        self::assertSame('2605317931138301', new Imeisv('26 053179 311383 01')->value);
     }
 
     /**

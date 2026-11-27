@@ -44,7 +44,7 @@ final class ContainerNumberTest extends TestCase
     #[DataProvider('valid')]
     public function testAccepts(string $input, string $expected): void
     {
-        self::assertSame($expected, (new ContainerNumber($input))->value);
+        self::assertSame($expected, new ContainerNumber($input)->value);
     }
 
     /**

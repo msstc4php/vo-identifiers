@@ -29,8 +29,8 @@ final class UnLocodeTest extends TestCase
 
     public function testNumeralsTwoToNineAreLocationCharacters(): void
     {
-        self::assertSame('USNY2', (new UnLocode('USNY2'))->value);
-        self::assertSame('USNY9', (new UnLocode('USNY9'))->value);
+        self::assertSame('USNY2', new UnLocode('USNY2')->value);
+        self::assertSame('USNY9', new UnLocode('USNY9')->value);
     }
 
     public function testCountryIsNullOutsideIso3166(): void

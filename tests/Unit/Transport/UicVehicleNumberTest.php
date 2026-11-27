@@ -32,7 +32,7 @@ final class UicVehicleNumberTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsPrintedAndCompactForms(string $input, string $expected): void
     {
-        self::assertSame($expected, (new UicVehicleNumber($input))->value);
+        self::assertSame($expected, new UicVehicleNumber($input)->value);
     }
 
     public function testAccessors(): void

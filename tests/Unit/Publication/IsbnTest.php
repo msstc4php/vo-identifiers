@@ -46,7 +46,7 @@ final class IsbnTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheCompactForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Isbn($input))->value);
+        self::assertSame($expected, new Isbn($input)->value);
     }
 
     /**

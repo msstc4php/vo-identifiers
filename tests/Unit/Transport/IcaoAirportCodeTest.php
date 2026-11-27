@@ -18,7 +18,7 @@ final class IcaoAirportCodeTest extends TestCase
 {
     public function testUppercases(): void
     {
-        self::assertSame('EDDF', (new IcaoAirportCode('eddf'))->value);
+        self::assertSame('EDDF', new IcaoAirportCode('eddf')->value);
     }
 
     /**

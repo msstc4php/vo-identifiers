@@ -32,7 +32,7 @@ final class IsniTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheCompactForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Isni($input))->value);
+        self::assertSame($expected, new Isni($input)->value);
     }
 
     /**

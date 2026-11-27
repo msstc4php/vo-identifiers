@@ -57,7 +57,7 @@ final class ImeiTest extends TestCase
     #[DataProvider('forms')]
     public function testAcceptsPrintedForms(string $input, string $stored): void
     {
-        self::assertSame($stored, (new Imei($input))->value);
+        self::assertSame($stored, new Imei($input)->value);
     }
 
     /**

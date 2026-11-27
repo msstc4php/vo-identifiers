@@ -40,7 +40,7 @@ final class OrcidTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheHyphenatedForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Orcid($input))->value);
+        self::assertSame($expected, new Orcid($input)->value);
     }
 
     /**

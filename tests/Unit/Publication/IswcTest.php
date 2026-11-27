@@ -33,7 +33,7 @@ final class IswcTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheCompactForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Iswc($input))->value);
+        self::assertSame($expected, new Iswc($input)->value);
     }
 
     /**
@@ -69,7 +69,7 @@ final class IswcTest extends TestCase
 
     public function testCheckDigitIsNotEnforced(): void
     {
-        self::assertSame('T0345246805', (new Iswc('T-034.524.680-5'))->value);
+        self::assertSame('T0345246805', new Iswc('T-034.524.680-5')->value);
     }
 
     public function testReportsTheCheckDigit(): void

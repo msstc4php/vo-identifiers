@@ -33,7 +33,7 @@ final class S10ItemIdentifierTest extends TestCase
 
     public function testLowercase(): void
     {
-        self::assertSame('RA473124829CH', (new S10ItemIdentifier('ra473124829ch'))->value);
+        self::assertSame('RA473124829CH', new S10ItemIdentifier('ra473124829ch')->value);
     }
 
     public function testCountryIsNullWhenTheUpuCodeIsNotIso3166(): void
@@ -82,7 +82,7 @@ final class S10ItemIdentifierTest extends TestCase
 
     public function testReservedLettersOutsideTheServiceIndicatorAreAccepted(): void
     {
-        self::assertSame('RJ473124829KW', (new S10ItemIdentifier('RJ473124829KW'))->value);
+        self::assertSame('RJ473124829KW', new S10ItemIdentifier('RJ473124829KW')->value);
     }
 
     /**

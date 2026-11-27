@@ -18,8 +18,8 @@ final class MpanTest extends TestCase
 {
     public function testAcceptsTheCoreAndTheFullForm(): void
     {
-        self::assertSame('1234567890123', (new Mpan('1234567890123'))->value);
-        self::assertSame('012345671234567890123', (new Mpan('012345671234567890123'))->value);
+        self::assertSame('1234567890123', new Mpan('1234567890123')->value);
+        self::assertSame('012345671234567890123', new Mpan('012345671234567890123')->value);
     }
 
     /**

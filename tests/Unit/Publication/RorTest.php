@@ -40,7 +40,7 @@ final class RorTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheBareLowercaseForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Ror($input))->value);
+        self::assertSame($expected, new Ror($input)->value);
     }
 
     /**

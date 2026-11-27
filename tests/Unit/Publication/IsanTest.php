@@ -46,7 +46,7 @@ final class IsanTest extends TestCase
     #[DataProvider('valid')]
     public function testAcceptsAndStoresTheCompactForm(string $input, string $expected): void
     {
-        self::assertSame($expected, (new Isan($input))->value);
+        self::assertSame($expected, new Isan($input)->value);
     }
 
     /**
