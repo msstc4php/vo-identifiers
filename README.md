@@ -30,6 +30,7 @@ Covered by 2.x (the same promise as 1.x):
   forms");
 - enum backed values and case names (`MmsiStationType`, `EicObjectType`, `WmiRegion`);
 - `MAX_LENGTH` values (the Doctrine column lengths of the bridge);
+- the results of `equals()` (which values are equal; 2.0 changed `Isan` per ISO 15706-2:2023 4.4);
 - exception classes and their parents.
 
 Rules:

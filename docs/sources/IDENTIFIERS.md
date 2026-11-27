@@ -85,7 +85,7 @@ Owner rule: a check digit or structure is enforced only when quoted from an offi
 13. **1.0 rulings (2026-11-23 UTC).** `Doi` cuts a resolver URL at a raw `?` or `#` and accepts the hosts the Handbook names, `doi.org` and
     `dx.doi.org` (DOI section); `Issn` refuses seven digits and `Issn::fromParts()` completes them on request (ISSN section); `Ark` keeps
     inflections, no quote (ARK section); `Iso15459Identifier` keeps `[A-Z0-9]` (Iso15459Identifier section; corrected by ruling 14.7: the 1.0 review then reached the DoD UID Guide v2.5 and the class accepts `-` and `/` after the first character, see "Character set");
-    `EnergyIdentificationCode` keeps `-` allowed in every position but the last (deliberate lenience, frozen for 1.x); a check that gets an
+    `EnergyIdentificationCode` keeps `-` allowed in every position but the last (deliberate lenience, frozen for 2.x as it was for 1.x); a check that gets an
     official source after 1.0 (`ImoNumber`, `ContainerNumber`, `Iswc`, `Mpan`) is only reported by a `hasValid…(): bool` (2.0 refuses none of them either).
 14. **1.2 rulings (2026-11-24 UTC).** No new refusal anywhere (constructor, `tryFrom()`, `isValid()`, factories); `equals()`, canonical forms and
     `MAX_LENGTH` unchanged.

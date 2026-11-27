@@ -39,7 +39,7 @@ compatibility" promise now covers 2.x.
   column or a string-keyed lookup can hold or miss the other form, as with ISBN-10/13 and the two IMEI forms: query
   every form (`WHERE isan IN ('B159D8FA01240000K', 'B159D8FA01240000K00000000E')`), or normalise before storing (cut
   a value whose `version()` is `00000000` to its first 16 or, with check characters, 17 characters).
-- Composer: `"msstc4php/vo-identifiers": "^2.0"` (or `"^1.0 || ^2.0"` for code that uses neither of the above). The
+- Composer: `"msstc4php/vo-identifiers": "^2.0"` (or `"^1.0 || ^2.0"` for code that uses neither of the above and does not rely on a zero ISAN version differing from none). The
   Doctrine bridge needs a release that allows `^2.0`; its column types and lengths are unchanged.
 - Static BC checkers (Roave) report the removed `MmsiType` against 1.2.0; that is the expected break.
 

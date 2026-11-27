@@ -43,7 +43,7 @@ copyright-restricted tables are not embedded (the table terms are in `docs/sourc
 
 - `Imei::equals()` (14/15 digits), `Isbn::equals()` (ISBN-10/13) and `Isan::equals()` (check characters; since 2.0 a `0000-0000` version equals none) compare across forms; the stored string keeps the form given, so a
   string-keyed index or UNIQUE column sees two values.
-- 2.x (same rules as 1.x): never refuse a value an earlier 2.x accepted (a newly sourced check is a `hasValid…(): bool`), never change a
+- 2.x (same rules as 1.x): never refuse a value an earlier 2.x accepted (a newly sourced check is a `hasValid…(): bool`), never change `equals()` results, never change a
   canonical form, `MAX_LENGTH` or a factory's candidate set; new reasons go into `Internal\Reason`.
 - Every string value object is validated again on unserialize by vo-base `^1.3` (`parse()` runs again); a composite
   one defines `__serialize()`/`__unserialize()` itself, as `Transport\DataIdentifierField` does. A new class must be added to `Tests\Unit\IdentifierContractTest` (with `MAX_LENGTH` when its length is bounded). Messages use `Internal\Reason`.

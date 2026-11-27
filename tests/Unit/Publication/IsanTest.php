@@ -22,6 +22,8 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Isni::class)]
 final class IsanTest extends TestCase
 {
+    // The second check characters (`9`, `E`) are computed with the package's own MOD 37,36 helper: no source prints
+    // a 26-character vector (ruling 10).
     private const string WITH_VERSION = 'B159D8FA01240000K9F3A02459';
 
     private const string ZERO_VERSION = 'B159D8FA01240000K00000000E';

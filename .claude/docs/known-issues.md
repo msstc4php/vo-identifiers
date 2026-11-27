@@ -47,7 +47,7 @@ empty value fails the remainder test anyway).
   whole rest is decoded as in 0.x, so nothing 0.x accepted is refused; the `s` flag of the URL regex matters there (a newline after the `?` must reach
   the final check). A DOI stored from a URL with a query under 0.x keeps it (no migration in the package; CHANGELOG has the cleanup hint).
 - `Ark` keeps `?`/`??` inflections in the Name: no quote of the draft's inflection text is in `docs/sources`. Stripping them changes stored forms and
-  `equals()`, so it waits for 2.0 even if a quote is found.
+  `equals()`, so it waits for the next major (3.0) even if a quote is found.
 - `Iso15459Identifier` is `[A-Z0-9][A-Z0-9/-]{2,}` since review CR-001 (DoD UID Guide v2.5, Rule 21 and footnote 88, reached via the UNT archive); no
   50-character DoD cap (25S is generic ISO/IEC 15459; a report-only `hasDodUiiLength()` was declined for 1.0). A `J` field keeps `[A-Z0-9]` (footnote 88
   does not list `J`), checked in `fromField()`.
