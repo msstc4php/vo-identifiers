@@ -17,8 +17,8 @@ use Override;
  * 16 digits, the second after the version, computed over the 16 digits and the version (not over the first check
  * character). A value without them (16 or 24 digits) is accepted; a check character that is present must be right, and a
  * version needs both or neither. Hyphens, spaces and a leading `ISAN ` are dropped; the stored form is compact and keeps
- * the form given, and {@see equals()} ignores the check characters. A bare 16-digit value is also a valid ISNI:
- * {@see PublicationIdentifierFactory} reports it ambiguous.
+ * the form given, and {@see equals()} ignores the check characters and treats a `0000-0000` version as none. A bare
+ * 16-digit value is also a valid ISNI: {@see PublicationIdentifierFactory} reports it ambiguous.
  *
  * @see https://isan.org/docs/isan_check_digit_calculation_v2.0.pdf ISAN International Agency, "ISAN Check Characters Calculation" v2.0
  * @see https://github.com/msstc4php/vo-identifiers/blob/main/docs/sources/IDENTIFIERS.md "ISAN (ISO 15706)"
@@ -29,6 +29,8 @@ final class Isan extends AbstractStringValueObject
     public const int MAX_LENGTH = 26;
 
     private const string TYPE = 'ISAN';
+
+    private const string NO_VERSION = '00000000';
 
     /**
      * Twelve hexadecimal digits.
@@ -60,14 +62,15 @@ final class Isan extends AbstractStringValueObject
 
     /**
      * Compares root, episode and version: the check characters are derived from them, so the forms with and without
-     * check characters of one ISAN are equal (the stored string keeps the form given).
+     * check characters of one ISAN are equal. A version `0000-0000` "shall be treated as an ISAN without a version
+     * segment" (ISO 15706-2:2023, 4.4), so it equals no version. The stored string keeps the form given either way.
      */
     #[Override]
     public function equals(ValueObject $other): bool
     {
         return $other instanceof self
             && \substr($other->value, 0, 16) === \substr($this->value, 0, 16)
-            && $other->version() === $this->version();
+            && $other->comparedVersion() === $this->comparedVersion();
     }
 
     public function hasVersion(): bool
@@ -133,5 +136,12 @@ final class Isan extends AbstractStringValueObject
         }
 
         return $value;
+    }
+
+    private function comparedVersion(): ?string
+    {
+        $version = $this->version();
+
+        return $version === self::NO_VERSION ? null : $version;
     }
 }

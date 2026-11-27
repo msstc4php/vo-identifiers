@@ -24,6 +24,8 @@ final class IsanTest extends TestCase
 {
     private const string WITH_VERSION = 'B159D8FA01240000K9F3A02459';
 
+    private const string ZERO_VERSION = 'B159D8FA01240000K00000000E';
+
     /**
      * @return iterable<string, array{string, string}>
      */
@@ -152,9 +154,62 @@ final class IsanTest extends TestCase
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('A159D8FA01240000')));
         self::assertFalse(new Isan('B159D8FA01240000K')->equals(new Isan(self::WITH_VERSION)));
         self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA012400009F3A0245')));
-        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA0124000000000000')));
         self::assertFalse(new Isan('B159D8FA012400009F3A0245')->equals(new Isan('B159D8FA012400009F3A0246')));
         self::assertFalse(new Isan('1422458635730476')->equals(Isni::from('1422458635730476')));
+    }
+
+    /**
+     * ISO 15706-2:2023, 4.4: a version segment `0000-0000` is treated as no version. Every pair holds one ISAN in two
+     * stored forms.
+     *
+     * @return iterable<string, array{string, string}>
+     */
+    public static function zeroVersionPairs(): iterable
+    {
+        yield '24 digits, 16 digits' => ['B159D8FA0124000000000000', 'B159D8FA01240000'];
+        yield '24 digits, 17 characters' => ['B159D8FA0124000000000000', 'B159D8FA01240000K'];
+        yield '26 characters, 17 characters' => [self::ZERO_VERSION, 'B159D8FA01240000K'];
+        yield '26 characters, 16 digits' => [self::ZERO_VERSION, 'B159D8FA01240000'];
+        yield '26 characters, 24 digits' => [self::ZERO_VERSION, 'B159D8FA0124000000000000'];
+        yield 'hyphenated' => ['ISAN B159-D8FA-0124-0000-K-0000-0000-E', 'ISAN B159-D8FA-0124-0000-K'];
+        yield 'hyphenated, no check characters' => ['B159-D8FA-0124-0000-0000-0000', 'B159-D8FA-0124-0000'];
+    }
+
+    #[DataProvider('zeroVersionPairs')]
+    public function testZeroVersionEqualsNoVersionInBothDirections(string $withZeroVersion, string $withoutVersion): void
+    {
+        $zero = new Isan($withZeroVersion);
+        $none = new Isan($withoutVersion);
+
+        self::assertTrue($zero->equals($none));
+        self::assertTrue($none->equals($zero));
+    }
+
+    public function testZeroVersionKeepsTheFormGiven(): void
+    {
+        $isan = new Isan('ISAN B159-D8FA-0124-0000-K-0000-0000-E');
+
+        self::assertSame(self::ZERO_VERSION, $isan->value);
+        self::assertSame(self::ZERO_VERSION, (string) $isan);
+        self::assertSame('"' . self::ZERO_VERSION . '"', \json_encode($isan, \JSON_THROW_ON_ERROR));
+        self::assertSame('00000000', $isan->version());
+        self::assertTrue($isan->hasVersion());
+        self::assertFalse($isan->isPrivateVersion());
+        self::assertSame('ISAN B159-D8FA-0124-0000-K-0000-0000-E', $isan->formatted());
+    }
+
+    public function testZeroVersionStillChecksTheSecondCheckCharacter(): void
+    {
+        $this->expectException(InvalidPublicationIdentifierException::class);
+        new Isan('B159D8FA01240000K00000000F');
+    }
+
+    public function testZeroVersionKeepsOtherIsansApart(): void
+    {
+        self::assertFalse(new Isan(self::ZERO_VERSION)->equals(new Isan(self::WITH_VERSION)));
+        self::assertFalse(new Isan(self::ZERO_VERSION)->equals(new Isan('B159D8FA01240001')));
+        self::assertFalse(new Isan('B159D8FA0124000000000000')->equals(new Isan('B159D8FA0124000000000001')));
+        self::assertFalse(new Isan('B159D8FA01240000')->equals(new Isan('B159D8FA0124000000000001')));
     }
 
     /**
