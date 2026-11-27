@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0] - unreleased
+## [2.0.0] - 2026-11-27
 
 A major release with two breaking changes; everything else (classes, methods, canonical stored forms, `MAX_LENGTH`,
 enum backed values, exception classes) is as in 1.2.0, and nothing that 1.2 accepted is refused. The README "Backward
